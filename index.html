@@ -1,1 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sanskar.jee — JEE Main PYQs, NTA CBT &amp; Daily Tracker</title>
 
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX CSS & JS for Crisp Math & Chemistry Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col selection:bg-indigo-100 selection:text-indigo-900">
+
+  <!-- Toast Notification Container (Replaces alert/confirm) -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full px-4 sm:px-0 pointer-events-none"></div>
+
+  <!-- ===================================================================== -->
+  <!-- TOP NAVIGATION BAR (Responsive for iPad Landscape, Portrait & Mobile) -->
+  <!-- ===================================================================== -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-3">
+        <!-- Brand Identity: Sanskar.jee -->
+        <div class="flex items-center gap-2.5 shrink-0 cursor-pointer group" onclick="switchTab('dashboard')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white flex items-center justify-center font-black text-lg shadow-sm group-hover:scale-105 transition-transform">
+            S
+          </div>
+          <div>
+            <h1 class="text-lg font-extrabold tracking-tight text-slate-900 leading-none">
+              Sanskar<span class="text-indigo-600">.jee</span>
+            </h1>
+            <p class="text-[11px] font-medium text-slate-500 mt-0.5">PYQs &bull; NTA CBT &bull; Daily Targets</p>
+          </div>
+        </div>
+
+        <!-- Desktop / iPad Landscape Navigation -->
+        <nav class="hidden md:flex items-center gap-1.5" id="desktop-nav">
+          <button onclick="switchTab('dashboard')" data-tab="dashboard" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors">Dashboard</button>
+          <button onclick="switchTab('practice')" data-tab="practice" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors">Practice</button>
+          <button onclick="switchTab('test')" data-tab="test" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors">NTA CBT Test</button>
+          <button onclick="switchTab('notebook')" data-tab="notebook" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors">Mistakes &amp; Bookmarks</button>
+          <button onclick="switchTab('import')" data-tab="import" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors">Import PYQs</button>
+        </nav>
+
+        <!-- Mobile Menu Toggle -->
+        <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100" aria-label="Toggle Menu">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile / iPad Portrait Collapsible Nav -->
+      <div id="mobile-nav" class="hidden md:hidden pb-3 pt-1 flex flex-wrap gap-1.5 border-t border-slate-100">
+        <button onclick="switchTab('dashboard'); toggleMobileMenu(false)" data-tab="dashboard" class="nav-btn px-3 py-2 rounded-xl text-sm font-semibold transition-colors">Dashboard</button>
+        <button onclick="switchTab('practice'); toggleMobileMenu(false)" data-tab="practice" class="nav-btn px-3 py-2 rounded-xl text-sm font-semibold transition-colors">Practice</button>
+        <button onclick="switchTab('test'); toggleMobileMenu(false)" data-tab="test" class="nav-btn px-3 py-2 rounded-xl text-sm font-semibold transition-colors">NTA CBT Test</button>
+        <button onclick="switchTab('notebook'); toggleMobileMenu(false)" data-tab="notebook" class="nav-btn px-3 py-2 rounded-xl text-sm font-semibold transition-colors">Mistakes &amp; Bookmarks</button>
+        <button onclick="switchTab('import'); toggleMobileMenu(false)" data-tab="import" class="nav-btn px-3 py-2 rounded-xl text-sm font-semibold transition-colors">Import PYQs</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Compact Daily Target Summary Strip (Visible outside Dashboard) -->
+  <div id="compact-target-bar" class="hidden bg-indigo-50/90 border-b border-indigo-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+      <div class="flex items-center gap-2">
+        <span class="font-extrabold text-indigo-900">Today's Target:</span>
+        <button onclick="openTargetModal()" class="text-[11px] font-bold text-indigo-600 hover:underline">(Edit)</button>
+      </div>
+      <div class="flex flex-wrap items-center gap-3 sm:gap-5" id="compact-target-items"></div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- =================================================================== -->
+    <!-- SECTION 1: DASHBOARD & DAILY TARGET TRACKER                         -->
+    <!-- =================================================================== -->
+    <section id="tab-dashboard" class="tab-section space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Welcome to Sanskar<span class="text-indigo-600">.jee</span>
+          </h2>
+          <p class="text-sm text-slate-500 mt-1">Track your daily Physics, Chemistry &amp; Maths targets. Every solved question updates automatically.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button onclick="openTargetModal()" class="px-4 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-800 text-sm font-semibold hover:bg-slate-50 shadow-sm transition">
+            Edit Daily Targets
+          </button>
+          <button onclick="switchTab('practice')" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 shadow-sm transition">
+            Start Practicing
+          </button>
+        </div>
+      </div>
+
+      <!-- 3 Subject Target Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="dashboard-target-cards"></div>
+
+      <!-- Quick Stats Overview -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Question Bank</p>
+          <p id="stat-total-q" class="text-3xl font-extrabold text-slate-900 mt-1">0</p>
+          <p class="text-xs text-slate-500 mt-1">Physics, Chem &amp; Maths</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Solved Today</p>
+          <p id="stat-solved-today" class="text-3xl font-extrabold text-indigo-600 mt-1">0</p>
+          <p class="text-xs text-slate-500 mt-1">Auto-resets daily</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm cursor-pointer hover:border-rose-300 transition" onclick="switchTab('notebook'); switchNotebookSubTab('mistakes')">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Mistake Notebook</p>
+          <p id="stat-mistakes" class="text-3xl font-extrabold text-rose-600 mt-1">0</p>
+          <p class="text-xs text-slate-500 mt-1">Tap to revise errors</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm cursor-pointer hover:border-amber-300 transition" onclick="switchTab('notebook'); switchNotebookSubTab('bookmarks')">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Bookmarked PYQs</p>
+          <p id="stat-bookmarks" class="text-3xl font-extrabold text-amber-500 mt-1">0</p>
+          <p class="text-xs text-slate-500 mt-1">Saved for quick revision</p>
+        </div>
+      </div>
+
+      <!-- Quick Launch Shortcuts -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <h3 class="text-base font-extrabold text-slate-900 mb-4">Quick Launch</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <button onclick="switchTab('practice'); startRandomPractice()" class="p-4 rounded-xl border border-indigo-100 bg-indigo-50/70 hover:bg-indigo-100/70 text-left transition">
+            <p class="font-bold text-indigo-900 text-sm">Random PYQ Sprint</p>
+            <p class="text-xs text-indigo-700 mt-1 leading-relaxed">Jump straight into random JEE Main questions with instant +4/-1 feedback and solutions.</p>
+          </button>
+          <button onclick="switchTab('test'); switchTestSubTab('pdf')" class="p-4 rounded-xl border border-emerald-100 bg-emerald-50/70 hover:bg-emerald-100/70 text-left transition">
+            <p class="font-bold text-emerald-900 text-sm">Split-Screen PDF CBT</p>
+            <p class="text-xs text-emerald-700 mt-1 leading-relaxed">Open any 5–6 year NTA shift PDF on your iPad alongside a 3-hr OMR &amp; Auto-Grader.</p>
+          </button>
+          <button onclick="switchTab('import')" class="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-left transition">
+            <p class="font-bold text-slate-900 text-sm">Import 2,300+ PYQs</p>
+            <p class="text-xs text-slate-600 mt-1 leading-relaxed">Drop a JSON/JSONL dataset to auto-classify questions into subjects and chapters.</p>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 2: PRACTICE MODE (CHAPTER-WISE, MIX & MATCH, RANDOM)        -->
+    <!-- =================================================================== -->
+    <section id="tab-practice" class="tab-section hidden space-y-5">
+      <!-- Filter & Random Controls -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2" id="practice-subject-pills">
+            <button onclick="setPracticeSubject('All')" data-subj="All" class="subj-pill px-4 py-2 rounded-xl text-sm font-semibold transition">All Subjects</button>
+            <button onclick="setPracticeSubject('Physics')" data-subj="Physics" class="subj-pill px-4 py-2 rounded-xl text-sm font-semibold transition">Physics</button>
+            <button onclick="setPracticeSubject('Chemistry')" data-subj="Chemistry" class="subj-pill px-4 py-2 rounded-xl text-sm font-semibold transition">Chemistry</button>
+            <button onclick="setPracticeSubject('Mathematics')" data-subj="Mathematics" class="subj-pill px-4 py-2 rounded-xl text-sm font-semibold transition">Mathematics</button>
+          </div>
+          <button onclick="pickRandomPracticeQuestion()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-bold hover:from-indigo-700 hover:to-violet-700 shadow-sm transition shrink-0">
+            🎲 Random Question
+          </button>
+        </div>
+
+        <!-- Multi-Select Chapter Pills -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Chapters (Tap one or multiple to mix &amp; match)</p>
+            <button onclick="clearChapterFilter()" class="text-xs font-bold text-indigo-600 hover:underline">Show All Chapters</button>
+          </div>
+          <div id="practice-chapter-pills" class="flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+
+      <!-- Active Practice Question Card -->
+      <div id="practice-question-container" class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-7 shadow-sm"></div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 3: NTA CBT TEST MODE (CUSTOM CBT + SPLIT-SCREEN PDF CBT)    -->
+    <!-- =================================================================== -->
+    <section id="tab-test" class="tab-section hidden space-y-5">
+      <!-- Sub-Mode Switcher -->
+      <div class="flex flex-wrap gap-2 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm w-fit">
+        <button onclick="switchTestSubTab('custom')" id="test-subtab-custom" class="px-4 py-2.5 rounded-xl text-sm font-bold transition">Custom CBT Test</button>
+        <button onclick="switchTestSubTab('pdf')" id="test-subtab-pdf" class="px-4 py-2.5 rounded-xl text-sm font-bold transition">Split-Screen PDF CBT (5–6 Yr Papers)</button>
+      </div>
+
+      <!-- SUB-MODE A: CUSTOM CBT TEST -->
+      <div id="test-panel-custom" class="space-y-5">
+        <!-- Setup Screen -->
+        <div id="cbt-setup" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-900">Configure NTA-Style CBT Test</h2>
+            <p class="text-sm text-slate-500 mt-0.5">Standard JEE Main marking: <span class="font-bold text-emerald-600">+4</span> correct, <span class="font-bold text-rose-600">-1</span> wrong, <span class="font-bold text-slate-600">0</span> unattempted.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Subjects</label>
+              <div class="space-y-2">
+                <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                  <input type="checkbox" value="Physics" checked class="cbt-subj-cb w-4 h-4 accent-indigo-600" onchange="renderCbtChapterChoices()" />
+                  <span class="text-sm font-semibold">Physics</span>
+                </label>
+                <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                  <input type="checkbox" value="Chemistry" checked class="cbt-subj-cb w-4 h-4 accent-indigo-600" onchange="renderCbtChapterChoices()" />
+                  <span class="text-sm font-semibold">Chemistry</span>
+                </label>
+                <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                  <input type="checkbox" value="Mathematics" checked class="cbt-subj-cb w-4 h-4 accent-indigo-600" onchange="renderCbtChapterChoices()" />
+                  <span class="text-sm font-semibold">Mathematics</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Number of Questions</label>
+              <input id="cbt-q-count" type="number" min="1" max="90" value="10" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <p id="cbt-available-note" class="text-xs text-slate-500 mt-1.5"></p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Duration (Minutes)</label>
+              <input id="cbt-duration" type="number" min="1" max="180" value="20" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <p class="text-xs text-slate-500 mt-1.5">Recommended: ~2 min per question</p>
+            </div>
+          </div>
+
+          <!-- Chapter Selection -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Chapters (Leave unselected to include all chapters)</label>
+            <div id="cbt-chapter-list" class="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-2.5 bg-slate-50 rounded-xl border border-slate-200"></div>
+          </div>
+
+          <button onclick="startCustomCbt()" class="px-6 py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 shadow-sm transition">
+            Start NTA CBT Test
+          </button>
+        </div>
+
+        <!-- Live CBT Exam Screen -->
+        <div id="cbt-exam" class="hidden space-y-4">
+          <div class="bg-slate-900 text-white rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+            <div>
+              <p class="text-[11px] text-indigo-300 font-bold uppercase tracking-wider">Sanskar.jee &bull; NTA CBT</p>
+              <p id="cbt-progress-label" class="text-sm font-bold">Question 1 of 10</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="px-4 py-1.5 rounded-xl bg-slate-800 border border-slate-700 font-mono text-lg font-extrabold text-amber-400" id="cbt-timer">00:00</div>
+              <button onclick="submitCustomCbt()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition">
+                Submit Test
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <!-- Question Area -->
+            <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between min-h-[380px]">
+              <div id="cbt-question-body"></div>
+              <div class="pt-6 mt-6 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap gap-2">
+                  <button onclick="cbtPrev()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50">Previous</button>
+                  <button onclick="cbtClearResponse()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50">Clear Response</button>
+                  <button onclick="cbtMarkForReview()" class="px-4 py-2.5 rounded-xl bg-purple-100 text-purple-800 text-sm font-semibold hover:bg-purple-200">Mark for Review</button>
+                </div>
+                <button onclick="cbtSaveAndNext()" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700">Save &amp; Next</button>
+              </div>
+            </div>
+
+            <!-- Color-Coded Question Palette -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+              <h3 class="text-sm font-extrabold text-slate-900">Question Palette</h3>
+              <div class="grid grid-cols-5 gap-2" id="cbt-palette"></div>
+              <div class="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs font-medium text-slate-600">
+                <div class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded bg-emerald-500 inline-block"></span> Answered</div>
+                <div class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded bg-rose-500 inline-block"></span> Not Answered</div>
+                <div class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded bg-purple-500 inline-block"></span> Marked</div>
+                <div class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded bg-slate-200 inline-block"></span> Not Visited</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CBT Score Analysis & Solutions -->
+        <div id="cbt-result" class="hidden space-y-5"></div>
+      </div>
+
+      <!-- SUB-MODE B: SPLIT-SCREEN PDF CBT (FOR 5–6 YR NTA PAPERS ON IPAD) -->
+      <div id="test-panel-pdf" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-3">
+            <label class="px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 cursor-pointer shadow-sm transition">
+              Load NTA PDF from iPad
+              <input type="file" accept="application/pdf" class="hidden" onchange="loadLocalPdf(event)" />
+            </label>
+            <div class="flex items-center gap-2 text-sm">
+              <label for="pdf-q-count" class="font-semibold text-slate-600">Qs:</label>
+              <input id="pdf-q-count" type="number" min="5" max="90" value="75" onchange="buildPdfOmrGrid()" class="w-16 px-2.5 py-1.5 rounded-xl border border-slate-300 font-bold text-center" />
+            </div>
+            <button onclick="openAutoGradeModal()" class="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 shadow-sm transition">
+              Auto-Grade (+4/-1)
+            </button>
+          </div>
+
+          <!-- 3-Hour Countdown Timer -->
+          <div class="flex items-center gap-2">
+            <span id="pdf-timer-display" class="font-mono text-lg font-extrabold text-slate-900 bg-slate-100 px-3.5 py-1.5 rounded-xl">03:00:00</span>
+            <button onclick="togglePdfTimer()" id="pdf-timer-btn" class="px-3.5 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700">Start</button>
+            <button onclick="resetPdfTimer()" class="px-3 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50">Reset</button>
+          </div>
+        </div>
+
+        <!-- Split Screen Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <!-- Left Side: Local PDF Viewer -->
+          <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col h-[72vh]">
+            <div id="pdf-placeholder" class="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-500">
+              <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3 font-black text-xl">PDF</div>
+              <p class="font-extrabold text-slate-800">No NTA Paper Loaded</p>
+              <p class="text-sm mt-1 max-w-sm">Tap <strong>"Load NTA PDF from iPad"</strong> above to view any official 2020–2026 JEE Main shift PDF right here while marking your OMR on the right.</p>
+            </div>
+            <iframe id="pdf-iframe" class="hidden w-full h-full border-0" title="NTA Question Paper PDF"></iframe>
+          </div>
+
+          <!-- Right Side: Interactive OMR (MCQ + Numerical) + Status Palette -->
+          <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col h-[72vh] space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div>
+                <h3 class="font-extrabold text-slate-900 text-sm">Interactive OMR &amp; Palette</h3>
+                <p id="pdf-omr-summary" class="text-[11px] font-semibold text-slate-500">0 answered &bull; 0 marked</p>
+              </div>
+              <button onclick="clearPdfOmr()" class="text-xs font-bold text-rose-600 hover:underline">Clear All</button>
+            </div>
+
+            <!-- Compact Status Palette -->
+            <div id="pdf-mini-palette" class="flex flex-wrap gap-1 max-h-20 overflow-y-auto pb-2 border-b border-slate-100"></div>
+
+            <!-- Scrollable OMR Rows -->
+            <div id="pdf-omr-grid" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 4: MISTAKE NOTEBOOK, MANUAL PDF LOGGER & BOOKMARKS          -->
+    <!-- =================================================================== -->
+    <section id="tab-notebook" class="tab-section hidden space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex flex-wrap gap-2 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm w-fit">
+          <button onclick="switchNotebookSubTab('mistakes')" id="nb-tab-mistakes" class="px-4 py-2 rounded-xl text-sm font-bold transition">Mistake Notebook</button>
+          <button onclick="switchNotebookSubTab('bookmarks')" id="nb-tab-bookmarks" class="px-4 py-2 rounded-xl text-sm font-bold transition">Bookmarks</button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="toggleManualMistakeForm()" class="px-4 py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm font-bold hover:bg-rose-100 transition">
+            + Log External PDF Mistake
+          </button>
+          <select id="nb-subject-filter" onchange="renderNotebook()" class="px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="All">All Subjects</option>
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Mathematics">Mathematics</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Collapsible Quick Form: Manual Mistake from External PDF -->
+      <div id="manual-mistake-form" class="hidden bg-white rounded-2xl border border-rose-200 p-5 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-extrabold text-slate-900">Log Mistake from an External NTA PDF</h3>
+          <button onclick="toggleManualMistakeForm(false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg leading-none">&times;</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <select id="mm-subject" class="px-3 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold bg-white">
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Mathematics">Mathematics</option>
+          </select>
+          <input id="mm-chapter" type="text" placeholder="Chapter (e.g. Rotational Motion)" class="px-3 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <input id="mm-ref" type="text" placeholder="Paper &amp; Q# (e.g. 2024 Jan S1 Q14)" class="px-3 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <textarea id="mm-note" rows="2" placeholder="What went wrong? (e.g. Forgot minus sign in work done, misread adiabatic vs isothermal)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+        <div class="flex justify-end">
+          <button onclick="saveManualMistake()" class="px-5 py-2.5 rounded-xl bg-rose-600 text-white text-sm font-bold hover:bg-rose-700 shadow-sm transition">
+            Save to Mistake Notebook
+          </button>
+        </div>
+      </div>
+
+      <div id="notebook-list" class="space-y-4"></div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 5: BULK 2,300+ PYQ IMPORTER (JSON / JSONL)                  -->
+    <!-- =================================================================== -->
+    <section id="tab-import" class="tab-section hidden space-y-5">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm max-w-3xl space-y-5">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-900">Bulk Import 2,300+ JEE Main PYQs</h2>
+          <p class="text-sm text-slate-600 mt-1">
+            Drop or select a <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-xs">.json</code> or <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-xs">.jsonl</code> file (compatible with Hugging Face <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-xs">eQOURSE/jee-main-questions</code>). Sanskar.jee automatically classifies every question into <strong>Physics, Chemistry, and Mathematics</strong> and extracts its chapter.
+          </p>
+        </div>
+
+        <!-- Drag & Drop Zone -->
+        <div id="import-dropzone" class="border-2 border-dashed border-indigo-200 rounded-2xl p-8 text-center bg-indigo-50/40 transition-colors">
+          <p class="font-extrabold text-slate-800 mb-1">Drag &amp; Drop or Choose File from iPad</p>
+          <p class="text-xs text-slate-500 mb-4">Supports JSON arrays and line-delimited JSONL datasets (MCQ &amp; Numerical)</p>
+          <label class="inline-block px-5 py-3 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 cursor-pointer shadow-sm transition">
+            Select .json or .jsonl File
+            <input type="file" accept=".json,.jsonl,.txt" class="hidden" onchange="handleBulkImportFile(event.target.files[0])" />
+          </label>
+        </div>
+
+        <div id="import-status" class="hidden p-4 rounded-xl text-sm font-semibold"></div>
+
+        <div class="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <p class="text-xs text-slate-500">Currently loaded: <strong id="import-current-count">0</strong> questions (21 built-in + imported).</p>
+          <button onclick="clearImportedQuestions()" class="px-4 py-2 rounded-xl border border-rose-200 text-rose-700 text-xs font-bold hover:bg-rose-50 transition">
+            Reset to Built-in 21 PYQs
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 1: EDIT DAILY TARGETS                                           -->
+  <!-- ===================================================================== -->
+  <div id="target-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-xl space-y-5">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-extrabold text-slate-900">Edit Daily Targets</h3>
+        <button onclick="closeTargetModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl leading-none">&times;</button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-1">Physics Daily Target</label>
+          <input id="input-target-Physics" type="number" min="1" max="500" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-1">Chemistry Daily Target</label>
+          <input id="input-target-Chemistry" type="number" min="1" max="500" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-1">Mathematics Daily Target</label>
+          <input id="input-target-Mathematics" type="number" min="1" max="500" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeTargetModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+        <button onclick="saveDailyTargets()" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700">Save Targets</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 2: SPLIT-SCREEN PDF AUTO-GRADE MODAL                            -->
+  <!-- ===================================================================== -->
+  <div id="autograde-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-extrabold text-slate-900">Auto-Grade PDF OMR (+4 / -1)</h3>
+        <button onclick="closeAutoGradeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl leading-none">&times;</button>
+      </div>
+      <p class="text-xs text-slate-600">
+        Paste the official NTA answer key below. Supports sequential answers (<code class="bg-slate-100 px-1 rounded font-mono">A C B D 12 ...</code>) or numbered pairs (<code class="bg-slate-100 px-1 rounded font-mono">1:A, 2:C, 21:4.5</code>).
+      </p>
+      <textarea id="pdf-answer-key-input" rows="4" placeholder="1:A, 2:B, 3:C, 4:D, 21:15..." class="w-full p-3 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+      <div id="pdf-autograde-result" class="hidden p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-sm text-indigo-950 space-y-1"></div>
+      <div class="flex justify-end gap-2 pt-1">
+        <button onclick="closeAutoGradeModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50">Close</button>
+        <button onclick="runPdfAutoGrade()" class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700">Calculate Score</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- APPLICATION JAVASCRIPT                                                -->
+  <!-- ===================================================================== -->
+  <script>
+    // -----------------------------------------------------------------------
+    // 1. BUILT-IN AUTHENTIC JEE MAIN PYQ BANK (21 QUESTIONS: 7P, 7C, 7M)
+    //    Includes both MCQ ('mcq') and Numerical ('num') question types
+    // -----------------------------------------------------------------------
+    const BUILTIN_QUESTIONS = [
+      // PHYSICS (7)
+      {
+        id: 'p1',
+        type: 'mcq',
+        subject: 'Physics',
+        chapter: 'Laws of Motion',
+        year: 'JEE Main 2024 Jan Shift 1',
+        question: 'A block of mass $m = 2\\text{ kg}$ rests on a rough horizontal surface with coefficient of static friction $\\mu_s = 0.4$. What is the minimum horizontal force required to just start moving the block? (Take $g = 10\\text{ m/s}^2$)',
+        options: ['$4\\text{ N}$', '$8\\text{ N}$', '$10\\text{ N}$', '$20\\text{ N}$'],
+        correctOption: 1,
+        solution: 'Maximum static friction is $f_{\\max} = \\mu_s N = \\mu_s mg = 0.4 \\times 2 \\times 10 = 8\\text{ N}$. Hence, a minimum horizontal force of $8\\text{ N}$ is required.'
+      },
+      {
+        id: 'p2',
+        type: 'mcq',
+        subject: 'Physics',
+        chapter: 'Laws of Motion',
+        year: 'JEE Main 2023 Apr Shift 2',
+        question: 'Two masses $m_1 = 4\\text{ kg}$ and $m_2 = 6\\text{ kg}$ are connected by a light inextensible string passing over a smooth frictionless pulley. The acceleration of the system is: (Take $g = 10\\text{ m/s}^2$)',
+        options: ['$1\\text{ m/s}^2$', '$2\\text{ m/s}^2$', '$4\\text{ m/s}^2$', '$5\\text{ m/s}^2$'],
+        correctOption: 1,
+        solution: 'For an Atwood machine, $a = \\frac{(m_2 - m_1)g}{m_1 + m_2} = \\frac{(6 - 4) \\times 10}{6 + 4} = 2\\text{ m/s}^2$.'
+      },
+      {
+        id: 'p3',
+        type: 'mcq',
+        subject: 'Physics',
+        chapter: 'Rotational Motion',
+        year: 'JEE Main 2024 Apr Shift 1',
+        question: 'A solid sphere of mass $M$ and radius $R$ rolls without slipping on a horizontal surface. The ratio of its rotational kinetic energy to its total kinetic energy is:',
+        options: ['$\\frac{2}{5}$', '$\\frac{2}{7}$', '$\\frac{5}{7}$', '$\\frac{1}{3}$'],
+        correctOption: 1,
+        solution: 'For a solid sphere, $I = \\frac{2}{5}MR^2$. Rotational KE $= \\frac{1}{2}I\\omega^2 = \\frac{1}{5}Mv^2$ and Total KE $= \\frac{1}{2}Mv^2 + \\frac{1}{5}Mv^2 = \\frac{7}{10}Mv^2$. Ratio $= \\frac{1/5}{7/10} = \\frac{2}{7}$.'
+      },
+      {
+        id: 'p4',
+        type: 'mcq',
+        subject: 'Physics',
+        chapter: 'Electrostatics',
+        year: 'JEE Main 2023 Jan Shift 1',
+        question: 'Two point charges $+4q$ and $+q$ are placed at a distance $L$ apart. At what distance from the $+4q$ charge on the line joining them is the net electric field zero?',
+        options: ['$\\frac{L}{3}$', '$\\frac{2L}{3}$', '$\\frac{L}{2}$', '$\\frac{3L}{4}$'],
+        correctOption: 1,
+        solution: 'At distance $x$ from $+4q$: $\\frac{k(4q)}{x^2} = \\frac{kq}{(L-x)^2} \\implies \\frac{2}{x} = \\frac{1}{L-x} \\implies 2L - 2x = x \\implies x = \\frac{2L}{3}$.'
+      },
+      {
+        id: 'p5',
+        type: 'mcq',
+        subject: 'Physics',
+        chapter: 'Current Electricity',
+        year: 'JEE Main 2024 Jan Shift 2',
+        question: 'A uniform wire of resistance $R = 20\\,\\Omega$ is stretched uniformly until its length becomes twice its original length. The new resistance of the wire is:',
+        options: ['$20\\,\\Omega$', '$40\\,\\Omega$', '$80\\,\\Omega$', '$100\\,\\Omega$'],
+        correctOption: 2,
+        solution: 'Since volume is conserved, $R \\propto L^2$. Doubling length gives $R\' = 4R = 4 \\times 20 = 80\\,\\Omega$.'
+      },
+      {
+        id: 'p6',
+        type: 'mcq',
+        subject: 'Physics',
+        chapter: 'Modern Physics',
+        year: 'JEE Main 2023 Apr Shift 1',
+        question: 'The work function of a metal surface is $2.2\\text{ eV}$. If light of photon energy $5.0\\text{ eV}$ is incident on it, the maximum kinetic energy of emitted photoelectrons is:',
+        options: ['$2.2\\text{ eV}$', '$2.8\\text{ eV}$', '$5.0\\text{ eV}$', '$7.2\\text{ eV}$'],
+        correctOption: 1,
+        solution: 'By Einstein\'s photoelectric equation, $K_{\\max} = E - \\phi_0 = 5.0 - 2.2 = 2.8\\text{ eV}$.'
+      },
+      {
+        id: 'p7',
+        type: 'num',
+        subject: 'Physics',
+        chapter: 'Current Electricity',
+        year: 'JEE Main 2024 Apr Shift 2 (Numerical)',
+        question: 'Three resistors of $6\\,\\Omega$, $6\\,\\Omega$, and $6\\,\\Omega$ are connected in parallel across a $10\\text{ V}$ ideal battery. Find the total current (in Ampere) drawn from the battery.',
+        numericalAnswer: '5',
+        solution: 'Equivalent resistance $R_{\\text{eq}} = \\frac{6}{3} = 2\\,\\Omega$. By Ohm\'s law, $I = \\frac{V}{R_{\\text{eq}}} = \\frac{10}{2} = 5\\text{ A}$.'
+      },
+
+      // CHEMISTRY (7)
+      {
+        id: 'c1',
+        type: 'mcq',
+        subject: 'Chemistry',
+        chapter: 'Chemical Bonding',
+        year: 'JEE Main 2024 Jan Shift 1',
+        question: 'According to VSEPR theory, the hybridization of the central atom and the molecular geometry of $\\text{XeF}_4$ are respectively:',
+        options: ['$sp^3$, Tetrahedral', '$sp^3d$, See-saw', '$sp^3d^2$, Square planar', '$sp^3d^2$, Octahedral'],
+        correctOption: 2,
+        solution: 'In $\\text{XeF}_4$, Xe has 4 bond pairs and 2 lone pairs. Steric number = 6 ($sp^3d^2$). The 2 lone pairs occupy axial positions, resulting in a square planar geometry.'
+      },
+      {
+        id: 'c2',
+        type: 'mcq',
+        subject: 'Chemistry',
+        chapter: 'Chemical Bonding',
+        year: 'JEE Main 2023 Jan Shift 2',
+        question: 'Which of the following diatomic species has a bond order of $2.5$ and is paramagnetic?',
+        options: ['$\\text{N}_2$', '$\\text{O}_2^+$', '$\\text{O}_2^{2-}$', '$\\text{C}_2$'],
+        correctOption: 1,
+        solution: '$\\text{O}_2^+$ has 15 electrons. Bond Order $= \\frac{10 - 5}{2} = 2.5$, with 1 unpaired electron in $\\pi^*2p$, so it is paramagnetic.'
+      },
+      {
+        id: 'c3',
+        type: 'mcq',
+        subject: 'Chemistry',
+        chapter: 'Thermodynamics',
+        year: 'JEE Main 2024 Apr Shift 2',
+        question: 'For a chemical reaction at $300\\text{ K}$, $\\Delta H = -40\\text{ kJ/mol}$ and $\\Delta S = -100\\text{ J K}^{-1}\\text{mol}^{-1}$. The Gibbs free energy change $\\Delta G$ is:',
+        options: ['$-10\\text{ kJ/mol}$', '$-70\\text{ kJ/mol}$', '$+10\\text{ kJ/mol}$', '$-30\\text{ kJ/mol}$'],
+        correctOption: 0,
+        solution: '$\\Delta G = \\Delta H - T\\Delta S = -40 - (300 \\times (-0.100)) = -40 + 30 = -10\\text{ kJ/mol}$.'
+      },
+      {
+        id: 'c4',
+        type: 'mcq',
+        subject: 'Chemistry',
+        chapter: 'Organic Chemistry',
+        year: 'JEE Main 2023 Apr Shift 1',
+        question: 'Which of the following carbocations is the most stable?',
+        options: ['$\\text{CH}_3^+$', '$\\text{CH}_3\\text{CH}_2^+$', '$(\\text{CH}_3)_2\\text{CH}^+$', '$(\\text{CH}_3)_3\\text{C}^+$'],
+        correctOption: 3,
+        solution: 'The tert-butyl carbocation $(\\text{CH}_3)_3\\text{C}^+$ is stabilized by 9 $\\alpha$-hydrogens (hyperconjugation) and three $+I$ methyl groups.'
+      },
+      {
+        id: 'c5',
+        type: 'mcq',
+        subject: 'Chemistry',
+        chapter: 'Coordination Compounds',
+        year: 'JEE Main 2024 Jan Shift 2',
+        question: 'The spin-only magnetic moment of $[\\text{Fe(CN)}_6]^{4-}$ is:',
+        options: ['$0\\text{ BM}$', '$1.73\\text{ BM}$', '$4.90\\text{ BM}$', '$5.92\\text{ BM}$'],
+        correctOption: 0,
+        solution: 'Fe is in $+2$ state ($3d^6$). With strong-field ligand $\\text{CN}^-$, all 6 electrons pair in $t_{2g}^6 e_g^0$, giving $n = 0$ unpaired electrons and $\\mu = 0\\text{ BM}$.'
+      },
+      {
+        id: 'c6',
+        type: 'mcq',
+        subject: 'Chemistry',
+        chapter: 'Chemical Kinetics',
+        year: 'JEE Main 2023 Jan Shift 1',
+        question: 'For a first-order reaction, the half-life $t_{1/2}$ is $10\\text{ minutes}$. How much time is required for $75\\%$ of the reaction to complete?',
+        options: ['$15\\text{ min}$', '$20\\text{ min}$', '$30\\text{ min}$', '$40\\text{ min}$'],
+        correctOption: 1,
+        solution: '$75\\%$ completion leaves $25\\%$, which corresponds to exactly 2 half-lives: $t_{75\\%} = 2 \\times 10 = 20\\text{ min}$.'
+      },
+      {
+        id: 'c7',
+        type: 'num',
+        subject: 'Chemistry',
+        chapter: 'Thermodynamics',
+        year: 'JEE Main 2024 Jan Shift 1 (Numerical)',
+        question: 'An ideal gas absorbs $500\\text{ J}$ of heat and performs $200\\text{ J}$ of work on the surroundings. What is the change in internal energy $\\Delta U$ (in Joules)?',
+        numericalAnswer: '300',
+        solution: 'By the First Law of Thermodynamics, $\\Delta U = q + w = (+500) + (-200) = 300\\text{ J}$.'
+      },
+
+      // MATHEMATICS (7)
+      {
+        id: 'm1',
+        type: 'mcq',
+        subject: 'Mathematics',
+        chapter: 'Integration',
+        year: 'JEE Main 2024 Apr Shift 1',
+        question: 'The value of the definite integral $\\int_0^{\\pi/2} \\frac{\\sin x}{\\sin x + \\cos x}\\,dx$ is:',
+        options: ['$\\frac{\\pi}{4}$', '$\\frac{\\pi}{2}$', '$\\pi$', '$1$'],
+        correctOption: 0,
+        solution: 'Using King\'s property $\\int_0^a f(x)dx = \\int_0^a f(a-x)dx$: $2I = \\int_0^{\\pi/2} 1\\,dx = \\frac{\\pi}{2} \\implies I = \\frac{\\pi}{4}$.'
+      },
+      {
+        id: 'm2',
+        type: 'mcq',
+        subject: 'Mathematics',
+        chapter: 'Matrices',
+        year: 'JEE Main 2023 Apr Shift 2',
+        question: 'If $A$ is a $3 \\times 3$ matrix such that $|A| = 4$, then the value of $|2A|$ is:',
+        options: ['$8$', '$16$', '$32$', '$64$'],
+        correctOption: 2,
+        solution: 'For an $n \\times n$ matrix, $|kA| = k^n |A|$. Thus $|2A| = 2^3 \\times 4 = 8 \\times 4 = 32$.'
+      },
+      {
+        id: 'm3',
+        type: 'mcq',
+        subject: 'Mathematics',
+        chapter: 'Probability',
+        year: 'JEE Main 2024 Jan Shift 2',
+        question: 'Two fair dice are thrown simultaneously. The probability of getting a sum equal to $9$ is:',
+        options: ['$\\frac{1}{12}$', '$\\frac{1}{9}$', '$\\frac{1}{6}$', '$\\frac{5}{36}$'],
+        correctOption: 1,
+        solution: 'Favorable outcomes for sum 9: $(3,6), (4,5), (5,4), (6,3)$ — 4 out of 36. Probability $= \\frac{4}{36} = \\frac{1}{9}$.'
+      },
+      {
+        id: 'm4',
+        type: 'mcq',
+        subject: 'Mathematics',
+        chapter: 'Vectors',
+        year: 'JEE Main 2023 Jan Shift 1',
+        question: 'If $\\vec{a} = \\hat{i} + 2\\hat{j} - \\hat{k}$ and $\\vec{b} = 2\\hat{i} - \\hat{j} + \\lambda\\hat{k}$ are perpendicular to each other, then the value of $\\lambda$ is:',
+        options: ['$0$', '$1$', '$2$', '$-2$'],
+        correctOption: 0,
+        solution: 'For perpendicular vectors, $\\vec{a} \\cdot \\vec{b} = 0 \\implies (1)(2) + (2)(-1) + (-1)(\\lambda) = 0 \\implies \\lambda = 0$.'
+      },
+      {
+        id: 'm5',
+        type: 'mcq',
+        subject: 'Mathematics',
+        chapter: 'Quadratic Equations',
+        year: 'JEE Main 2024 Jan Shift 1',
+        question: 'If $\\alpha$ and $\\beta$ are the roots of $x^2 - 5x + 6 = 0$, then the value of $\\alpha^2 + \\beta^2$ is:',
+        options: ['$11$', '$13$', '$19$', '$25$'],
+        correctOption: 1,
+        solution: '$\\alpha + \\beta = 5$ and $\\alpha\\beta = 6$. Therefore $\\alpha^2 + \\beta^2 = (\\alpha + \\beta)^2 - 2\\alpha\\beta = 25 - 12 = 13$.'
+      },
+      {
+        id: 'm6',
+        type: 'mcq',
+        subject: 'Mathematics',
+        chapter: 'Integration',
+        year: 'JEE Main 2023 Apr Shift 1',
+        question: 'The value of $\\int_0^1 (3x^2 + 2x + 1)\\,dx$ is:',
+        options: ['$2$', '$3$', '$4$', '$6$'],
+        correctOption: 1,
+        solution: '$\\left[x^3 + x^2 + x\\right]_0^1 = (1 + 1 + 1) - 0 = 3$.'
+      },
+      {
+        id: 'm7',
+        type: 'num',
+        subject: 'Mathematics',
+        chapter: 'Matrices',
+        year: 'JEE Main 2024 Apr Shift 2 (Numerical)',
+        question: 'Find the determinant of the $2 \\times 2$ matrix $\\begin{pmatrix} 5 & 2 \\\\ 3 & 4 \\end{pmatrix}$.',
+        numericalAnswer: '14',
+        solution: '$\\det = (5)(4) - (2)(3) = 20 - 6 = 14$.'
+      }
+    ];
+
+    // -----------------------------------------------------------------------
+    // 2. PERSISTENT STATE (localStorage)
+    // -----------------------------------------------------------------------
+    const STORAGE_KEYS = {
+      TARGETS: 'sanskar_jee_targets_v1',
+      DAILY_PROGRESS: 'sanskar_jee_daily_progress_v1',
+      MISTAKES: 'sanskar_jee_mistakes_v1',
+      MANUAL_MISTAKES: 'sanskar_jee_manual_mistakes_v1',
+      BOOKMARKS: 'sanskar_jee_bookmarks_v1',
+      IMPORTED: 'sanskar_jee_imported_v1'
+    };
+
+    function getTodayDateStr() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function loadJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function saveJSON(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (err) {
+        showToast('Browser storage is full! Try importing a smaller batch of questions.', 'error');
+      }
+    }
+
+    let dailyTargets = loadJSON(STORAGE_KEYS.TARGETS, { Physics: 70, Chemistry: 50, Mathematics: 30 });
+    let dailyProgress = loadJSON(STORAGE_KEYS.DAILY_PROGRESS, { date: getTodayDateStr(), Physics: 0, Chemistry: 0, Mathematics: 0 });
+    if (dailyProgress.date !== getTodayDateStr()) {
+      dailyProgress = { date: getTodayDateStr(), Physics: 0, Chemistry: 0, Mathematics: 0 };
+      saveJSON(STORAGE_KEYS.DAILY_PROGRESS, dailyProgress);
+    }
+
+    let mistakes = new Set(loadJSON(STORAGE_KEYS.MISTAKES, []));
+    let manualMistakes = loadJSON(STORAGE_KEYS.MANUAL_MISTAKES, []);
+    let bookmarks = new Set(loadJSON(STORAGE_KEYS.BOOKMARKS, []));
+    let importedQuestions = loadJSON(STORAGE_KEYS.IMPORTED, []);
+    let allQuestions = [...BUILTIN_QUESTIONS, ...importedQuestions];
+
+    // -----------------------------------------------------------------------
+    // 3. UI UTILITIES (TOASTS, KATEX, NAVIGATION)
+    // -----------------------------------------------------------------------
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      const colors = {
+        success: 'bg-emerald-600 text-white',
+        error: 'bg-rose-600 text-white',
+        info: 'bg-slate-900 text-white'
+      };
+      el.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg text-sm font-semibold ${colors[type] || colors.info} transition-opacity duration-300`;
+      el.textContent = message;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.classList.add('opacity-0');
+        setTimeout(() => el.remove(), 300);
+      }, 2800);
+    }
+
+    function renderMath(element) {
+      if (typeof renderMathInElement === 'function' && element) {
+        try {
+          renderMathInElement(element, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false },
+              { left: '\\(', right: '\\)', display: false },
+              { left: '\\[', right: '\\]', display: true }
+            ],
+            throwOnError: false
+          });
+        } catch (e) { /* Gracefully skip malformed LaTeX */ }
+      }
+    }
+
+    function compareNumerical(userVal, correctVal) {
+      const u = parseFloat(String(userVal || '').trim());
+      const c = parseFloat(String(correctVal || '').trim());
+      if (Number.isNaN(u) || Number.isNaN(c)) {
+        return String(userVal || '').trim().toLowerCase() === String(correctVal || '').trim().toLowerCase();
+      }
+      return Math.abs(u - c) < 0.015;
+    }
+
+    function toggleMobileMenu(forceState) {
+      const nav = document.getElementById('mobile-nav');
+      if (typeof forceState === 'boolean') nav.classList.toggle('hidden', !forceState);
+      else nav.classList.toggle('hidden');
+    }
+
+    let currentTab = 'dashboard';
+    function switchTab(tabName) {
+      currentTab = tabName;
+      document.querySelectorAll('.tab-section').forEach(s => s.classList.add('hidden'));
+      const target = document.getElementById(`tab-${tabName}`);
+      if (target) target.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        const isActive = btn.dataset.tab === tabName;
+        btn.className = `nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors ${
+          isActive ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+        }`;
+      });
+
+      document.getElementById('compact-target-bar').classList.toggle('hidden', tabName === 'dashboard');
+
+      if (tabName === 'dashboard') renderDashboard();
+      if (tabName === 'practice') renderPracticeSection();
+      if (tabName === 'test') renderCbtChapterChoices();
+      if (tabName === 'notebook') renderNotebook();
+      if (tabName === 'import') {
+        document.getElementById('import-current-count').textContent = allQuestions.length;
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // 4. DAILY TARGET TRACKER & DASHBOARD
+    // -----------------------------------------------------------------------
+    function getTargetStatus(solved, target) {
+      if (solved < target) {
+        return { text: `${target - solved} questions left`, color: 'text-amber-800 bg-amber-50 border-amber-200' };
+      }
+      if (solved === target) {
+        return { text: 'Target Achieved! 🎉', color: 'text-emerald-800 bg-emerald-50 border-emerald-200' };
+      }
+      return { text: `+${solved - target} extra questions done! 🚀`, color: 'text-indigo-800 bg-indigo-50 border-indigo-200' };
+    }
+
+    function incrementDailySolved(subject) {
+      if (!['Physics', 'Chemistry', 'Mathematics'].includes(subject)) return;
+      if (dailyProgress.date !== getTodayDateStr()) {
+        dailyProgress = { date: getTodayDateStr(), Physics: 0, Chemistry: 0, Mathematics: 0 };
+      }
+      dailyProgress[subject] = (dailyProgress[subject] || 0) + 1;
+      saveJSON(STORAGE_KEYS.DAILY_PROGRESS, dailyProgress);
+      renderCompactTargetBar();
+      if (currentTab === 'dashboard') renderDashboard();
+    }
+
+    function renderCompactTargetBar() {
+      const container = document.getElementById('compact-target-items');
+      const subjects = ['Physics', 'Chemistry', 'Mathematics'];
+      container.innerHTML = subjects.map(subj => {
+        const solved = dailyProgress[subj] || 0;
+        const target = dailyTargets[subj] || 30;
+        const status = getTargetStatus(solved, target);
+        return `
+          <div class="flex items-center gap-1.5">
+            <span class="font-bold text-slate-700">${subj.slice(0, 4)}:</span>
+            <span class="font-extrabold text-indigo-700">${solved}/${target}</span>
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full border ${status.color}">${status.text}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderDashboard() {
+      const subjects = [
+        { name: 'Physics', bar: 'bg-blue-600', badge: 'bg-blue-50 text-blue-700' },
+        { name: 'Chemistry', bar: 'bg-emerald-600', badge: 'bg-emerald-50 text-emerald-700' },
+        { name: 'Mathematics', bar: 'bg-indigo-600', badge: 'bg-indigo-50 text-indigo-700' }
+      ];
+
+      document.getElementById('dashboard-target-cards').innerHTML = subjects.map(s => {
+        const solved = dailyProgress[s.name] || 0;
+        const target = dailyTargets[s.name] || 30;
+        const pct = Math.min(100, Math.round((solved / Math.max(1, target)) * 100));
+        const status = getTargetStatus(solved, target);
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between gap-4">
+            <div class="flex items-center justify-between">
+              <span class="px-3 py-1 rounded-lg text-xs font-bold ${s.badge}">${s.name}</span>
+              <span class="text-sm font-extrabold text-slate-800">${solved} / ${target}</span>
+            </div>
+            <div>
+              <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                <div class="${s.bar} h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+              </div>
+              <div class="mt-3 px-3 py-2 rounded-xl border text-xs font-bold ${status.color}">
+                ${status.text}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('stat-total-q').textContent = allQuestions.length;
+      document.getElementById('stat-solved-today').textContent =
+        (dailyProgress.Physics || 0) + (dailyProgress.Chemistry || 0) + (dailyProgress.Mathematics || 0);
+      document.getElementById('stat-mistakes').textContent = mistakes.size + manualMistakes.length;
+      document.getElementById('stat-bookmarks').textContent = bookmarks.size;
+      renderCompactTargetBar();
+    }
+
+    function openTargetModal() {
+      document.getElementById('input-target-Physics').value = dailyTargets.Physics;
+      document.getElementById('input-target-Chemistry').value = dailyTargets.Chemistry;
+      document.getElementById('input-target-Mathematics').value = dailyTargets.Mathematics;
+      document.getElementById('target-modal').classList.remove('hidden');
+    }
+
+    function closeTargetModal() {
+      document.getElementById('target-modal').classList.add('hidden');
+    }
+
+    function saveDailyTargets() {
+      dailyTargets.Physics = Math.max(1, parseInt(document.getElementById('input-target-Physics').value, 10) || 70);
+      dailyTargets.Chemistry = Math.max(1, parseInt(document.getElementById('input-target-Chemistry').value, 10) || 50);
+      dailyTargets.Mathematics = Math.max(1, parseInt(document.getElementById('input-target-Mathematics').value, 10) || 30);
+      saveJSON(STORAGE_KEYS.TARGETS, dailyTargets);
+      closeTargetModal();
+      renderDashboard();
+      showToast('Daily targets updated!', 'success');
+    }
+
+    // -----------------------------------------------------------------------
+    // 5. PRACTICE MODE (CHAPTER-WISE, MIX & MATCH, RANDOM)
+    // -----------------------------------------------------------------------
+    let practiceSubject = 'All';
+    let selectedChapters = new Set();
+    let practicePool = [];
+    let practiceIndex = 0;
+    let practiceSelectedOption = null;
+    let practiceNumericalInput = '';
+    let practiceChecked = false;
+
+    function setPracticeSubject(subj) {
+      practiceSubject = subj;
+      selectedChapters.clear();
+      renderPracticeSection();
+    }
+
+    function togglePracticeChapter(chap) {
+      if (selectedChapters.has(chap)) selectedChapters.delete(chap);
+      else selectedChapters.add(chap);
+      rebuildPracticePool();
+      renderPracticeChapters();
+      renderPracticeQuestion();
+    }
+
+    function clearChapterFilter() {
+      selectedChapters.clear();
+      rebuildPracticePool();
+      renderPracticeChapters();
+      renderPracticeQuestion();
+    }
+
+    function rebuildPracticePool() {
+      practicePool = allQuestions.filter(q => {
+        const subjOk = practiceSubject === 'All' || q.subject === practiceSubject;
+        const chapOk = selectedChapters.size === 0 || selectedChapters.has(q.chapter);
+        return subjOk && chapOk;
+      });
+      practiceIndex = 0;
+      practiceSelectedOption = null;
+      practiceNumericalInput = '';
+      practiceChecked = false;
+    }
+
+    function renderPracticeChapters() {
+      const relevant = allQuestions.filter(q => practiceSubject === 'All' || q.subject === practiceSubject);
+      const chapters = [...new Set(relevant.map(q => q.chapter))].sort();
+      const container = document.getElementById('practice-chapter-pills');
+
+      if (chapters.length === 0) {
+        container.innerHTML = '<span class="text-xs text-slate-400">No chapters found.</span>';
+        return;
+      }
+
+      container.innerHTML = chapters.map(chap => {
+        const active = selectedChapters.has(chap);
+        return `
+          <button onclick="togglePracticeChapter('${chap.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
+            active ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+          }">${chap}</button>
+        `;
+      }).join('');
+    }
+
+    function renderPracticeSection() {
+      document.querySelectorAll('.subj-pill').forEach(btn => {
+        const active = btn.dataset.subj === practiceSubject;
+        btn.className = `subj-pill px-4 py-2 rounded-xl text-sm font-semibold transition ${
+          active ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+        }`;
+      });
+      renderPracticeChapters();
+      rebuildPracticePool();
+      renderPracticeQuestion();
+    }
+
+    function startRandomPractice() {
+      practiceSubject = 'All';
+      selectedChapters.clear();
+      renderPracticeSection();
+      pickRandomPracticeQuestion();
+    }
+
+    function pickRandomPracticeQuestion() {
+      if (practicePool.length === 0) {
+        showToast('No questions match your current filter.', 'error');
+        return;
+      }
+      practiceIndex = Math.floor(Math.random() * practicePool.length);
+      practiceSelectedOption = null;
+      practiceNumericalInput = '';
+      practiceChecked = false;
+      renderPracticeQuestion();
+    }
+
+    function selectPracticeOption(idx) {
+      if (practiceChecked) return;
+      practiceSelectedOption = idx;
+      renderPracticeQuestion();
+    }
+
+    function checkPracticeAnswer() {
+      if (practiceChecked) return;
+      const q = practicePool[practiceIndex];
+      if (q.type === 'num') {
+        const inputEl = document.getElementById('practice-num-input');
+        practiceNumericalInput = inputEl ? inputEl.value.trim() : '';
+        if (!practiceNumericalInput) {
+          showToast('Please enter a numerical answer first.', 'info');
+          return;
+        }
+      } else if (practiceSelectedOption === null) {
+        showToast('Please select an option first.', 'info');
+        return;
+      }
+
+      practiceChecked = true;
+      incrementDailySolved(q.subject);
+      renderPracticeQuestion();
+    }
+
+    function navigatePractice(delta) {
+      if (practicePool.length === 0) return;
+      practiceIndex = (practiceIndex + delta + practicePool.length) % practicePool.length;
+      practiceSelectedOption = null;
+      practiceNumericalInput = '';
+      practiceChecked = false;
+      renderPracticeQuestion();
+    }
+
+    function toggleBookmark(qId) {
+      if (bookmarks.has(qId)) {
+        bookmarks.delete(qId);
+        showToast('Removed from Bookmarks.', 'info');
+      } else {
+        bookmarks.add(qId);
+        showToast('Saved to Bookmarks!', 'success');
+      }
+      saveJSON(STORAGE_KEYS.BOOKMARKS, [...bookmarks]);
+      if (currentTab === 'practice') renderPracticeQuestion();
+      if (currentTab === 'notebook') renderNotebook();
+    }
+
+    function addMistake(qId) {
+      mistakes.add(qId);
+      saveJSON(STORAGE_KEYS.MISTAKES, [...mistakes]);
+      showToast('Added to Mistake Notebook!', 'success');
+      if (currentTab === 'practice') renderPracticeQuestion();
+    }
+
+    function renderPracticeQuestion() {
+      const container = document.getElementById('practice-question-container');
+      if (practicePool.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-500 py-10 font-semibold">No questions found for this filter. Try another subject or chapter.</p>`;
+        return;
+      }
+
+      const q = practicePool[practiceIndex];
+      const isNum = q.type === 'num';
+      const isBookmarked = bookmarks.has(q.id);
+      const isMistake = mistakes.has(q.id);
+      const letters = ['A', 'B', 'C', 'D'];
+
+      const isCorrect = practiceChecked && (
+        isNum ? compareNumerical(practiceNumericalInput, q.numericalAnswer) : practiceSelectedOption === q.correctOption
+      );
+
+      let answerInputHtml = '';
+      if (isNum) {
+        answerInputHtml = `
+          <div class="max-w-sm">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Enter Numerical Answer</label>
+            <input id="practice-num-input" type="text" inputmode="decimal" value="${practiceNumericalInput}" ${practiceChecked ? 'disabled' : ''} placeholder="e.g. 5 or 14.5" class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 font-bold text-base focus:outline-none focus:border-indigo-600 disabled:bg-slate-100" />
+          </div>
+        `;
+      } else {
+        answerInputHtml = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            ${q.options.map((opt, idx) => {
+              let style = 'border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/40';
+              if (!practiceChecked && practiceSelectedOption === idx) {
+                style = 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200';
+              } else if (practiceChecked) {
+                if (idx === q.correctOption) style = 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200';
+                else if (idx === practiceSelectedOption) style = 'border-rose-500 bg-rose-50 ring-2 ring-rose-200';
+                else style = 'border-slate-200 bg-slate-50 opacity-70';
+              }
+              return `
+                <button onclick="selectPracticeOption(${idx})" class="w-full text-left p-4 rounded-xl border-2 transition flex items-start gap-3 ${style}">
+                  <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">${letters[idx]}</span>
+                  <span class="text-sm sm:text-base text-slate-800 font-medium leading-relaxed">${opt}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      let feedbackHtml = '';
+      if (practiceChecked) {
+        const correctLabel = isNum ? q.numericalAnswer : `Option ${letters[q.correctOption]}`;
+        feedbackHtml = `
+          <div class="mt-6 space-y-4">
+            <div class="p-4 rounded-xl border flex flex-wrap items-center justify-between gap-3 ${
+              isCorrect ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'
+            }">
+              <div class="font-extrabold text-sm sm:text-base">
+                ${isCorrect ? 'Correct! +4' : `Wrong! -1 — Correct Answer: ${correctLabel}`}
+              </div>
+              <button onclick="addMistake('${q.id}')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${
+                isMistake ? 'bg-rose-200 text-rose-900 cursor-default' : 'bg-rose-600 text-white hover:bg-rose-700 shadow-sm'
+              }">
+                ${isMistake ? 'Saved in Mistake Notebook' : 'Add to Mistake Notebook'}
+              </button>
+            </div>
+            <div class="p-5 rounded-xl bg-slate-50 border border-slate-200">
+              <p class="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1.5">Step-by-Step Solution</p>
+              <p class="text-sm sm:text-base text-slate-800 leading-relaxed">${q.solution || 'No solution provided.'}</p>
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-slate-100">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold">${q.subject}</span>
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">${q.chapter}</span>
+            <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 text-xs font-semibold">${q.year || 'JEE Main PYQ'}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-400">Q ${practiceIndex + 1} / ${practicePool.length}</span>
+            <button onclick="addMistake('${q.id}')" class="px-3 py-1.5 rounded-xl border text-xs font-bold transition ${
+              isMistake ? 'bg-rose-100 border-rose-300 text-rose-800' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+            }">
+              ${isMistake ? '✓ Mistake Logged' : '+ Mistake'}
+            </button>
+            <button onclick="toggleBookmark('${q.id}')" class="px-3 py-1.5 rounded-xl border text-xs font-bold transition ${
+              isBookmarked ? 'bg-amber-100 border-amber-300 text-amber-900' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+            }">
+              ${isBookmarked ? '★ Bookmarked' : '☆ Bookmark'}
+            </button>
+          </div>
+        </div>
+
+        <div class="py-5 text-base sm:text-lg font-semibold text-slate-900 leading-relaxed">
+          ${q.question}
+        </div>
+
+        ${answerInputHtml}
+        ${feedbackHtml}
+
+        <div class="mt-6 pt-5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <button onclick="navigatePractice(-1)" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50">Previous</button>
+          <div class="flex items-center gap-2">
+            ${!practiceChecked ? `
+              <button onclick="checkPracticeAnswer()" class="px-6 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 shadow-sm transition">
+                Submit Answer
+              </button>
+            ` : ''}
+            <button onclick="navigatePractice(1)" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition">
+              Next Question
+            </button>
+          </div>
+        </div>
+      `;
+
+      renderMath(container);
+    }
+
+    // -----------------------------------------------------------------------
+    // 6. NTA CBT TEST MODE (CUSTOM CBT + SPLIT-SCREEN PDF CBT)
+    // -----------------------------------------------------------------------
+    function switchTestSubTab(sub) {
+      const isCustom = sub === 'custom';
+      document.getElementById('test-panel-custom').classList.toggle('hidden', !isCustom);
+      document.getElementById('test-panel-pdf').classList.toggle('hidden', isCustom);
+
+      document.getElementById('test-subtab-custom').className = `px-4 py-2.5 rounded-xl text-sm font-bold transition ${
+        isCustom ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+      }`;
+      document.getElementById('test-subtab-pdf').className = `px-4 py-2.5 rounded-xl text-sm font-bold transition ${
+        !isCustom ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+      }`;
+    }
+
+    let cbtSelectedChapters = new Set();
+    let cbtQuestions = [];
+    let cbtAnswers = {};
+    let cbtVisited = new Set();
+    let cbtMarked = new Set();
+    let cbtIndex = 0;
+    let cbtTimerInterval = null;
+    let cbtSecondsLeft = 0;
+
+    function getCheckedCbtSubjects() {
+      return [...document.querySelectorAll('.cbt-subj-cb:checked')].map(cb => cb.value);
+    }
+
+    function renderCbtChapterChoices() {
+      const subjs = getCheckedCbtSubjects();
+      const matching = allQuestions.filter(q => subjs.includes(q.subject));
+      document.getElementById('cbt-available-note').textContent = `${matching.length} questions available in selected subjects.`;
+
+      const chapters = [...new Set(matching.map(q => q.chapter))].sort();
+      const container = document.getElementById('cbt-chapter-list');
+      container.innerHTML = chapters.map(c => {
+        const active = cbtSelectedChapters.has(c);
+        return `
+          <button type="button" onclick="toggleCbtChapter('${c.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg text-xs font-semibold border transition ${
+            active ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+          }">${c}</button>
+        `;
+      }).join('');
+    }
+
+    function toggleCbtChapter(c) {
+      if (cbtSelectedChapters.has(c)) cbtSelectedChapters.delete(c);
+      else cbtSelectedChapters.add(c);
+      renderCbtChapterChoices();
+    }
+
+    function startCustomCbt() {
+      const subjs = getCheckedCbtSubjects();
+      let pool = allQuestions.filter(q => subjs.includes(q.subject));
+      if (cbtSelectedChapters.size > 0) {
+        pool = pool.filter(q => cbtSelectedChapters.has(q.chapter));
+      }
+      if (pool.length === 0) {
+        showToast('No questions available for your selection.', 'error');
+        return;
+      }
+
+      const count = Math.min(pool.length, Math.max(1, parseInt(document.getElementById('cbt-q-count').value, 10) || 10));
+      const mins = Math.max(1, parseInt(document.getElementById('cbt-duration').value, 10) || 20);
+
+      cbtQuestions = [...pool].sort(() => Math.random() - 0.5).slice(0, count);
+      cbtAnswers = {};
+      cbtVisited = new Set([0]);
+      cbtMarked = new Set();
+      cbtIndex = 0;
+      cbtSecondsLeft = mins * 60;
+
+      document.getElementById('cbt-setup').classList.add('hidden');
+      document.getElementById('cbt-result').classList.add('hidden');
+      document.getElementById('cbt-exam').classList.remove('hidden');
+
+      clearInterval(cbtTimerInterval);
+      updateCbtTimerDisplay();
+      cbtTimerInterval = setInterval(() => {
+        cbtSecondsLeft--;
+        updateCbtTimerDisplay();
+        if (cbtSecondsLeft <= 0) {
+          clearInterval(cbtTimerInterval);
+          submitCustomCbt();
+        }
+      }, 1000);
+
+      renderCbtExamQuestion();
+    }
+
+    function updateCbtTimerDisplay() {
+      const m = Math.floor(cbtSecondsLeft / 60);
+      const s = cbtSecondsLeft % 60;
+      document.getElementById('cbt-timer').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function renderCbtExamQuestion() {
+      const q = cbtQuestions[cbtIndex];
+      cbtVisited.add(cbtIndex);
+      document.getElementById('cbt-progress-label').textContent = `Question ${cbtIndex + 1} of ${cbtQuestions.length} • ${q.subject}`;
+
+      const letters = ['A', 'B', 'C', 'D'];
+      const chosen = cbtAnswers[cbtIndex];
+      const body = document.getElementById('cbt-question-body');
+
+      let inputMarkup = '';
+      if (q.type === 'num') {
+        inputMarkup = `
+          <div class="max-w-xs">
+            <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Numerical Answer</label>
+            <input type="text" inputmode="decimal" value="${chosen !== undefined ? chosen : ''}" oninput="setCbtNumerical(this.value)" placeholder="Type number..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 font-bold text-base focus:outline-none focus:border-indigo-600" />
+          </div>
+        `;
+      } else {
+        inputMarkup = `
+          <div class="space-y-2.5">
+            ${q.options.map((opt, idx) => `
+              <button onclick="selectCbtOption(${idx})" class="w-full text-left p-3.5 rounded-xl border-2 transition flex items-start gap-3 ${
+                chosen === idx ? 'border-indigo-600 bg-indigo-50' : 'border-slate-200 hover:border-indigo-300'
+              }">
+                <span class="w-6 h-6 rounded-md bg-slate-100 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">${letters[idx]}</span>
+                <span class="text-sm sm:text-base font-medium text-slate-800">${opt}</span>
+              </button>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      body.innerHTML = `
+        <div class="flex items-center gap-2 mb-3">
+          <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold">${q.subject}</span>
+          <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">${q.chapter}</span>
+        </div>
+        <div class="text-base sm:text-lg font-semibold text-slate-900 leading-relaxed mb-5">${q.question}</div>
+        ${inputMarkup}
+      `;
+      renderMath(body);
+
+      const palette = document.getElementById('cbt-palette');
+      palette.innerHTML = cbtQuestions.map((_, idx) => {
+        const hasAns = cbtAnswers[idx] !== undefined && String(cbtAnswers[idx]).trim() !== '';
+        let cls = 'bg-slate-200 text-slate-700';
+        if (cbtMarked.has(idx)) cls = 'bg-purple-500 text-white';
+        else if (hasAns) cls = 'bg-emerald-500 text-white';
+        else if (cbtVisited.has(idx)) cls = 'bg-rose-500 text-white';
+        if (idx === cbtIndex) cls += ' ring-2 ring-slate-900 ring-offset-1';
+        return `<button onclick="jumpCbt(${idx})" class="h-10 rounded-xl font-bold text-xs ${cls}">${idx + 1}</button>`;
+      }).join('');
+    }
+
+    function selectCbtOption(idx) {
+      cbtAnswers[cbtIndex] = idx;
+      renderCbtExamQuestion();
+    }
+
+    function setCbtNumerical(val) {
+      if (val.trim() === '') delete cbtAnswers[cbtIndex];
+      else cbtAnswers[cbtIndex] = val.trim();
+    }
+
+    function cbtClearResponse() {
+      delete cbtAnswers[cbtIndex];
+      renderCbtExamQuestion();
+    }
+
+    function cbtMarkForReview() {
+      cbtMarked.add(cbtIndex);
+      if (cbtIndex < cbtQuestions.length - 1) cbtIndex++;
+      renderCbtExamQuestion();
+    }
+
+    function cbtSaveAndNext() {
+      cbtMarked.delete(cbtIndex);
+      if (cbtIndex < cbtQuestions.length - 1) cbtIndex++;
+      renderCbtExamQuestion();
+    }
+
+    function cbtPrev() {
+      if (cbtIndex > 0) cbtIndex--;
+      renderCbtExamQuestion();
+    }
+
+    function jumpCbt(idx) {
+      cbtIndex = idx;
+      renderCbtExamQuestion();
+    }
+
+    function submitCustomCbt() {
+      clearInterval(cbtTimerInterval);
+      document.getElementById('cbt-exam').classList.add('hidden');
+      const resEl = document.getElementById('cbt-result');
+      resEl.classList.remove('hidden');
+
+      let correct = 0, wrong = 0, unattempted = 0;
+      const wrongIds = [];
+      const letters = ['A', 'B', 'C', 'D'];
+
+      cbtQuestions.forEach((q, idx) => {
+        const ans = cbtAnswers[idx];
+        const attempted = ans !== undefined && String(ans).trim() !== '';
+        if (!attempted) {
+          unattempted++;
+        } else {
+          incrementDailySolved(q.subject);
+          const right = q.type === 'num'
+            ? compareNumerical(ans, q.numericalAnswer)
+            : ans === q.correctOption;
+          if (right) correct++;
+          else {
+            wrong++;
+            wrongIds.push(q.id);
+          }
+        }
+      });
+
+      const score = correct * 4 - wrong;
+      const maxScore = cbtQuestions.length * 4;
+      const attempted = correct + wrong;
+      const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+
+      resEl.innerHTML = `
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 class="text-2xl font-extrabold text-slate-900">Sanskar.jee &bull; Score Analysis</h2>
+              <p class="text-sm text-slate-500">Attempted questions have been logged to your Daily Target Tracker.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              ${wrongIds.length > 0 ? `
+                <button onclick="addBulkMistakes(${JSON.stringify(wrongIds).replace(/"/g, '&quot;')})" class="px-4 py-2.5 rounded-xl bg-rose-600 text-white text-sm font-bold hover:bg-rose-700 shadow-sm">
+                  Add All ${wrongIds.length} Wrong to Mistakes
+                </button>
+              ` : ''}
+              <button onclick="resetCustomCbt()" class="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800">New Test</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-100">
+              <p class="text-xs font-bold text-indigo-700 uppercase">JEE Score</p>
+              <p class="text-3xl font-extrabold text-indigo-900 mt-1">${score} <span class="text-sm font-semibold text-indigo-500">/ ${maxScore}</span></p>
+            </div>
+            <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
+              <p class="text-xs font-bold text-emerald-700 uppercase">Correct (+4)</p>
+              <p class="text-3xl font-extrabold text-emerald-900 mt-1">${correct}</p>
+            </div>
+            <div class="p-4 rounded-xl bg-rose-50 border border-rose-100">
+              <p class="text-xs font-bold text-rose-700 uppercase">Wrong (-1)</p>
+              <p class="text-3xl font-extrabold text-rose-900 mt-1">${wrong}</p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <p class="text-xs font-bold text-slate-600 uppercase">Accuracy</p>
+              <p class="text-3xl font-extrabold text-slate-900 mt-1">${accuracy}%</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          ${cbtQuestions.map((q, idx) => {
+            const ans = cbtAnswers[idx];
+            const isAtt = ans !== undefined && String(ans).trim() !== '';
+            const isRight = isAtt && (q.type === 'num' ? compareNumerical(ans, q.numericalAnswer) : ans === q.correctOption);
+            const userLabel = q.type === 'num' ? ans : letters[ans];
+            const correctLabel = q.type === 'num' ? q.numericalAnswer : `Option ${letters[q.correctOption]} — ${q.options[q.correctOption]}`;
+
+            const statusBadge = !isAtt
+              ? '<span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold">Unattempted (0)</span>'
+              : isRight
+                ? '<span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold">Correct (+4)</span>'
+                : `<span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800 text-xs font-bold">Wrong (-1) • Your Ans: ${userLabel}</span>`;
+
+            return `
+              <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="text-xs font-bold text-slate-500">Q${idx + 1} &bull; ${q.subject} &bull; ${q.chapter}</span>
+                  ${statusBadge}
+                </div>
+                <p class="font-semibold text-slate-900 text-sm sm:text-base">${q.question}</p>
+                <p class="text-xs font-bold text-emerald-700">Correct Answer: ${correctLabel}</p>
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700">
+                  <strong>Solution:</strong> ${q.solution || 'N/A'}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+      renderMath(resEl);
+    }
+
+    function addBulkMistakes(ids) {
+      ids.forEach(id => mistakes.add(id));
+      saveJSON(STORAGE_KEYS.MISTAKES, [...mistakes]);
+      showToast(`Added ${ids.length} wrong questions to Mistake Notebook!`, 'success');
+    }
+
+    function resetCustomCbt() {
+      document.getElementById('cbt-result').classList.add('hidden');
+      document.getElementById('cbt-setup').classList.remove('hidden');
+    }
+
+    // --- Split-Screen PDF CBT (MCQ + Numerical OMR & Auto-Grade Modal) ---
+    let pdfObjectUrl = null;
+    let pdfOmrAnswers = {}; // { qNum: 'A' | 'B' | 'C' | 'D' | '4.5' }
+    let pdfOmrMarked = new Set();
+    let pdfTimerSeconds = 3 * 3600;
+    let pdfTimerRunning = false;
+    let pdfTimerInterval = null;
+
+    function loadLocalPdf(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (pdfObjectUrl) URL.revokeObjectURL(pdfObjectUrl);
+      pdfObjectUrl = URL.createObjectURL(file);
+      const iframe = document.getElementById('pdf-iframe');
+      iframe.src = pdfObjectUrl;
+      iframe.classList.remove('hidden');
+      document.getElementById('pdf-placeholder').classList.add('hidden');
+      showToast(`Loaded PDF: ${file.name}`, 'success');
+    }
+
+    function isPdfNumericalSlot(qNum, total) {
+      // Standard 75-Q JEE Main pattern: Q21-25, Q46-50, Q71-75 are numerical
+      if (total === 75) {
+        const mod = ((qNum - 1) % 25) + 1;
+        return mod >= 21;
+      }
+      return false;
+    }
+
+    function buildPdfOmrGrid() {
+      const count = Math.min(90, Math.max(5, parseInt(document.getElementById('pdf-q-count').value, 10) || 75));
+      const grid = document.getElementById('pdf-omr-grid');
+      const mini = document.getElementById('pdf-mini-palette');
+      const letters = ['A', 'B', 'C', 'D'];
+
+      let gridHtml = '';
+      let miniHtml = '';
+      let answeredCount = 0;
+
+      for (let i = 1; i <= count; i++) {
+        const val = pdfOmrAnswers[i] || '';
+        const marked = pdfOmrMarked.has(i);
+        if (val) answeredCount++;
+
+        const miniColor = marked
+          ? 'bg-purple-500 text-white'
+          : val
+            ? 'bg-emerald-500 text-white'
+            : 'bg-slate-100 text-slate-600';
+
+        miniHtml += `<a href="#pdf-row-${i}" class="w-6 h-6 rounded-md text-[10px] font-bold flex items-center justify-center ${miniColor}">${i}</a>`;
+
+        const isNum = isPdfNumericalSlot(i, count);
+        gridHtml += `
+          <div id="pdf-row-${i}" class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-100">
+            <span class="text-xs font-extrabold text-slate-700 w-9 shrink-0">Q${i}</span>
+            ${isNum ? `
+              <input type="text" inputmode="decimal" value="${val}" onchange="setPdfOmr(${i}, this.value)" placeholder="Numerical" class="flex-1 max-w-[140px] px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-bold focus:outline-none focus:border-indigo-600" />
+            ` : `
+              <div class="flex items-center gap-1.5">
+                ${letters.map(l => `
+                  <button onclick="togglePdfOmrOption(${i}, '${l}')" class="w-8 h-8 rounded-lg text-xs font-bold border transition ${
+                    val === l ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-400'
+                  }">${l}</button>
+                `).join('')}
+              </div>
+            `}
+            <button onclick="togglePdfMark(${i})" title="Mark for Review" class="px-2 py-1 rounded-lg text-[10px] font-bold border transition ${
+              marked ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-slate-500 border-slate-200 hover:bg-purple-50'
+            }">★</button>
+          </div>
+        `;
+      }
+
+      grid.innerHTML = gridHtml;
+      mini.innerHTML = miniHtml;
+      document.getElementById('pdf-omr-summary').textContent = `${answeredCount} answered • ${pdfOmrMarked.size} marked`;
+    }
+
+    function togglePdfOmrOption(qNum, letter) {
+      if (pdfOmrAnswers[qNum] === letter) delete pdfOmrAnswers[qNum];
+      else pdfOmrAnswers[qNum] = letter;
+      buildPdfOmrGrid();
+    }
+
+    function setPdfOmr(qNum, val) {
+      const clean = String(val || '').trim();
+      if (!clean) delete pdfOmrAnswers[qNum];
+      else pdfOmrAnswers[qNum] = clean;
+      buildPdfOmrGrid();
+    }
+
+    function togglePdfMark(qNum) {
+      if (pdfOmrMarked.has(qNum)) pdfOmrMarked.delete(qNum);
+      else pdfOmrMarked.add(qNum);
+      buildPdfOmrGrid();
+    }
+
+    function clearPdfOmr() {
+      pdfOmrAnswers = {};
+      pdfOmrMarked.clear();
+      buildPdfOmrGrid();
+      showToast('PDF OMR cleared.', 'info');
+    }
+
+    function togglePdfTimer() {
+      const btn = document.getElementById('pdf-timer-btn');
+      if (pdfTimerRunning) {
+        clearInterval(pdfTimerInterval);
+        pdfTimerRunning = false;
+        btn.textContent = 'Resume';
+      } else {
+        pdfTimerRunning = true;
+        btn.textContent = 'Pause';
+        pdfTimerInterval = setInterval(() => {
+          if (pdfTimerSeconds > 0) {
+            pdfTimerSeconds--;
+            updatePdfTimerDisplay();
+          } else {
+            clearInterval(pdfTimerInterval);
+            pdfTimerRunning = false;
+            showToast('3-hour JEE Main timer completed!', 'info');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetPdfTimer() {
+      clearInterval(pdfTimerInterval);
+      pdfTimerRunning = false;
+      pdfTimerSeconds = 3 * 3600;
+      document.getElementById('pdf-timer-btn').textContent = 'Start';
+      updatePdfTimerDisplay();
+    }
+
+    function updatePdfTimerDisplay() {
+      const h = Math.floor(pdfTimerSeconds / 3600);
+      const m = Math.floor((pdfTimerSeconds % 3600) / 60);
+      const s = pdfTimerSeconds % 60;
+      document.getElementById('pdf-timer-display').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function openAutoGradeModal() {
+      document.getElementById('autograde-modal').classList.remove('hidden');
+    }
+
+    function closeAutoGradeModal() {
+      document.getElementById('autograde-modal').classList.add('hidden');
+    }
+
+    function runPdfAutoGrade() {
+      const raw = document.getElementById('pdf-answer-key-input').value.trim().toUpperCase();
+      if (!raw) {
+        showToast('Paste an official answer key first.', 'error');
+        return;
+      }
+
+      const keyMap = {};
+      const pairMatches = [...raw.matchAll(/(\d+)\s*[:=\-\.]\s*([ABCD]|-?\d+(?:\.\d+)?)/g)];
+      if (pairMatches.length > 0) {
+        pairMatches.forEach(m => { keyMap[parseInt(m[1], 10)] = m[2]; });
+      } else {
+        const tokens = raw.split(/[\s,;]+/).filter(Boolean);
+        tokens.forEach((t, idx) => { keyMap[idx + 1] = t; });
+      }
+
+      let correct = 0, wrong = 0, checked = 0;
+      const wrongList = [];
+
+      Object.entries(keyMap).forEach(([qNum, ans]) => {
+        const userAns = pdfOmrAnswers[qNum];
+        if (userAns) {
+          checked++;
+          const isMatch = /^[ABCD]$/.test(ans)
+            ? userAns.toUpperCase() === ans
+            : compareNumerical(userAns, ans);
+          if (isMatch) correct++;
+          else {
+            wrong++;
+            wrongList.push(`Q${qNum} (You: ${userAns}, Key: ${ans})`);
+          }
+        }
+      });
+
+      const score = correct * 4 - wrong;
+      const out = document.getElementById('pdf-autograde-result');
+      out.innerHTML = `
+        <p class="font-extrabold text-base">Score: ${score} <span class="text-xs font-semibold text-indigo-600">(+${correct * 4} / -${wrong})</span></p>
+        <p class="text-xs font-semibold">Correct: ${correct} &bull; Wrong: ${wrong} &bull; Checked: ${checked} attempted questions</p>
+        ${wrongList.length > 0 ? `<p class="text-xs text-rose-700 pt-1"><strong>Wrong Qs:</strong> ${wrongList.slice(0, 12).join(', ')}${wrongList.length > 12 ? '...' : ''}</p>` : ''}
+      `;
+      out.classList.remove('hidden');
+    }
+
+    // -----------------------------------------------------------------------
+    // 7. MISTAKE NOTEBOOK, MANUAL PDF LOGGER & BOOKMARKS
+    // -----------------------------------------------------------------------
+    let notebookSubTab = 'mistakes';
+
+    function switchNotebookSubTab(sub) {
+      notebookSubTab = sub;
+      const isMistakes = sub === 'mistakes';
+      document.getElementById('nb-tab-mistakes').className = `px-4 py-2 rounded-xl text-sm font-bold transition ${
+        isMistakes ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+      }`;
+      document.getElementById('nb-tab-bookmarks').className = `px-4 py-2 rounded-xl text-sm font-bold transition ${
+        !isMistakes ? 'bg-amber-500 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+      }`;
+      renderNotebook();
+    }
+
+    function toggleManualMistakeForm(force) {
+      const form = document.getElementById('manual-mistake-form');
+      if (typeof force === 'boolean') form.classList.toggle('hidden', !force);
+      else form.classList.toggle('hidden');
+    }
+
+    function saveManualMistake() {
+      const subject = document.getElementById('mm-subject').value;
+      const chapter = document.getElementById('mm-chapter').value.trim() || 'General';
+      const ref = document.getElementById('mm-ref').value.trim() || 'External NTA PDF';
+      const note = document.getElementById('mm-note').value.trim();
+
+      if (!note) {
+        showToast('Please write a short note about the mistake.', 'error');
+        return;
+      }
+
+      manualMistakes.unshift({
+        id: `mm_${Date.now()}`,
+        subject,
+        chapter,
+        ref,
+        note,
+        date: getTodayDateStr()
+      });
+      saveJSON(STORAGE_KEYS.MANUAL_MISTAKES, manualMistakes);
+
+      document.getElementById('mm-chapter').value = '';
+      document.getElementById('mm-ref').value = '';
+      document.getElementById('mm-note').value = '';
+      toggleManualMistakeForm(false);
+      switchNotebookSubTab('mistakes');
+      showToast('External PDF mistake saved!', 'success');
+    }
+
+    function removeManualMistake(id) {
+      manualMistakes = manualMistakes.filter(m => m.id !== id);
+      saveJSON(STORAGE_KEYS.MANUAL_MISTAKES, manualMistakes);
+      renderNotebook();
+      showToast('Marked as mastered!', 'success');
+    }
+
+    function removeNotebookItem(qId) {
+      if (notebookSubTab === 'mistakes') {
+        mistakes.delete(qId);
+        saveJSON(STORAGE_KEYS.MISTAKES, [...mistakes]);
+        showToast('Marked as mastered & removed!', 'success');
+      } else {
+        bookmarks.delete(qId);
+        saveJSON(STORAGE_KEYS.BOOKMARKS, [...bookmarks]);
+        showToast('Removed from Bookmarks.', 'info');
+      }
+      renderNotebook();
+    }
+
+    function checkNotebookReattempt(qId, chosenIdx, correctIdx) {
+      const fb = document.getElementById(`nb-fb-${qId}`);
+      const letters = ['A', 'B', 'C', 'D'];
+      if (chosenIdx === correctIdx) {
+        fb.className = 'mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold';
+        fb.textContent = `Correct! (+4) — You've mastered this concept.`;
+      } else {
+        fb.className = 'mt-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold';
+        fb.textContent = `Wrong! Correct answer is Option ${letters[correctIdx]}. Review the solution below.`;
+      }
+      fb.classList.remove('hidden');
+    }
+
+    function renderNotebook() {
+      const listEl = document.getElementById('notebook-list');
+      const subjFilter = document.getElementById('nb-subject-filter').value;
+      const idSet = notebookSubTab === 'mistakes' ? mistakes : bookmarks;
+
+      const items = allQuestions.filter(q => idSet.has(q.id) && (subjFilter === 'All' || q.subject === subjFilter));
+      const filteredManual = notebookSubTab === 'mistakes'
+        ? manualMistakes.filter(m => subjFilter === 'All' || m.subject === subjFilter)
+        : [];
+
+      if (items.length === 0 && filteredManual.length === 0) {
+        listEl.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-500">
+            <p class="font-bold text-slate-800">Nothing here yet</p>
+            <p class="text-sm mt-1">${notebookSubTab === 'mistakes' ? 'Wrong answers you save during Practice, CBT Tests, or External PDFs will appear here.' : 'Tap the Bookmark button on any question to save it here.'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      const letters = ['A', 'B', 'C', 'D'];
+
+      const manualHtml = filteredManual.map(m => `
+        <div class="bg-white rounded-2xl border border-rose-200 p-5 shadow-sm space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold">PDF Log</span>
+              <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold">${m.subject}</span>
+              <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">${m.chapter}</span>
+              <span class="text-xs font-semibold text-slate-500">${m.ref}</span>
+            </div>
+            <button onclick="removeManualMistake('${m.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold hover:bg-emerald-100">
+              Mark as Mastered
+            </button>
+          </div>
+          <p class="text-sm font-medium text-slate-800 leading-relaxed">${m.note}</p>
+        </div>
+      `).join('');
+
+      const qHtml = items.map(q => `
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold">${q.subject}</span>
+              <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">${q.chapter}</span>
+            </div>
+            <button onclick="removeNotebookItem('${q.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold hover:bg-emerald-100">
+              ${notebookSubTab === 'mistakes' ? 'Mark as Mastered' : 'Remove Bookmark'}
+            </button>
+          </div>
+
+          <div class="font-semibold text-slate-900 text-sm sm:text-base leading-relaxed">${q.question}</div>
+
+          ${q.type !== 'num' ? `
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              ${q.options.map((opt, idx) => `
+                <button onclick="checkNotebookReattempt('${q.id}', ${idx}, ${q.correctOption})" class="text-left p-3 rounded-xl border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/40 text-xs sm:text-sm flex items-start gap-2">
+                  <span class="font-bold text-slate-500">${letters[idx]}.</span>
+                  <span>${opt}</span>
+                </button>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <div id="nb-fb-${q.id}" class="hidden"></div>
+
+          <details class="pt-1">
+            <summary class="text-xs font-bold text-indigo-600 cursor-pointer select-none">Show / Hide Solution</summary>
+            <div class="mt-2 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed">
+              <p class="font-bold text-emerald-700 mb-1">Correct Answer: ${q.type === 'num' ? q.numericalAnswer : `Option ${letters[q.correctOption]}`}</p>
+              ${q.solution || 'No solution available.'}
+            </div>
+          </details>
+        </div>
+      `).join('');
+
+      listEl.innerHTML = manualHtml + qHtml;
+      renderMath(listEl);
+    }
+
+    // -----------------------------------------------------------------------
+    // 8. BULK 2,300+ PYQ IMPORTER (JSON / JSONL + DRAG & DROP)
+    // -----------------------------------------------------------------------
+    function normalizeSubject(raw) {
+      const s = String(raw || '').toLowerCase();
+      if (s.includes('phys')) return 'Physics';
+      if (s.includes('chem')) return 'Chemistry';
+      if (s.includes('math')) return 'Mathematics';
+      return 'Physics';
+    }
+
+    function parseCorrectOption(raw, options) {
+      if (typeof raw === 'number' && raw >= 0 && raw <= 3) return raw;
+      const s = String(raw || '').trim().toUpperCase();
+      if (s === 'A' || s === '0' || s === '1') return 0;
+      if (s === 'B' || s === '2') return 1;
+      if (s === 'C' || s === '3') return 2;
+      if (s === 'D' || s === '4') return 3;
+      const idx = options.findIndex(o => String(o).trim().toUpperCase() === s);
+      return idx >= 0 ? idx : 0;
+    }
+
+    function handleBulkImportFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result.trim();
+        let rawItems = [];
+        try {
+          if (text.startsWith('[')) {
+            rawItems = JSON.parse(text);
+          } else {
+            rawItems = text.split('\n').filter(line => line.trim()).map(line => JSON.parse(line));
+          }
+        } catch (err) {
+          showToast('Could not parse file. Ensure it is valid .json or .jsonl.', 'error');
+          return;
+        }
+
+        const parsed = [];
+        rawItems.forEach((row, idx) => {
+          const qText = row.question || row.question_text || row.problem || row.text;
+          if (!qText) return;
+
+          const qTypeRaw = String(row.type || row.question_type || '').toLowerCase();
+          let opts = row.options || row.choices;
+          const hasOpts = Array.isArray(opts) && opts.length >= 4;
+          const hasFlatOpts = row.option_a || row.optionA || row.A;
+
+          const isNumerical = qTypeRaw.includes('num') || qTypeRaw.includes('int') || (!hasOpts && !hasFlatOpts && (row.numericalAnswer || row.answer !== undefined));
+
+          if (isNumerical) {
+            parsed.push({
+              id: `imp_${Date.now()}_${idx}`,
+              type: 'num',
+              subject: normalizeSubject(row.subject || row.Subject),
+              chapter: String(row.chapter || row.chapter_name || row.topic || 'General').trim(),
+              year: String(row.year || row.exam || 'JEE Main PYQ'),
+              question: String(qText),
+              numericalAnswer: String(row.numericalAnswer ?? row.answer ?? row.Answer ?? '0').trim(),
+              solution: String(row.solution || row.explanation || 'Solution not included in dataset.')
+            });
+          } else {
+            if (!hasOpts) {
+              opts = [
+                row.option_a || row.optionA || row.A || 'Option A',
+                row.option_b || row.optionB || row.B || 'Option B',
+                row.option_c || row.optionC || row.C || 'Option C',
+                row.option_d || row.optionD || row.D || 'Option D'
+              ];
+            }
+            parsed.push({
+              id: `imp_${Date.now()}_${idx}`,
+              type: 'mcq',
+              subject: normalizeSubject(row.subject || row.Subject),
+              chapter: String(row.chapter || row.chapter_name || row.topic || 'General').trim(),
+              year: String(row.year || row.exam || 'JEE Main PYQ'),
+              question: String(qText),
+              options: opts.slice(0, 4).map(String),
+              correctOption: parseCorrectOption(row.correctOption ?? row.correct_option ?? row.answer ?? row.Answer, opts),
+              solution: String(row.solution || row.explanation || 'Solution not included in dataset.')
+            });
+          }
+        });
+
+        if (parsed.length === 0) {
+          showToast('No valid questions detected in this file.', 'error');
+          return;
+        }
+
+        importedQuestions = [...importedQuestions, ...parsed];
+        allQuestions = [...BUILTIN_QUESTIONS, ...importedQuestions];
+        saveJSON(STORAGE_KEYS.IMPORTED, importedQuestions);
+
+        const statusEl = document.getElementById('import-status');
+        statusEl.className = 'p-4 rounded-xl text-sm font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800';
+        statusEl.textContent = `Successfully imported & classified ${parsed.length} PYQs into Physics, Chemistry & Mathematics! Total bank: ${allQuestions.length} questions.`;
+        statusEl.classList.remove('hidden');
+        document.getElementById('import-current-count').textContent = allQuestions.length;
+        showToast(`Imported ${parsed.length} PYQs into Sanskar.jee!`, 'success');
+      };
+      reader.readAsText(file);
+    }
+
+    function clearImportedQuestions() {
+      importedQuestions = [];
+      allQuestions = [...BUILTIN_QUESTIONS];
+      saveJSON(STORAGE_KEYS.IMPORTED, []);
+      document.getElementById('import-current-count').textContent = allQuestions.length;
+      document.getElementById('import-status').classList.add('hidden');
+      showToast('Reset to the 21 built-in JEE Main PYQs.', 'info');
+    }
+
+    // -----------------------------------------------------------------------
+    // 9. INITIALIZE APP & DRAG-AND-DROP LISTENERS
+    // -----------------------------------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      switchTab('dashboard');
+      switchTestSubTab('custom');
+      switchNotebookSubTab('mistakes');
+      buildPdfOmrGrid();
+
+      const dz = document.getElementById('import-dropzone');
+      if (dz) {
+        ['dragenter', 'dragover'].forEach(evt => {
+          dz.addEventListener(evt, (e) => {
+            e.preventDefault();
+            dz.classList.add('border-indigo-500', 'bg-indigo-100/60');
+          });
+        });
+        ['dragleave', 'drop'].forEach(evt => {
+          dz.addEventListener(evt, (e) => {
+            e.preventDefault();
+            dz.classList.remove('border-indigo-500', 'bg-indigo-100/60');
+          });
+        });
+        dz.addEventListener('drop', (e) => {
+          const file = e.dataTransfer.files[0];
+          if (file) handleBulkImportFile(file);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
