@@ -25,7 +25,7 @@
     };
   </script>
 
-  <!-- KaTeX v0.16.9 for Math & Chemistry Formulas -->
+  <!-- KaTeX v0.16.9 for Math & Chemistry Rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
@@ -33,13 +33,12 @@
   <!-- Theme System: Midnight Velvet & Rose-Gold (Default) + Warm Editorial Light -->
   <style>
     :root {
-      /* Default Night Mode (JEE): Midnight Velvet & Rose-Gold + Electric Violet */
       --bg-base: #0A0612;
       --bg-surface: rgba(19, 13, 33, 0.86);
       --bg-elevated: rgba(29, 20, 49, 0.85);
       --bg-input: rgba(12, 8, 22, 0.92);
       --border-subtle: rgba(242, 167, 141, 0.14);
-      --border-strong: rgba(242, 167, 141, 0.30);
+      --border-strong: rgba(242, 167, 141, 0.32);
       --text-primary: #FAF7FF;
       --text-secondary: #B4A9C7;
       --text-muted: #7C7093;
@@ -59,7 +58,6 @@
       --shadow-card: 0 14px 40px rgba(4, 2, 10, 0.55);
     }
 
-    /* Night Mode (NEET): Midnight Velvet & Rose-Gold + Aurora Mint */
     html[data-theme="dark"][data-exam="neet"] {
       --accent: #2DD4BF;
       --accent-hover: #14B8A6;
@@ -67,10 +65,8 @@
       --accent-border: rgba(45, 212, 191, 0.42);
       --accent-ink: #051F1D;
       --glow-1: rgba(45, 212, 191, 0.16);
-      --glow-2: rgba(242, 167, 141, 0.14);
     }
 
-    /* Warm Editorial Light Mode (JEE) */
     html[data-theme="light"] {
       --bg-base: #F8F7F4;
       --bg-surface: #FFFFFF;
@@ -97,7 +93,6 @@
       --shadow-card: 0 6px 24px rgba(17, 24, 39, 0.05);
     }
 
-    /* Warm Editorial Light Mode (NEET) */
     html[data-theme="light"][data-exam="neet"] {
       --accent: #059669;
       --accent-hover: #047857;
@@ -118,7 +113,6 @@
       transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    /* Ambient Velvet Radial Glows */
     body::before {
       content: "";
       position: fixed;
@@ -139,24 +133,10 @@
       -webkit-backdrop-filter: blur(14px);
       transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.25s ease;
     }
-    .surface-card-hover:hover {
-      border-color: var(--border-strong);
-      transform: translateY(-1px);
-    }
-    .surface-elevated {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-subtle);
-    }
-    .surface-input {
-      background: var(--bg-input);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-primary);
-    }
-    .surface-input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
+    .surface-card-hover:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+    .surface-elevated { background: var(--bg-elevated); border: 1px solid var(--border-subtle); }
+    .surface-input { background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-primary); }
+    .surface-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 
     .text-sec { color: var(--text-secondary); }
     .text-mut { color: var(--text-muted); }
@@ -173,7 +153,6 @@
       color: #0A0612;
       box-shadow: 0 4px 18px var(--glow-2);
     }
-
     .hero-gradient {
       background: linear-gradient(135deg, var(--accent-soft), var(--rosegold-soft));
       border: 1px solid var(--border-strong);
@@ -189,7 +168,7 @@
 </head>
 <body class="flex flex-col pb-20 lg:pb-0">
 
-  <!-- Toast Stack -->
+  <!-- Toast Notification Stack -->
   <div id="toast-container" class="fixed bottom-20 lg:bottom-5 right-4 z-50 flex flex-col gap-2 max-w-sm w-[calc(100%-2rem)] sm:w-80 pointer-events-none"></div>
 
   <!-- ===================================================================== -->
@@ -198,7 +177,7 @@
   <header class="sticky top-0 z-40 surface-card border-x-0 border-t-0 rounded-none">
     <div class="max-w-7xl mx-auto px-3 sm:px-6">
       <div class="h-16 flex items-center justify-between gap-2">
-        <!-- Brand Logo -->
+        <!-- Brand -->
         <button onclick="switchTab('dashboard')" class="flex items-center gap-2.5 text-left shrink-0">
           <div class="w-9 h-9 rounded-xl brand-mark font-black text-base flex items-center justify-center">M</div>
           <div>
@@ -220,9 +199,8 @@
           <button onclick="switchTab('syllabus')" data-tab="syllabus" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-bold transition">Syllabus</button>
         </nav>
 
-        <!-- Right Controls: Exam Switcher + Pomodoro + Theme -->
+        <!-- Right Controls: JEE/NEET Switcher + Pomodoro + Theme -->
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <!-- JEE | NEET Pill Switcher -->
           <div class="flex items-center p-0.5 rounded-xl surface-elevated">
             <button id="pill-jee" onclick="switchExam('jee')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-extrabold transition">JEE</button>
             <button id="pill-neet" onclick="switchExam('neet')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-extrabold transition">NEET</button>
@@ -263,7 +241,7 @@
     </div>
   </header>
 
-  <!-- Mobile & iPad Bottom Navigation Bar (7 Tabs) -->
+  <!-- Mobile / iPad Bottom Navigation -->
   <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 surface-card border-x-0 border-b-0 rounded-none px-1.5 py-1.5">
     <div class="grid grid-cols-7 gap-0.5 max-w-2xl mx-auto">
       <button onclick="switchTab('dashboard')" data-tab="dashboard" class="mob-nav-btn flex flex-col items-center py-1.5 rounded-xl text-[10px] font-bold transition"><span>🏠</span><span>Home</span></button>
@@ -276,17 +254,17 @@
     </div>
   </nav>
 
-  <!-- Chunked JSONL Loader Progress Banner -->
+  <!-- Chunked Loader Banner -->
   <div id="loader-banner" class="hidden max-w-7xl w-full mx-auto px-4 sm:px-6 pt-4">
     <div class="surface-card rounded-2xl p-3.5 flex items-center gap-3">
       <span class="w-4 h-4 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin shrink-0"></span>
       <div class="flex-1">
         <div class="flex justify-between text-xs font-bold mb-1">
-          <span id="loader-text">Loading question bank...</span>
+          <span id="loader-text">Loading dataset...</span>
           <span id="loader-pct" class="font-mono text-acc">0%</span>
         </div>
         <div class="w-full h-1.5 rounded-full surface-elevated overflow-hidden">
-          <div id="loader-bar" class="h-full bg-acc transition-all duration-150" style="width:15%"></div>
+          <div id="loader-bar" class="h-full bg-acc transition-all duration-150" style="width:10%"></div>
         </div>
       </div>
     </div>
@@ -298,38 +276,37 @@
   <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5 space-y-5">
 
     <!-- =================================================================== -->
-    <!-- TAB 1: COMMAND DASHBOARD (DEFAULT LANDING VIEW)                     -->
+    <!-- TAB 1: COMMAND DASHBOARD                                            -->
     <!-- =================================================================== -->
     <section id="tab-dashboard" class="tab-section space-y-5">
-      <!-- Hero Banner: Exam Countdown + Daily Goal SVG Ring + Study Streak -->
       <div class="surface-card hero-gradient rounded-3xl p-5 sm:p-7 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         <div class="space-y-3 flex-1">
           <div class="flex flex-wrap items-center gap-2">
             <span class="px-3 py-1 rounded-full bg-rg-soft text-[11px] font-extrabold uppercase tracking-wider">Command Center</span>
             <span class="px-3 py-1 rounded-full bg-acc-soft text-[11px] font-extrabold">🔥 <span id="dash-streak">0</span> Day Streak</span>
-            <span id="dash-bank-pill" class="px-3 py-1 rounded-full surface-elevated text-[11px] font-bold text-sec">Loading PYQs...</span>
+            <span id="dash-bank-pill" class="px-3 py-1 rounded-full surface-elevated text-[11px] font-bold text-sec">Initializing...</span>
           </div>
           <div>
             <div class="flex flex-wrap items-center gap-2.5">
               <h1 id="dash-exam-title" class="text-2xl sm:text-3xl font-extrabold tracking-tight">JEE Main 2027</h1>
               <button onclick="openCountdownModal()" class="px-2.5 py-1 rounded-lg surface-elevated hover:border-[var(--rosegold-border)] text-[11px] font-bold text-sec transition">✏️ Edit Date</button>
             </div>
-            <p class="text-xs sm:text-sm text-sec mt-1">Stay consistent every day. Track speed, accuracy, formulas, and full syllabus mastery in one place.</p>
+            <p class="text-xs sm:text-sm text-sec mt-1">100% isolated JEE &amp; NEET prep workspace. Track speed, accuracy, formulas, and full syllabus mastery.</p>
           </div>
-          <div class="flex items-baseline gap-2 pt-1">
-            <span id="dash-days-left" class="font-mono text-4xl sm:text-5xl font-extrabold text-rg">0</span>
+          <button onclick="openCountdownModal()" class="flex items-baseline gap-2 pt-1 text-left group">
+            <span id="dash-days-left" class="font-mono text-4xl sm:text-5xl font-extrabold text-rg group-hover:underline">0</span>
             <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-sec">Days Left until <span id="dash-target-date-lbl">Target Date</span></span>
-          </div>
+          </button>
         </div>
 
-        <!-- SVG Daily Goal Ring -->
+        <!-- Daily Goal SVG Ring -->
         <div class="surface-card rounded-2xl p-4 sm:p-5 flex items-center gap-4 w-full lg:w-auto shrink-0">
           <div class="relative w-20 h-20 shrink-0">
             <svg class="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
               <circle cx="40" cy="40" r="33" fill="none" stroke="var(--border-subtle)" stroke-width="7"></circle>
               <circle id="dash-ring-circle" cx="40" cy="40" r="33" fill="none" stroke="var(--rosegold)" stroke-width="7" stroke-linecap="round" stroke-dasharray="207.35" stroke-dashoffset="207.35" class="transition-all duration-500"></circle>
             </svg>
-            <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <div class="absolute inset-0 flex items-center justify-center">
               <span id="dash-ring-pct" class="font-mono text-sm font-extrabold">0%</span>
             </div>
           </div>
@@ -344,12 +321,12 @@
         </div>
       </div>
 
-      <!-- 5 Quick KPI Stat Cards -->
+      <!-- 5 KPI Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         <div class="surface-card rounded-2xl p-4">
-          <div class="text-[11px] font-bold uppercase text-mut">Total Solved</div>
+          <div class="text-[11px] font-bold uppercase text-mut">Questions Solved</div>
           <div id="kpi-solved" class="font-mono text-2xl font-extrabold mt-1">0</div>
-          <div class="text-[11px] text-sec mt-0.5">All-time PYQs</div>
+          <div class="text-[11px] text-sec mt-0.5">Active exam mode</div>
         </div>
         <div class="surface-card rounded-2xl p-4">
           <div class="text-[11px] font-bold uppercase text-mut">Accuracy</div>
@@ -362,79 +339,70 @@
           <div id="kpi-bench" class="text-[11px] text-sec mt-0.5">Goal &le; 90s</div>
         </div>
         <div class="surface-card rounded-2xl p-4">
-          <div class="text-[11px] font-bold uppercase text-mut">Formulas Read</div>
-          <div id="kpi-formulas" class="font-mono text-2xl font-extrabold text-acc mt-1">0/15</div>
-          <div class="text-[11px] text-sec mt-0.5">Read Now Hub</div>
+          <div class="text-[11px] font-bold uppercase text-mut">Bookmarked</div>
+          <div id="kpi-bookmarks" class="font-mono text-2xl font-extrabold text-acc mt-1">0</div>
+          <div class="text-[11px] text-sec mt-0.5">Saved for review</div>
         </div>
         <div class="surface-card rounded-2xl p-4 col-span-2 sm:col-span-1">
-          <div class="text-[11px] font-bold uppercase text-mut">Syllabus Mastery</div>
-          <div id="kpi-syl" class="font-mono text-2xl font-extrabold text-acc mt-1">0%</div>
-          <div id="kpi-syl-sub" class="text-[11px] text-sec mt-0.5">0 / 58 Chapters</div>
+          <div class="text-[11px] font-bold uppercase text-mut">Formulas Read</div>
+          <div id="kpi-formulas" class="font-mono text-2xl font-extrabold text-acc mt-1">0/0</div>
+          <div class="text-[11px] text-sec mt-0.5">Read Now Hub</div>
         </div>
       </div>
 
-      <!-- Quick Launch Action Grid (5 One-Tap Cards) -->
+      <!-- Quick Launch Grid -->
       <div class="space-y-2.5">
         <h2 class="text-xs font-extrabold uppercase tracking-wider text-sec">Quick Launch</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <button onclick="switchTab('practice')" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
             <span class="w-9 h-9 rounded-xl bg-acc-soft flex items-center justify-center text-base">📝</span>
-            <div class="text-sm font-extrabold">Continue PYQ Practice</div>
-            <div class="text-[11px] text-sec">Timed practice with live stopwatch &amp; solutions.</div>
+            <div class="text-sm font-extrabold">Continue Practice</div>
+            <div class="text-[11px] text-sec">Solve PYQs with live stopwatch &amp; solutions.</div>
           </button>
           <button onclick="quickStartTenQSprint()" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
             <span class="w-9 h-9 rounded-xl bg-rg-soft flex items-center justify-center text-base">⚡</span>
-            <div class="text-sm font-extrabold">Start 10-Q Speed Sprint</div>
-            <div class="text-[11px] text-sec">Instant timed mini-mock with +4 / -1 scoring.</div>
+            <div class="text-sm font-extrabold">10-Q Speed Sprint</div>
+            <div class="text-[11px] text-sec">Instant timed mini-mock with +4 / &minus;1 scoring.</div>
+          </button>
+          <button onclick="jumpToReviewMistakes()" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
+            <span class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center justify-center text-base">🔖</span>
+            <div class="text-sm font-extrabold">Review Mistakes</div>
+            <div class="text-[11px] text-sec">Re-attempt wrong or bookmarked PYQs.</div>
           </button>
           <button onclick="switchTab('readnow')" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
             <span class="w-9 h-9 rounded-xl bg-acc-soft flex items-center justify-center text-base">📖</span>
             <div class="text-sm font-extrabold">Open Formula Hub</div>
             <div class="text-[11px] text-sec">Chapter-wise KaTeX formulas &amp; exam traps.</div>
           </button>
-          <button onclick="jumpToReviewMistakes()" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
-            <span class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center justify-center text-base">🔖</span>
-            <div class="text-sm font-extrabold">Review Mistakes</div>
-            <div class="text-[11px] text-sec">Re-solve wrong &amp; bookmarked questions.</div>
-          </button>
-          <button onclick="switchTab('cbt')" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
-            <span class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-base">📄</span>
-            <div class="text-sm font-extrabold">Split-Screen PDF CBT</div>
-            <div class="text-[11px] text-sec">Upload paper PDF + interactive NTA OMR.</div>
-          </button>
         </div>
       </div>
 
-      <!-- Bottom Split: Daily Study Checklist + Smart Focus & Recent Activity -->
+      <!-- Daily Study Checklist + Smart Focus -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <!-- Daily Study Checklist (To-Do) -->
         <div class="lg:col-span-7 surface-card rounded-2xl p-5 space-y-4">
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-sm font-extrabold uppercase tracking-wider text-rg">Daily Study Checklist</h3>
-              <p class="text-xs text-sec">Persisted separately for each exam mode.</p>
+              <p class="text-xs text-sec">Saved separately for JEE and NEET modes.</p>
             </div>
             <span id="todo-progress-pill" class="px-2.5 py-1 rounded-lg surface-elevated font-mono text-xs font-bold">0 / 0 Done</span>
           </div>
           <form onsubmit="addTodoTask(event)" class="flex gap-2">
-            <input id="todo-input" type="text" placeholder="Add a study task (e.g., Revise Electrostatics formulas)..." class="flex-1 px-3.5 py-2.5 rounded-xl surface-input text-xs font-semibold" />
+            <input id="todo-input" type="text" placeholder="Add a study task..." class="flex-1 px-3.5 py-2.5 rounded-xl surface-input text-xs font-semibold" />
             <button type="submit" class="px-4 py-2.5 rounded-xl bg-acc text-xs font-extrabold shrink-0">+ Add</button>
           </form>
           <div id="todo-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
         </div>
 
-        <!-- Smart Focus & Recent Activity -->
         <div class="lg:col-span-5 flex flex-col gap-4">
-          <!-- Smart Focus Card -->
           <div class="surface-card rounded-2xl p-5 space-y-3">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-extrabold uppercase tracking-wider text-acc">Smart Focus Recommendation</span>
+              <span class="text-xs font-extrabold uppercase tracking-wider text-acc">Smart Focus (Weakest Subject)</span>
               <span class="text-xs">🎯</span>
             </div>
             <div id="dash-smart-focus" class="space-y-2"></div>
           </div>
 
-          <!-- Recent Mock Activity -->
           <div class="surface-card rounded-2xl p-5 space-y-3 flex-1">
             <div class="flex items-center justify-between">
               <span class="text-xs font-extrabold uppercase tracking-wider text-sec">Recent Mock Scores</span>
@@ -452,25 +420,22 @@
     <section id="tab-practice" class="tab-section hidden space-y-4">
       <div class="surface-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2">
-          <span id="bank-status-badge" class="px-3 py-1 rounded-xl bg-acc-soft text-xs font-extrabold">Loading Bank...</span>
-          <span class="px-3 py-1 rounded-xl bg-rg-soft text-xs font-bold">🔥 <span id="prac-streak-badge">0</span>d Streak</span>
+          <span id="bank-status-badge" class="px-3 py-1.5 rounded-xl bg-acc-soft text-xs font-extrabold">Loading...</span>
+          <span class="px-3 py-1.5 rounded-xl bg-rg-soft text-xs font-bold">🔥 <span id="prac-streak-badge">0</span>d Streak</span>
         </div>
-        <div class="flex items-center gap-2">
-          <label class="px-3.5 py-2 rounded-xl surface-elevated hover:border-[var(--rosegold-border)] cursor-pointer text-xs font-bold transition">
-            📂 Load Local .jsonl/.json
-            <input type="file" accept=".jsonl,.json,.txt" class="hidden" onchange="handleLocalDatasetImport(event)" />
-          </label>
-        </div>
+        <label class="px-3.5 py-2 rounded-xl surface-elevated hover:border-[var(--rosegold-border)] cursor-pointer text-xs font-bold transition">
+          📂 Import .jsonl/.json
+          <input type="file" accept=".jsonl,.json,.txt" multiple class="hidden" onchange="handleLocalDatasetImport(event)" />
+        </label>
       </div>
 
-      <!-- Subject Pills + Filters + Pagination -->
       <div class="surface-card rounded-2xl p-4 space-y-3">
         <div id="prac-subject-pills" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"></div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
           <select id="prac-status-filter" onchange="applyPracticeFilters()" class="px-3 py-2.5 rounded-xl surface-input text-xs font-bold">
             <option value="all">All Questions</option>
             <option value="unsolved">Unsolved Only</option>
-            <option value="wrong">Wrong / Mistakes</option>
+            <option value="wrong">Mistakes Only</option>
             <option value="bookmarked">Bookmarked Only</option>
           </select>
           <select id="prac-chapter-filter" onchange="applyPracticeFilters()" class="px-3 py-2.5 rounded-xl surface-input text-xs font-bold">
@@ -488,7 +453,6 @@
         </div>
       </div>
 
-      <!-- Active Practice Card -->
       <div id="practice-card" class="surface-card rounded-2xl p-5 sm:p-7"></div>
 
       <p class="hidden sm:block text-center text-[11px] font-semibold text-mut">
@@ -504,9 +468,8 @@
         <div class="space-y-1.5">
           <span class="px-2.5 py-1 rounded-lg bg-rg-soft text-[11px] font-extrabold uppercase tracking-wider">NTA-Style Mini Mock</span>
           <h2 class="text-2xl font-extrabold">Timed Mock Sprint</h2>
-          <p class="text-sm text-sec">Generate an instant timed test from your active exam PYQ bank with +4 / &minus;1 scoring and question-by-question review.</p>
+          <p class="text-sm text-sec">Pulls random questions exclusively from your active exam bank with +4 / &minus;1 auto-scoring.</p>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="space-y-1.5">
             <label class="text-xs font-bold text-sec uppercase">Question Count</label>
@@ -522,7 +485,6 @@
             <select id="sprint-subject" class="w-full px-3.5 py-2.5 rounded-xl surface-input text-xs font-bold"></select>
           </div>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
           <div class="space-y-1.5">
             <label class="text-xs font-bold text-sec uppercase">Time Limit (Minutes)</label>
@@ -533,11 +495,9 @@
             <div>+4 Correct &bull; &minus;1 Incorrect &bull; 0 Unattempted</div>
           </div>
         </div>
-
         <button onclick="startMockSprint()" class="w-full py-3.5 rounded-2xl bg-acc text-sm font-extrabold transition shadow-lg">🚀 Launch Timed Mock Sprint</button>
       </div>
 
-      <!-- Active Sprint Arena -->
       <div id="sprint-arena" class="hidden space-y-4">
         <div class="surface-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-3">
@@ -549,7 +509,6 @@
             <button onclick="openConfirmSprintSubmit()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold">Submit Sprint</button>
           </div>
         </div>
-
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div id="sprint-q-card" class="lg:col-span-8 surface-card rounded-2xl p-5 sm:p-6"></div>
           <div class="lg:col-span-4 surface-card rounded-2xl p-4 space-y-4 h-fit">
@@ -558,26 +517,25 @@
             <div class="grid grid-cols-2 gap-2 pt-3 border-t border-[var(--border-subtle)] text-[11px] font-semibold text-sec">
               <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500"></span> Answered</div>
               <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-purple-500"></span> Marked</div>
-              <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-500"></span> Skipped</div>
+              <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-500"></span> Not Answered</div>
               <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded surface-elevated"></span> Unvisited</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Post-Sprint Scorecard -->
       <div id="sprint-report" class="hidden space-y-5"></div>
     </section>
 
     <!-- =================================================================== -->
-    <!-- TAB 4: UPGRADED "READ NOW" FORMULA & REVISION HUB                   -->
+    <!-- TAB 4: READ NOW — FORMULA & REVISION HUB                            -->
     <!-- =================================================================== -->
     <section id="tab-readnow" class="tab-section hidden space-y-5">
       <div class="surface-card rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span class="px-2.5 py-0.5 rounded-lg bg-rg-soft text-[11px] font-extrabold uppercase tracking-wider">Formula &amp; Revision Hub</span>
           <h2 id="readnow-heading" class="text-xl sm:text-2xl font-extrabold mt-1">Read Now — Chapter Formulas</h2>
-          <p class="text-xs sm:text-sm text-sec mt-0.5">Select any chapter to study high-yield KaTeX formulas, exam traps, or add your own custom formula notes.</p>
+          <p class="text-xs sm:text-sm text-sec mt-0.5">High-yield KaTeX formulas, exam traps, and custom notes saved per exam mode.</p>
         </div>
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div class="min-w-[180px] space-y-1.5">
@@ -593,7 +551,6 @@
         </div>
       </div>
 
-      <!-- Chapter Selection Window -->
       <div class="surface-card rounded-2xl p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div id="readnow-subject-pills" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar"></div>
@@ -602,16 +559,14 @@
             <span>Unread Only</span>
           </label>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <select id="readnow-chapter-select" onchange="renderReadNow()" class="px-3.5 py-2.5 rounded-xl surface-input text-xs font-bold">
             <option value="All">All Chapters</option>
           </select>
-          <input id="readnow-search" type="text" oninput="renderReadNow()" placeholder="Search formulas, keywords, or exam traps..." class="px-3.5 py-2.5 rounded-xl surface-input text-xs font-semibold" />
+          <input id="readnow-search" type="text" oninput="renderReadNow()" placeholder="Search formulas, chapters, or traps..." class="px-3.5 py-2.5 rounded-xl surface-input text-xs font-semibold" />
         </div>
       </div>
 
-      <!-- Formula Cards Grid -->
       <div id="readnow-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </section>
 
@@ -644,7 +599,6 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <!-- Left Pane: PDF Viewer -->
         <div id="cbt-pdf-pane" class="lg:col-span-7 surface-card rounded-2xl overflow-hidden flex flex-col h-[74vh]">
           <div class="px-3.5 py-2.5 border-b border-[var(--border-subtle)] flex items-center justify-between gap-2">
             <span id="cbt-pdf-name" class="text-xs font-bold text-sec truncate">No PDF uploaded yet</span>
@@ -660,7 +614,7 @@
             <div id="cbt-pdf-empty" class="h-full flex flex-col items-center justify-center p-6 text-center space-y-2">
               <div class="w-14 h-14 rounded-2xl bg-acc-soft flex items-center justify-center text-2xl font-black">PDF</div>
               <p class="font-extrabold text-sm">Upload Any Local Question Paper PDF</p>
-              <p class="text-xs text-sec max-w-sm">View your paper side-by-side while marking A/B/C/D or Numerical answers on the interactive NTA OMR grid.</p>
+              <p class="text-xs text-sec max-w-sm">View your paper on the left while marking A/B/C/D or Numerical answers on the interactive OMR sheet.</p>
             </div>
             <div id="cbt-pdf-frame-wrap" class="hidden w-full h-full origin-top-left transition-transform duration-150">
               <iframe id="cbt-pdf-frame" class="w-full h-full border-0 bg-white" title="Question Paper PDF"></iframe>
@@ -668,7 +622,6 @@
           </div>
         </div>
 
-        <!-- Right Pane: Interactive NTA OMR -->
         <div id="cbt-omr-pane" class="lg:col-span-5 surface-card rounded-2xl p-4 flex flex-col h-[74vh] space-y-3">
           <div id="cbt-subject-tabs" class="grid grid-cols-3 gap-1.5"></div>
           <div class="surface-elevated rounded-2xl p-4 space-y-3">
@@ -719,7 +672,6 @@
         <button onclick="switchTab('practice')" class="px-4 py-2 rounded-xl bg-acc text-xs font-extrabold">Practice PYQs</button>
       </div>
 
-      <!-- KPI + Improvement Trend -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div class="surface-card rounded-2xl p-4 sm:p-5">
           <div class="text-[11px] font-bold uppercase text-mut">Total Attempted</div>
@@ -742,13 +694,11 @@
         </div>
       </div>
 
-      <!-- Subject-Wise Mastery & Speed -->
       <div class="surface-card rounded-2xl p-5 space-y-4">
         <h3 class="text-xs font-extrabold uppercase tracking-wider text-sec">Subject-Wise Mastery &amp; Speed</h3>
         <div id="an-subjects" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
       </div>
 
-      <!-- Last 7 Days Visual Bar Charts -->
       <div class="surface-card rounded-2xl p-5 space-y-4">
         <div>
           <h3 class="text-xs font-extrabold uppercase tracking-wider text-sec">Last 7 Days Performance</h3>
@@ -770,50 +720,30 @@
         </div>
       </div>
 
-      <!-- Week-by-Week Table + Mock History -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <div class="lg:col-span-7 surface-card rounded-2xl p-5 space-y-3">
-          <h3 class="text-xs font-extrabold uppercase tracking-wider text-sec">Week-by-Week History</h3>
-          <div class="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
-            <table class="w-full text-left text-xs">
-              <thead class="surface-elevated">
-                <tr>
-                  <th class="p-3 font-extrabold">Week</th>
-                  <th class="p-3 font-extrabold">Qs</th>
-                  <th class="p-3 font-extrabold">Avg Time</th>
-                  <th class="p-3 font-extrabold">Accuracy</th>
-                  <th class="p-3 font-extrabold text-right">Trend</th>
-                </tr>
-              </thead>
-              <tbody id="an-weekly-tbody" class="divide-y divide-[var(--border-subtle)]"></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="lg:col-span-5 surface-card rounded-2xl p-5 space-y-3">
-          <h3 class="text-xs font-extrabold uppercase tracking-wider text-sec">Mock Test History</h3>
-          <div id="an-mock-history" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
-        </div>
+      <div class="surface-card rounded-2xl p-5 space-y-3">
+        <h3 class="text-xs font-extrabold uppercase tracking-wider text-sec">Mock Test History</h3>
+        <div id="an-mock-history" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
       </div>
     </section>
 
     <!-- =================================================================== -->
-    <!-- TAB 7: SYLLABUS TRACKER (58 JEE / 79 NEET CHAPTERS)                 -->
+    <!-- TAB 7: SYLLABUS TRACKER                                             -->
     <!-- =================================================================== -->
     <section id="tab-syllabus" class="tab-section hidden space-y-5">
       <div class="surface-card rounded-2xl p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 id="syl-heading" class="text-xl sm:text-2xl font-extrabold">JEE Main Syllabus Tracker</h2>
-            <p class="text-xs sm:text-sm text-sec">Tap any chapter to cycle: Not Started &rarr; Studying &rarr; Revised &rarr; Mastered.</p>
+            <h2 id="syl-heading" class="text-xl sm:text-2xl font-extrabold">Syllabus Tracker</h2>
+            <p class="text-xs sm:text-sm text-sec">Tap any chapter to cycle: Not Started &rarr; In Progress &rarr; Revised &rarr; Mastered.</p>
           </div>
           <div class="flex items-center gap-4">
             <div class="text-right">
-              <div class="text-[10px] font-bold uppercase text-mut">Overall Mastery</div>
+              <div class="text-[10px] font-bold uppercase text-mut">Completion</div>
               <div id="syl-pct" class="font-mono text-2xl sm:text-3xl font-extrabold text-acc">0%</div>
             </div>
             <div class="text-right">
               <div class="text-[10px] font-bold uppercase text-mut">Revised / Mastered</div>
-              <div id="syl-done" class="font-mono text-2xl sm:text-3xl font-extrabold text-rg">0 / 58</div>
+              <div id="syl-done" class="font-mono text-2xl sm:text-3xl font-extrabold text-rg">0 / 0</div>
             </div>
           </div>
         </div>
@@ -825,7 +755,7 @@
         <select id="syl-status-filter" onchange="renderSyllabusList()" class="px-3 py-2 rounded-xl surface-input text-xs font-bold">
           <option value="All">All Statuses</option>
           <option value="Not Started">Not Started</option>
-          <option value="Studying">Studying</option>
+          <option value="In Progress">In Progress</option>
           <option value="Revised">Revised</option>
           <option value="Mastered">Mastered</option>
         </select>
@@ -835,33 +765,10 @@
   </main>
 
   <!-- ===================================================================== -->
-  <!-- MODALS (NO alert/confirm USED ANYWHERE)                               -->
+  <!-- MODALS                                                                -->
   <!-- ===================================================================== -->
 
-  <!-- Modal 1: First-Visit Exam Picker -->
-  <div id="welcome-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="surface-card rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 text-center">
-      <div class="space-y-2">
-        <div class="w-12 h-12 mx-auto rounded-2xl brand-mark font-black text-2xl flex items-center justify-center">M</div>
-        <h2 class="text-2xl font-extrabold">Welcome to Mockify<span class="text-rg">.prep</span></h2>
-        <p class="text-sm text-sec">Choose your target exam. All PYQs, formulas, analytics, checklist, and syllabus stay 100% isolated—and you can switch anytime.</p>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-left">
-        <button onclick="selectInitialExam('jee')" class="p-5 rounded-2xl surface-elevated hover:border-[#A78BFA] transition space-y-1.5">
-          <span class="px-2.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 text-[10px] font-extrabold uppercase">Engineering</span>
-          <div class="text-lg font-extrabold">JEE Main (PCM)</div>
-          <div class="text-xs text-sec">Physics, Chemistry, Maths &bull; 75 Qs CBT &bull; 58 Chapters</div>
-        </button>
-        <button onclick="selectInitialExam('neet')" class="p-5 rounded-2xl surface-elevated hover:border-[#2DD4BF] transition space-y-1.5">
-          <span class="px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-extrabold uppercase">Medical</span>
-          <div class="text-lg font-extrabold">NEET UG (PCB)</div>
-          <div class="text-xs text-sec">Physics, Chemistry, Biology &bull; 180 Qs CBT &bull; 79 Chapters</div>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal 2: Edit Exam Countdown -->
+  <!-- Edit Exam Countdown Modal -->
   <div id="countdown-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="surface-card rounded-2xl max-w-sm w-full p-6 space-y-4">
       <div class="flex items-center justify-between">
@@ -885,13 +792,13 @@
     </div>
   </div>
 
-  <!-- Modal 3: Add Custom Formula Card -->
+  <!-- Add Custom Formula Modal -->
   <div id="custom-formula-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="surface-card rounded-3xl max-w-lg w-full p-6 space-y-4">
       <div class="flex items-center justify-between">
         <div>
           <h3 class="text-base font-extrabold">Add Custom Formula Card</h3>
-          <p class="text-[11px] text-sec">Supports KaTeX math using $...$ (e.g., $E = mc^2$). Saved locally.</p>
+          <p class="text-[11px] text-sec">Supports KaTeX math using $...$ (e.g., $E = mc^2$). Saved per exam mode.</p>
         </div>
         <button onclick="closeCustomFormulaModal()" class="text-2xl text-sec leading-none">&times;</button>
       </div>
@@ -916,7 +823,7 @@
         </div>
         <div class="space-y-1">
           <label class="text-xs font-bold text-sec">Exam Trap / Tip (Optional)</label>
-          <input id="cf-trap" type="text" placeholder="e.g., Escape velocity is independent of projectile mass." class="w-full px-3 py-2.5 rounded-xl surface-input text-xs font-semibold" />
+          <input id="cf-trap" type="text" placeholder="e.g., Independent of projectile mass." class="w-full px-3 py-2.5 rounded-xl surface-input text-xs font-semibold" />
         </div>
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="closeCustomFormulaModal()" class="px-4 py-2 rounded-xl surface-elevated text-xs font-bold">Cancel</button>
@@ -926,7 +833,7 @@
     </div>
   </div>
 
-  <!-- Modal 4: Confirm Sprint Submit -->
+  <!-- Confirm Sprint Submit Modal -->
   <div id="sprint-confirm-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="surface-card rounded-2xl max-w-sm w-full p-6 space-y-4">
       <h3 class="text-lg font-extrabold">Submit Mock Sprint?</h3>
@@ -938,7 +845,7 @@
     </div>
   </div>
 
-  <!-- Modal 5: PDF CBT Answer Key Grader -->
+  <!-- PDF CBT Answer Key Grader Modal -->
   <div id="cbt-grade-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="surface-card rounded-3xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto space-y-5">
       <div class="flex items-center justify-between">
@@ -972,7 +879,7 @@
       'use strict';
 
       // =====================================================================
-      // 1. EXAM CONFIG, STORAGE ISOLATION & SILENT MIGRATION
+      // 1. STRICT EXAM CONFIG, IN-MEMORY ISOLATION & STORAGE MIGRATION
       // =====================================================================
       const EXAM_CFG = {
         jee: {
@@ -999,188 +906,132 @@
             { name: 'Chemistry', start: 46, end: 90 },
             { name: 'Biology', start: 91, end: 180 }
           ],
-          githubFiles: ['neet.jsonl', 'neet.json', 'neet_complete_dataset.jsonl']
+          githubFiles: ['neet_complete_dataset.jsonl'],
+          fallbackFile: 'neet.jsonl'
         }
+      };
+
+      // Strictly isolated in-memory banks & loader status per exam mode
+      const banks = { jee: [], neet: [] };
+      const bankMeta = {
+        jee: { loadedFromRepo: false, loading: false, statusText: 'Initializing JEE...' },
+        neet: { loadedFromRepo: false, loading: false, statusText: 'Initializing NEET...' }
       };
 
       let currentExam = 'jee';
       let currentTab = 'dashboard';
 
-      function lsKey(s) { return `mockify_${currentExam}_${s}`; }
+      function lsKey(s, ex = currentExam) { return `mockify_${ex}_${s}`; }
       function loadLS(k, fb) { try { const r = localStorage.getItem(k); return r !== null ? JSON.parse(r) : fb; } catch { return fb; } }
       function saveLS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 
       function migrateLegacySanskar() {
-        if (loadLS('mockify_migrated_v2', false)) return;
-        const suf = ['attempts', 'mistakes', 'bookmarks', 'solved_ids', 'mock_history', 'daily_q_goal', 'syllabus'];
+        if (loadLS('mockify_migrated_v3', false)) return;
+        const suf = ['attempts', 'mistakes', 'bookmarks', 'solved_ids', 'mock_history', 'daily_q_goal', 'syllabus', 'todos', 'countdown'];
         ['jee', 'neet'].forEach(ex => {
           suf.forEach(s => {
             try {
-              const o = localStorage.getItem(`sanskar_${ex}_${s}`);
-              if (o !== null && localStorage.getItem(`mockify_${ex}_${s}`) === null) {
-                localStorage.setItem(`mockify_${ex}_${s}`, o);
+              const oldVal = localStorage.getItem(`sanskar_${ex}_${s}`);
+              if (oldVal !== null && localStorage.getItem(`mockify_${ex}_${s}`) === null) {
+                localStorage.setItem(`mockify_${ex}_${s}`, oldVal);
               }
             } catch {}
           });
         });
-        saveLS('mockify_migrated_v2', true);
+        saveLS('mockify_migrated_v3', true);
       }
 
       function getDateKey(d = new Date()) {
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       }
-      function getWeekMonday(d = new Date()) {
-        const c = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-        const day = c.getDay();
-        c.setDate(c.getDate() + (day === 0 ? -6 : 1 - day));
-        return getDateKey(c);
-      }
-      function formatWeekRange(monStr) {
-        const s = new Date(`${monStr}T00:00:00`);
-        const e = new Date(s); e.setDate(e.getDate() + 6);
-        const o = { day: 'numeric', month: 'short' };
-        const txt = `${s.toLocaleDateString('en-IN', o)} – ${e.toLocaleDateString('en-IN', o)}`;
-        return monStr === getWeekMonday() ? `This Week (${txt})` : txt;
-      }
 
       // =====================================================================
-      // 2. BUILT-IN VERIFIED PYQS (15 JEE + 24 NEET)
+      // 2. BUILT-IN FALLBACK SAMPLE PYQS (12 JEE + 12 NEET)
       // =====================================================================
-      const JEE_PYQS = [
-        // Physics (5)
-        { id: 'JEE-PH-01', subject: 'Physics', chapter: 'Laws of Motion', year: 'JEE Main', question: 'A block of mass $m = 2\\text{ kg}$ rests on a rough horizontal surface with $\\mu_s = 0.4$. What is the minimum horizontal force required to just start moving it? ($g = 10\\text{ m/s}^2$)', options: ['$4\\text{ N}$', '$8\\text{ N}$', '$10\\text{ N}$', '$20\\text{ N}$'], correctOption: 1, explanation: 'Limiting friction $f_{\\max} = \\mu_s mg = 0.4 \\times 2 \\times 10 = 8\\text{ N}$.' },
-        { id: 'JEE-PH-02', subject: 'Physics', chapter: 'Rotational Motion', year: 'JEE Main', question: 'A solid sphere of mass $M$ and radius $R$ rolls without slipping. The ratio of its rotational kinetic energy to total kinetic energy is:', options: ['$\\frac{2}{5}$', '$\\frac{2}{7}$', '$\\frac{5}{7}$', '$\\frac{1}{3}$'], correctOption: 1, explanation: 'Since $I = \\frac{2}{5}MR^2$, $K_{\\text{rot}}/K_{\\text{tot}} = \\frac{2/5}{1 + 2/5} = \\frac{2}{7}$.' },
-        { id: 'JEE-PH-03', subject: 'Physics', chapter: 'Electrostatics', year: 'JEE Main', question: 'Two point charges $+4q$ and $+q$ are separated by distance $L$. At what distance from $+4q$ on the line joining them is the electric field zero?', options: ['$\\frac{L}{3}$', '$\\frac{2L}{3}$', '$\\frac{L}{2}$', '$\\frac{3L}{4}$'], correctOption: 1, explanation: '$\\frac{4q}{x^2} = \\frac{q}{(L-x)^2} \\Rightarrow \\frac{2}{x} = \\frac{1}{L-x} \\Rightarrow x = \\frac{2L}{3}$.' },
-        { id: 'JEE-PH-04', subject: 'Physics', chapter: 'Modern Physics', year: 'JEE Main', question: 'The work function of a metal is $2.2\\text{ eV}$. If photons of energy $5.0\\text{ eV}$ strike it, the maximum kinetic energy of emitted photoelectrons is:', options: ['$2.2\\text{ eV}$', '$2.8\\text{ eV}$', '$5.0\\text{ eV}$', '$7.2\\text{ eV}$'], correctOption: 1, explanation: 'By Einstein’s equation, $K_{\\max} = h\\nu - \\phi = 5.0 - 2.2 = 2.8\\text{ eV}$.' },
-        { id: 'JEE-PH-05', subject: 'Physics', chapter: 'Current Electricity', year: 'JEE Main', question: 'Three resistors of $6\\,\\Omega$ each are connected in parallel across a $10\\text{ V}$ ideal battery. Total current drawn is:', options: ['$2.5\\text{ A}$', '$5.0\\text{ A}$', '$10\\text{ A}$', '$1.67\\text{ A}$'], correctOption: 1, explanation: '$R_{\\text{eq}} = 6/3 = 2\\,\\Omega \\Rightarrow I = V/R_{\\text{eq}} = 10/2 = 5.0\\text{ A}$.' },
-        // Chemistry (5)
-        { id: 'JEE-CH-01', subject: 'Chemistry', chapter: 'Chemical Bonding', year: 'JEE Main', question: 'According to VSEPR theory, the hybridization and molecular geometry of $\\text{XeF}_4$ are respectively:', options: ['$sp^3$, Tetrahedral', '$sp^3d$, See-saw', '$sp^3d^2$, Square planar', '$sp^3d^2$, Octahedral'], correctOption: 2, explanation: '$\\text{XeF}_4$ has 4 bond pairs and 2 lone pairs ($sp^3d^2$), giving a square planar shape.' },
-        { id: 'JEE-CH-02', subject: 'Chemistry', chapter: 'Chemical Thermodynamics', year: 'JEE Main', question: 'For a reaction at $300\\text{ K}$, $\\Delta H = -40\\text{ kJ/mol}$ and $\\Delta S = -100\\text{ J K}^{-1}\\text{mol}^{-1}$. The Gibbs free energy change $\\Delta G$ is:', options: ['$-10\\text{ kJ/mol}$', '$-70\\text{ kJ/mol}$', '$+10\\text{ kJ/mol}$', '$-30\\text{ kJ/mol}$'], correctOption: 0, explanation: '$\\Delta G = \\Delta H - T\\Delta S = -40 - 300(-0.1) = -10\\text{ kJ/mol}$.' },
-        { id: 'JEE-CH-03', subject: 'Chemistry', chapter: 'Coordination Compounds', year: 'JEE Main', question: 'The spin-only magnetic moment of $[\\text{Fe(CN)}_6]^{4-}$ is:', options: ['$0\\text{ BM}$', '$1.73\\text{ BM}$', '$4.90\\text{ BM}$', '$5.92\\text{ BM}$'], correctOption: 0, explanation: '$\\text{Fe}^{2+}$ is $d^6$; strong-field $\\text{CN}^-$ pairs all electrons in $t_{2g}^6$, so $n = 0 \\Rightarrow \\mu = 0\\text{ BM}$.' },
-        { id: 'JEE-CH-04', subject: 'Chemistry', chapter: 'Chemical Kinetics', year: 'JEE Main', question: 'For a first-order reaction with $t_{1/2} = 10\\text{ min}$, the time required for $75\\%$ completion is:', options: ['$15\\text{ min}$', '$20\\text{ min}$', '$30\\text{ min}$', '$40\\text{ min}$'], correctOption: 1, explanation: '$75\\%$ completion equals two half-lives: $2 \\times 10 = 20\\text{ min}$.' },
-        { id: 'JEE-CH-05', subject: 'Chemistry', chapter: 'Electrochemistry', year: 'JEE Main', question: 'At $298\\text{ K}$, the standard EMF of a Daniell cell with $E^\\circ_{\\text{Zn}^{2+}/\\text{Zn}} = -0.76\\text{ V}$ and $E^\\circ_{\\text{Cu}^{2+}/\\text{Cu}} = +0.34\\text{ V}$ is:', options: ['$0.42\\text{ V}$', '$1.10\\text{ V}$', '$-1.10\\text{ V}$', '$0.76\\text{ V}$'], correctOption: 1, explanation: '$E^\\circ_{\\text{cell}} = E^\\circ_{\\text{cathode}} - E^\\circ_{\\text{anode}} = 0.34 - (-0.76) = 1.10\\text{ V}$.' },
-        // Mathematics (5)
-        { id: 'JEE-MA-01', subject: 'Mathematics', chapter: 'Indefinite & Definite Integration', year: 'JEE Main', question: 'The value of $\\int_0^{\\pi/2} \\frac{\\sin x}{\\sin x + \\cos x}\\,dx$ is:', options: ['$\\frac{\\pi}{4}$', '$\\frac{\\pi}{2}$', '$\\pi$', '$1$'], correctOption: 0, explanation: 'Using King’s property, $2I = \\int_0^{\\pi/2} 1\\,dx = \\frac{\\pi}{2} \\Rightarrow I = \\frac{\\pi}{4}$.' },
-        { id: 'JEE-MA-02', subject: 'Mathematics', chapter: 'Matrices & Determinants', year: 'JEE Main', question: 'If $A$ is a $3 \\times 3$ matrix with $|A| = 4$, then $|2A|$ equals:', options: ['$8$', '$16$', '$32$', '$64$'], correctOption: 2, explanation: 'For an $n \\times n$ matrix, $|kA| = k^n |A| = 2^3 \\times 4 = 32$.' },
-        { id: 'JEE-MA-03', subject: 'Mathematics', chapter: 'Probability', year: 'JEE Main', question: 'Two fair dice are thrown simultaneously. The probability of getting a sum of $9$ is:', options: ['$\\frac{1}{12}$', '$\\frac{1}{9}$', '$\\frac{1}{6}$', '$\\frac{5}{36}$'], correctOption: 1, explanation: 'Favorable pairs: $(3,6),(4,5),(5,4),(6,3) = 4/36 = 1/9$.' },
-        { id: 'JEE-MA-04', subject: 'Mathematics', chapter: 'Complex Numbers & Quadratic Eq.', year: 'JEE Main', question: 'If $\\alpha, \\beta$ are the roots of $x^2 - 5x + 6 = 0$, then $\\alpha^2 + \\beta^2$ equals:', options: ['$11$', '$13$', '$19$', '$25$'], correctOption: 1, explanation: '$\\alpha + \\beta = 5, \\alpha\\beta = 6 \\Rightarrow \\alpha^2 + \\beta^2 = 5^2 - 2(6) = 13$.' },
-        { id: 'JEE-MA-05', subject: 'Mathematics', chapter: 'Limits, Continuity & Differentiability', year: 'JEE Main', question: 'The value of $\\lim_{x \\to 0} \\frac{1 - \\cos 2x}{x^2}$ is:', options: ['$0$', '$1$', '$2$', '$4$'], correctOption: 2, explanation: '$1 - \\cos 2x = 2\\sin^2 x \\Rightarrow \\lim_{x\\to 0} 2(\\sin x / x)^2 = 2$.' }
-      ];
-
-      const NEET_PYQS = [
-        // Physics (8)
-        { id: 'NEET-PH-01', subject: 'Physics', chapter: 'Units & Measurements', year: 'NEET PYQ', question: 'The dimensional formula of Planck’s constant $h$ is identical to that of:', options: ['Linear momentum', 'Angular momentum', 'Torque', 'Force'], correctOption: 1, explanation: 'Both $h = E/\\nu$ and angular momentum $L = mvr$ have dimensions $[ML^2T^{-1}]$.' },
-        { id: 'NEET-PH-02', subject: 'Physics', chapter: 'Motion in a Straight Line', year: 'NEET PYQ', question: 'A ball is thrown vertically upwards at $20\\text{ m/s}$ from a tower of height $25\\text{ m}$. Time taken to hit the ground ($g = 10\\text{ m/s}^2$) is:', options: ['$3\\text{ s}$', '$4\\text{ s}$', '$5\\text{ s}$', '$6\\text{ s}$'], correctOption: 2, explanation: '$-25 = 20t - 5t^2 \\Rightarrow t^2 - 4t - 5 = 0 \\Rightarrow t = 5\\text{ s}$.' },
-        { id: 'NEET-PH-03', subject: 'Physics', chapter: 'Work, Energy & Power', year: 'NEET PYQ', question: 'If linear momentum of a body increases by $50\\%$, its kinetic energy increases by:', options: ['$50\\%$', '$100\\%$', '$125\\%$', '$150\\%$'], correctOption: 2, explanation: '$K \\propto p^2 \\Rightarrow K\' = (1.5)^2 K = 2.25K$ (an increase of $125\\%$).' },
-        { id: 'NEET-PH-04', subject: 'Physics', chapter: 'Thermodynamics', year: 'NEET PYQ', question: 'A Carnot engine operates between $227^\\circ\\text{C}$ and $127^\\circ\\text{C}$. Its efficiency is:', options: ['$20\\%$', '$25\\%$', '$40\\%$', '$50\\%$'], correctOption: 0, explanation: '$T_1 = 500\\text{ K}, T_2 = 400\\text{ K} \\Rightarrow \\eta = 1 - 400/500 = 20\\%$.' },
-        { id: 'NEET-PH-05', subject: 'Physics', chapter: 'Current Electricity', year: 'NEET PYQ', question: 'A wire of resistance $R$ is stretched to double its length at constant volume. Its new resistance is:', options: ['$R$', '$2R$', '$4R$', '$8R$'], correctOption: 2, explanation: 'At constant volume, $R \\propto l^2$, so doubling $l$ yields $R\' = 4R$.' },
-        { id: 'NEET-PH-06', subject: 'Physics', chapter: 'Alternating Current', year: 'NEET PYQ', question: 'At resonance in a series LCR circuit, the power factor $\\cos\\phi$ equals:', options: ['$0$', '$0.5$', '$1$', '$\\infty$'], correctOption: 2, explanation: 'At resonance $X_L = X_C \\Rightarrow Z = R$ and $\\phi = 0 \\Rightarrow \\cos\\phi = 1$.' },
-        { id: 'NEET-PH-07', subject: 'Physics', chapter: 'Ray Optics & Optical Instruments', year: 'NEET PYQ', question: 'A convex lens ($f = 20\\text{ cm}$) is in contact with a concave lens ($f = -40\\text{ cm}$). Power of combination is:', options: ['$+2.5\\text{ D}$', '$-2.5\\text{ D}$', '$+7.5\\text{ D}$', '$+5.0\\text{ D}$'], correctOption: 0, explanation: '$P = \\frac{100}{20} - \\frac{100}{40} = 5 - 2.5 = +2.5\\text{ D}$.' },
-        { id: 'NEET-PH-08', subject: 'Physics', chapter: 'Dual Nature, Atoms, Nuclei & Semiconductors', year: 'NEET PYQ', question: 'The de Broglie wavelength $\\lambda$ of an electron accelerated through potential $V$ is proportional to:', options: ['$V$', '$\\sqrt{V}$', '$V^{-1/2}$', '$V^{-1}$'], correctOption: 2, explanation: '$\\lambda = \\frac{h}{\\sqrt{2meV}} \\propto V^{-1/2}$.' },
-        // Chemistry (8)
-        { id: 'NEET-CH-01', subject: 'Chemistry', chapter: 'Some Basic Concepts of Chemistry', year: 'NEET PYQ', question: 'Which of the following contains the maximum number of molecules?', options: ['$1\\text{ g } \\text{CO}_2$', '$1\\text{ g } \\text{N}_2$', '$1\\text{ g } \\text{H}_2$', '$1\\text{ g } \\text{CH}_4$'], correctOption: 2, explanation: '$\\text{H}_2$ has the smallest molar mass ($2\\text{ g/mol}$), so $1\\text{ g}$ contains $0.5\\text{ mol}$ (maximum).' },
-        { id: 'NEET-CH-02', subject: 'Chemistry', chapter: 'Structure of Atom', year: 'NEET PYQ', question: 'Maximum number of electrons in a subshell with azimuthal quantum number $l = 3$ is:', options: ['$6$', '$10$', '$14$', '$18$'], correctOption: 2, explanation: 'Max electrons $= 2(2l+1) = 2(7) = 14$ ($f$-subshell).' },
-        { id: 'NEET-CH-03', subject: 'Chemistry', chapter: 'Chemical Bonding & Molecular Structure', year: 'NEET PYQ', question: 'Which of the following species has a bond order of $2.5$?', options: ['$\\text{O}_2$', '$\\text{O}_2^+$', '$\\text{O}_2^-$', '$\\text{O}_2^{2-}$'], correctOption: 1, explanation: '$\\text{O}_2^+$ has 15 electrons: $\\text{BO} = (10 - 5)/2 = 2.5$.' },
-        { id: 'NEET-CH-04', subject: 'Chemistry', chapter: 'Equilibrium', year: 'NEET PYQ', question: 'The conjugate base of $\\text{H}_2\\text{PO}_4^-$ is:', options: ['$\\text{H}_3\\text{PO}_4$', '$\\text{HPO}_4^{2-}$', '$\\text{PO}_4^{3-}$', '$\\text{OH}^-$'], correctOption: 1, explanation: 'Removing one proton ($\\text{H}^+$) from $\\text{H}_2\\text{PO}_4^-$ gives $\\text{HPO}_4^{2-}$.' },
-        { id: 'NEET-CH-05', subject: 'Chemistry', chapter: 'Solutions', year: 'NEET PYQ', question: 'The van’t Hoff factor $i$ for a dilute aqueous solution of $\\text{K}_2\\text{SO}_4$ (100% dissociated) is:', options: ['$1$', '$2$', '$3$', '$4$'], correctOption: 2, explanation: '$\\text{K}_2\\text{SO}_4 \\rightarrow 2\\text{K}^+ + \\text{SO}_4^{2-}$ gives 3 ions ($i = 3$).' },
-        { id: 'NEET-CH-06', subject: 'Chemistry', chapter: 'Electrochemistry', year: 'NEET PYQ', question: 'Faradays required to produce $20\\text{ g}$ of Ca from molten $\\text{CaCl}_2$ (Atomic mass = $40$) is:', options: ['$1\\text{ F}$', '$2\\text{ F}$', '$3\\text{ F}$', '$4\\text{ F}$'], correctOption: 0, explanation: '$20\\text{ g} = 0.5\\text{ mol Ca}$. $\\text{Ca}^{2+} + 2e^- \\rightarrow \\text{Ca} \\Rightarrow 0.5 \\times 2 = 1\\text{ F}$.' },
-        { id: 'NEET-CH-07', subject: 'Chemistry', chapter: 'Organic Chemistry - Basic Principles', year: 'NEET PYQ', question: 'Which of the following carbocations is the most stable?', options: ['$\\text{CH}_3^+$', '$\\text{CH}_3\\text{CH}_2^+$', '$(\\text{CH}_3)_2\\text{CH}^+$', '$(\\text{CH}_3)_3\\text{C}^+$'], correctOption: 3, explanation: 'Tertiary carbocation $(\\text{CH}_3)_3\\text{C}^+$ has 9 $\\alpha$-H atoms (strongest hyperconjugation).' },
-        { id: 'NEET-CH-08', subject: 'Chemistry', chapter: 'Aldehydes, Ketones & Carboxylic Acids', year: 'NEET PYQ', question: 'Which of the following undergoes the Cannizzaro reaction?', options: ['Acetaldehyde', 'Acetone', 'Formaldehyde', 'Propanal'], correctOption: 2, explanation: 'Formaldehyde ($\\text{HCHO}$) has no $\\alpha$-H, so it undergoes Cannizzaro disproportionation.' },
-        // Biology (8)
-        { id: 'NEET-BI-01', subject: 'Biology', chapter: 'Biological Classification', year: 'NEET PYQ', question: 'Which organisms are known as the chief "producers" in the oceans?', options: ['Dinoflagellates', 'Diatoms', 'Cyanobacteria', 'Euglenoids'], correctOption: 1, explanation: 'NCERT Class 11 Ch. 2: Diatoms (Chrysophytes) are the chief producers in the oceans.' },
-        { id: 'NEET-BI-02', subject: 'Biology', chapter: 'Cell: The Unit of Life', year: 'NEET PYQ', question: 'Which organelle is the primary site for synthesis of glycoproteins and glycolipids?', options: ['Lysosome', 'Golgi apparatus', 'Peroxisome', 'Vacuole'], correctOption: 1, explanation: 'NCERT Class 11 Ch. 8: Golgi apparatus forms glycoproteins and glycolipids.' },
-        { id: 'NEET-BI-03', subject: 'Biology', chapter: 'Cell Cycle & Cell Division', year: 'NEET PYQ', question: 'Crossing over between non-sister chromatids occurs during which substage of Prophase I?', options: ['Leptotene', 'Zygotene', 'Pachytene', 'Diplotene'], correctOption: 2, explanation: 'Crossing over mediated by recombinase occurs during Pachytene.' },
-        { id: 'NEET-BI-04', subject: 'Biology', chapter: 'Photosynthesis in Higher Plants', year: 'NEET PYQ', question: 'In $\\text{C}_4$ plants, the primary $\\text{CO}_2$ acceptor in mesophyll cells is:', options: ['RuBP', 'Phosphoenolpyruvate (PEP)', '3-PGA', 'Oxaloacetic acid (OAA)'], correctOption: 1, explanation: 'PEP (3-carbon molecule) accepts $\\text{CO}_2$ via PEPcase in mesophyll cells.' },
-        { id: 'NEET-BI-05', subject: 'Biology', chapter: 'Body Fluids & Circulation', year: 'NEET PYQ', question: 'In a standard ECG, the QRS complex represents:', options: ['Depolarisation of atria', 'Repolarisation of ventricles', 'Depolarisation of ventricles', 'Joint diastole'], correctOption: 2, explanation: 'QRS complex represents depolarisation of ventricles, initiating ventricular systole.' },
-        { id: 'NEET-BI-06', subject: 'Biology', chapter: 'Sexual Reproduction in Flowering Plants', year: 'NEET PYQ', question: 'A typical mature angiosperm embryo sac is:', options: ['8-nucleate and 8-celled', '7-nucleate and 8-celled', '8-nucleate and 7-celled', '7-nucleate and 7-celled'], correctOption: 2, explanation: 'NCERT Class 12 Ch. 2: Mature embryo sac is 7-celled and 8-nucleate.' },
-        { id: 'NEET-BI-07', subject: 'Biology', chapter: 'Molecular Basis of Inheritance', year: 'NEET PYQ', question: 'Which of the following is NOT a stop (nonsense) codon?', options: ['UAA', 'UAG', 'UGA', 'AUG'], correctOption: 3, explanation: 'AUG is the start codon coding for Methionine; UAA, UAG, UGA are stop codons.' },
-        { id: 'NEET-BI-08', subject: 'Biology', chapter: 'Biotechnology: Principles & Processes', year: 'NEET PYQ', question: 'In agarose gel electrophoresis, DNA fragments move towards the:', options: ['Cathode (negative)', 'Anode (positive)', 'Center of gel', 'Both electrodes equally'], correctOption: 1, explanation: 'Negatively charged DNA migrates toward the positively charged anode.' }
-      ];
-
-      // =====================================================================
-      // 3. EXPANDED READ NOW FORMULA LIBRARY (15 JEE + 15 NEET CHAPTERS)
-      // =====================================================================
-      const READ_NOW_DATA = {
+      const FALLBACK_PYQS = {
         jee: [
-          { id: 'j_f1', subject: 'Physics', chapter: 'Kinematics', title: '1D, Projectile & Relative Motion', points: ['Equations (const $a$): $v = u + at$, $s = ut + \\frac{1}{2}at^2$, $v^2 - u^2 = 2as$.', 'Displacement in $n^{th}$ sec: $s_n = u + \\frac{a}{2}(2n - 1)$.', 'Projectile: $T = \\frac{2u\\sin\\theta}{g}$, $H = \\frac{u^2\\sin^2\\theta}{2g}$, $R = \\frac{u^2\\sin 2\\theta}{g}$.', 'Trajectory: $y = x\\tan\\theta - \\frac{gx^2}{2u^2\\cos^2\\theta} = x\\tan\\theta\\left(1 - \\frac{x}{R}\\right)$.'], trap: 'Trap: Range $R$ is identical for complementary angles $\\theta$ and $90^\\circ - \\theta$, but $H_1/H_2 = \\tan^2\\theta$.' },
-          { id: 'j_f2', subject: 'Physics', chapter: 'Laws of Motion', title: 'Newton’s Laws, Friction & Circular', points: ['Impulse: $\\vec{J} = \\int \\vec{F}\\,dt = \\Delta\\vec{p}$.', 'Static friction $f_s \\le \\mu_s N$; Kinetic friction $f_k = \\mu_k N$.', 'Angle of repose: $\\tan\\theta_r = \\mu_s$.', 'Banked road (no friction): $\\tan\\theta = \\frac{v^2}{rg}$; with friction: $v_{\\max} = \\sqrt{rg\\frac{\\mu + \\tan\\theta}{1 - \\mu\\tan\\theta}}$.'], trap: 'Trap: Pseudo force $-m\\vec{a}_0$ applies ONLY in non-inertial frames and acts opposite to the frame’s acceleration.' },
-          { id: 'j_f3', subject: 'Physics', chapter: 'Work, Energy & Power', title: 'Work-Energy Theorem & Collisions', points: ['Work-Energy Theorem: $W_{\\text{all}} = \\Delta K = K_f - K_i$.', 'Conservative force: $F = -\\frac{dU}{dx}$; equilibrium at $\\frac{dU}{dx} = 0$ (stable if $\\frac{d^2U}{dx^2} > 0$).', 'Power: $P = \\vec{F}\\cdot\\vec{v} = \\frac{dW}{dt}$.', 'Coefficient of restitution: $e = \\frac{v_2 - v_1}{u_1 - u_2}$ ($e=1$ elastic, $e=0$ perfectly inelastic).'], trap: 'Trap: In vertical circular motion of a string, minimum bottom speed to complete loop is $\\sqrt{5gR}$ (top speed $\\sqrt{gR}$).' },
-          { id: 'j_f4', subject: 'Physics', chapter: 'Rotational Motion', title: 'Moment of Inertia, Torque & Rolling', points: ['MI: Solid Sphere $\\frac{2}{5}MR^2$, Hollow Sphere $\\frac{2}{3}MR^2$, Disc $\\frac{1}{2}MR^2$, Ring $MR^2$.', 'Parallel Axis: $I = I_{\\text{cm}} + Md^2$; Perpendicular Axis: $I_z = I_x + I_y$.', 'Rolling on incline: $a = \\frac{g\\sin\\theta}{1 + k^2/R^2}$, $v = \\sqrt{\\frac{2gh}{1 + k^2/R^2}}$.', 'Angular momentum conservation: $I_1\\omega_1 = I_2\\omega_2$ when $\\tau_{\\text{ext}} = 0$.'], trap: 'Trap: Friction in pure rolling is static, not $\\mu N$, unless the body is on the verge of slipping.' },
-          { id: 'j_f5', subject: 'Physics', chapter: 'Electrostatics', title: 'Gauss Law, Dipole & Capacitors', points: ['Gauss Law: $\\oint \\vec{E}\\cdot d\\vec{A} = \\frac{q_{\\text{in}}}{\\varepsilon_0}$.', 'Dipole field: Axial $E = \\frac{2kp}{r^3}$; Equatorial $E = \\frac{kp}{r^3}$.', 'Potential & Field: $\\vec{E} = -\\nabla V$; $U_{\\text{dipole}} = -\\vec{p}\\cdot\\vec{E}$.', 'Capacitor energy: $U = \\frac{1}{2}CV^2 = \\frac{Q^2}{2C}$; parallel plate $C = \\frac{K\\varepsilon_0 A}{d}$.'], trap: 'Trap: Inserting dielectric with battery disconnected keeps $Q$ constant ($U \\downarrow$ by $K$); connected keeps $V$ constant ($U \\uparrow$ by $K$).' },
-          { id: 'j_f6', subject: 'Physics', chapter: 'Current Electricity', title: 'Drift Velocity, Circuits & Bridges', points: ['Drift velocity: $v_d = \\frac{eE\\tau}{m}$, Current $I = neAv_d$.', 'Resistance: $R = \\rho\\frac{l}{A}$; stretched wire at const vol: $R \\propto l^2 \\propto 1/r^4$.', 'Kirchhoff: $\\sum I = 0$ (charge), $\\sum \\Delta V = 0$ (energy).', 'Wheatstone balance: $\\frac{P}{Q} = \\frac{R}{S}$; Power $P = I^2R = \\frac{V^2}{R}$.'], trap: 'Trap: Maximum power transfer to external load $R$ happens when $R = r$ (internal resistance), efficiency is $50\\%$.' },
-          { id: 'j_f7', subject: 'Physics', chapter: 'Optics', title: 'Ray Optics, Lenses & YDSE', points: ['Mirror: $\\frac{1}{v} + \\frac{1}{u} = \\frac{1}{f}$; Lens: $\\frac{1}{v} - \\frac{1}{u} = \\frac{1}{f}$.', 'Lens Maker: $\\frac{1}{f} = (\\mu - 1)\\left(\\frac{1}{R_1} - \\frac{1}{R_2}\\right)$; Prism $\\mu = \\frac{\\sin((A+\\delta_m)/2)}{\\sin(A/2)}$.', 'YDSE fringe width: $\\beta = \\frac{\\lambda D}{d}$; Intensity $I = 4I_0\\cos^2(\\phi/2)$.', 'Brewster angle: $\\tan i_p = \\mu$.'], trap: 'Trap: Immersing YDSE apparatus in liquid of index $\\mu$ shrinks fringe width to $\\beta/\\mu$.' },
-          { id: 'j_f8', subject: 'Chemistry', chapter: 'Atomic Structure', title: 'Bohr Model, de Broglie & Quantum', points: ['Bohr radius: $r_n = 0.529\\frac{n^2}{Z}\\text{ \\AA}$; Velocity $v_n = 2.18\\times 10^6\\frac{Z}{n}\\text{ m/s}$.', 'Energy: $E_n = -13.6\\frac{Z^2}{n^2}\\text{ eV}$; $\\text{TE} = -\\text{KE} = \\text{PE}/2$.', 'Rydberg: $\\frac{1}{\\lambda} = RZ^2\\left(\\frac{1}{n_1^2} - \\frac{1}{n_2^2}\\right)$.', 'Radial nodes $= n - l - 1$; Angular nodes $= l$; Total nodes $= n - 1$.'], trap: 'Trap: Bohr’s model applies strictly to single-electron species ($\\text{H}, \\text{He}^+, \\text{Li}^{2+}$).' },
-          { id: 'j_f9', subject: 'Chemistry', chapter: 'Thermodynamics', title: 'Enthalpy, Entropy & Gibbs Energy', points: ['First Law: $\\Delta U = q + w$ (IUPAC: compression work is $+w$).', 'Isothermal rev work: $w = -2.303nRT\\log(V_2/V_1)$.', 'Enthalpy: $\\Delta H = \\Delta U + \\Delta n_g RT$; $C_p - C_v = R$.', 'Gibbs: $\\Delta G = \\Delta H - T\\Delta S$; $\\Delta G^\\circ = -2.303RT\\log K$.'], trap: 'Trap: $\\Delta H$ is usually in kJ while $\\Delta S$ is in J/K — always divide $\\Delta S$ by 1000 before subtracting!' },
-          { id: 'j_f10', subject: 'Chemistry', chapter: 'Chemical Equilibrium', title: 'Kp/Kc, Le Chatelier & Buffers', points: ['Relation: $K_p = K_c(RT)^{\\Delta n_g}$ (count ONLY gaseous moles).', 'Reaction Quotient: $Q < K$ (forward), $Q > K$ (backward).', 'Henderson-Hasselbalch (Acidic Buffer): $\\text{pH} = \\text{p}K_a + \\log\\frac{[\\text{Salt}]}{[\\text{Acid}]}$.', 'Solubility product ($A_x B_y$): $K_{sp} = x^x y^y S^{x+y}$.'], trap: 'Trap: Equilibrium constant $K$ depends ONLY on temperature — pressure, volume, or catalysts never change $K$.' },
-          { id: 'j_f11', subject: 'Chemistry', chapter: 'Coordination Compounds', title: 'VBT, CFT & Magnetic Moment', points: ['Spin-only magnetic moment: $\\mu = \\sqrt{n(n+2)}\\text{ BM}$.', 'Strong ligands: $\\text{CO} > \\text{CN}^- > \\text{en} > \\text{NH}_3$ (pairing, low spin).', 'CFSE relation: $\\Delta_t = \\frac{4}{9}\\Delta_o$.', 'EAN $= Z - \\text{OS} + 2(\\text{CN})$.'], trap: 'Trap: $[\\text{Ni(CN)}_4]^{2-}$ is square planar & diamagnetic ($dsp^2$), while $[\\text{NiCl}_4]^{2-}$ is tetrahedral & paramagnetic ($sp^3$).' },
-          { id: 'j_f12', subject: 'Mathematics', chapter: 'Quadratic Equations', title: 'Roots, Discriminant & Location', points: ['Roots: $x = \\frac{-b \\pm \\sqrt{D}}{2a}$, $D = b^2 - 4ac$; $\\alpha+\\beta = -b/a$, $\\alpha\\beta = c/a$.', 'Difference of roots: $|\\alpha - \\beta| = \\frac{\\sqrt{D}}{|a|}$.', 'Vertex of $ax^2+bx+c$: $\\left(-\\frac{b}{2a}, -\\frac{D}{4a}\\right)$.', 'Common root of $a_1x^2+b_1x+c_1=0$ & $a_2x^2+b_2x+c_2=0$: $(c_1a_2-c_2a_1)^2 = (b_1c_2-b_2c_1)(a_1b_2-a_2b_1)$.'], trap: 'Trap: For $ax^2+bx+c > 0\\;\\forall x\\in\\mathbb{R}$, you need BOTH $a > 0$ AND $D < 0$.' },
-          { id: 'j_f13', subject: 'Mathematics', chapter: 'Matrices & Determinants', title: 'Adjoint, Inverse & Cramer’s Rule', points: ['$|kA| = k^n|A|$, $|AB| = |A||B|$, $|\\text{adj } A| = |A|^{n-1}$.', '$A(\\text{adj } A) = |A|I_n$; $A^{-1} = \\frac{\\text{adj } A}{|A|}$.', '$\\text{adj}(\\text{adj } A) = |A|^{n-2}A$; $|\\text{adj}(\\text{adj } A)| = |A|^{(n-1)^2}$.', 'Cayley-Hamilton: Every square matrix satisfies its own characteristic equation $|A - \\lambda I| = 0$.'], trap: 'Trap: Reversal law applies to transpose, inverse, and adjoint: $(AB)^{-1} = B^{-1}A^{-1}$.' },
-          { id: 'j_f14', subject: 'Mathematics', chapter: 'Calculus — Limits & Integration', title: 'Standard Limits & Definite Integrals', points: ['Limits: $\\lim_{x\\to 0}\\frac{\\sin x}{x} = 1$, $\\lim_{x\\to 0}(1+x)^{1/x} = e$, $\\lim_{x\\to 0}\\frac{e^x-1}{x} = 1$.', 'King’s Property: $\\int_a^b f(x)\\,dx = \\int_a^b f(a+b-x)\\,dx$.', 'Leibniz Rule: $\\frac{d}{dx}\\int_{g(x)}^{h(x)} f(t)\\,dt = f(h(x))h\'(x) - f(g(x))g\'(x)$.', 'Walli’s Formula: $\\int_0^{\\pi/2}\\sin^n x\\,dx = \\frac{(n-1)(n-3)\\cdots}{n(n-2)\\cdots}\\cdot k$ ($k=\\pi/2$ if $n$ even, $1$ if odd).'], trap: 'Trap: Check for $1^\\infty$ form: $\\lim f(x)^{g(x)} = e^{\\lim (f(x)-1)g(x)}$.' },
-          { id: 'j_f15', subject: 'Mathematics', chapter: 'Vectors & 3D', title: 'Products, Skew Lines & Planes', points: ['Dot: $\\vec{a}\\cdot\\vec{b} = ab\\cos\\theta$; Cross: $|\\vec{a}\\times\\vec{b}| = ab\\sin\\theta$ (Area of parallelogram).', 'Vector Triple Product: $\\vec{a}\\times(\\vec{b}\\times\\vec{c}) = (\\vec{a}\\cdot\\vec{c})\\vec{b} - (\\vec{a}\\cdot\\vec{b})\\vec{c}$.', 'Shortest distance (skew lines): $d = \\frac{|(\\vec{a}_2-\\vec{a}_1)\\cdot(\\vec{b}_1\\times\\vec{b}_2)|}{|\\vec{b}_1\\times\\vec{b}_2|}$.', 'Distance of $(x_1,y_1,z_1)$ from $ax+by+cz+d=0$: $\\frac{|ax_1+by_1+cz_1+d|}{\\sqrt{a^2+b^2+c^2}}$.'], trap: 'Trap: If $\\vec{b}_1 \\parallel \\vec{b}_2$, skew formula gives $0/0$ — use parallel-line formula $d = \\frac{|(\\vec{a}_2-\\vec{a}_1)\\times\\vec{b}|}{|\\vec{b}|}$.' }
+          { id: 'JEE-PH-01', subject: 'Physics', chapter: 'Laws of Motion', year: 'JEE Main', question: 'A block of mass $m = 2\\text{ kg}$ rests on a rough horizontal surface with $\\mu_s = 0.4$. What is the minimum horizontal force required to just start moving it? ($g = 10\\text{ m/s}^2$)', options: ['$4\\text{ N}$', '$8\\text{ N}$', '$10\\text{ N}$', '$20\\text{ N}$'], correctOption: 1, explanation: 'Limiting friction $f_{\\max} = \\mu_s mg = 0.4 \\times 2 \\times 10 = 8\\text{ N}$.' },
+          { id: 'JEE-PH-02', subject: 'Physics', chapter: 'Rotational Motion', year: 'JEE Main', question: 'A solid sphere rolls without slipping. The ratio of its rotational kinetic energy to total kinetic energy is:', options: ['$\\frac{2}{5}$', '$\\frac{2}{7}$', '$\\frac{5}{7}$', '$\\frac{1}{3}$'], correctOption: 1, explanation: '$I = \\frac{2}{5}MR^2 \\Rightarrow K_{\\text{rot}}/K_{\\text{tot}} = \\frac{2/5}{1 + 2/5} = \\frac{2}{7}$.' },
+          { id: 'JEE-PH-03', subject: 'Physics', chapter: 'Electrostatics', year: 'JEE Main', question: 'Two point charges $+4q$ and $+q$ are separated by distance $L$. At what distance from $+4q$ on the line joining them is the electric field zero?', options: ['$\\frac{L}{3}$', '$\\frac{2L}{3}$', '$\\frac{L}{2}$', '$\\frac{3L}{4}$'], correctOption: 1, explanation: '$\\frac{4q}{x^2} = \\frac{q}{(L-x)^2} \\Rightarrow x = \\frac{2L}{3}$.' },
+          { id: 'JEE-PH-04', subject: 'Physics', chapter: 'Modern Physics', year: 'JEE Main', question: 'The work function of a metal is $2.2\\text{ eV}$. If photons of energy $5.0\\text{ eV}$ strike it, $K_{\\max}$ of emitted photoelectrons is:', options: ['$2.2\\text{ eV}$', '$2.8\\text{ eV}$', '$5.0\\text{ eV}$', '$7.2\\text{ eV}$'], correctOption: 1, explanation: '$K_{\\max} = h\\nu - \\phi = 5.0 - 2.2 = 2.8\\text{ eV}$.' },
+          { id: 'JEE-CH-01', subject: 'Chemistry', chapter: 'Chemical Bonding', year: 'JEE Main', question: 'The hybridization and molecular geometry of $\\text{XeF}_4$ are respectively:', options: ['$sp^3$, Tetrahedral', '$sp^3d$, See-saw', '$sp^3d^2$, Square planar', '$sp^3d^2$, Octahedral'], correctOption: 2, explanation: '$\\text{XeF}_4$ has 4 bond pairs and 2 lone pairs ($sp^3d^2$), giving a square planar shape.' },
+          { id: 'JEE-CH-02', subject: 'Chemistry', chapter: 'Thermodynamics', year: 'JEE Main', question: 'For a reaction at $300\\text{ K}$, $\\Delta H = -40\\text{ kJ/mol}$ and $\\Delta S = -100\\text{ J K}^{-1}\\text{mol}^{-1}$. $\\Delta G$ is:', options: ['$-10\\text{ kJ/mol}$', '$-70\\text{ kJ/mol}$', '$+10\\text{ kJ/mol}$', '$-30\\text{ kJ/mol}$'], correctOption: 0, explanation: '$\\Delta G = \\Delta H - T\\Delta S = -40 - 300(-0.1) = -10\\text{ kJ/mol}$.' },
+          { id: 'JEE-CH-03', subject: 'Chemistry', chapter: 'Coordination Compounds', year: 'JEE Main', question: 'The spin-only magnetic moment of $[\\text{Fe(CN)}_6]^{4-}$ is:', options: ['$0\\text{ BM}$', '$1.73\\text{ BM}$', '$4.90\\text{ BM}$', '$5.92\\text{ BM}$'], correctOption: 0, explanation: 'Strong-field $\\text{CN}^-$ pairs all $d^6$ electrons in $t_{2g}^6$, so $n = 0 \\Rightarrow \\mu = 0\\text{ BM}$.' },
+          { id: 'JEE-CH-04', subject: 'Chemistry', chapter: 'Chemical Kinetics', year: 'JEE Main', question: 'For a first-order reaction with $t_{1/2} = 10\\text{ min}$, time for $75\\%$ completion is:', options: ['$15\\text{ min}$', '$20\\text{ min}$', '$30\\text{ min}$', '$40\\text{ min}$'], correctOption: 1, explanation: '$75\\%$ completion = 2 half-lives = $20\\text{ min}$.' },
+          { id: 'JEE-MA-01', subject: 'Mathematics', chapter: 'Definite Integration', year: 'JEE Main', question: 'The value of $\\int_0^{\\pi/2} \\frac{\\sin x}{\\sin x + \\cos x}\\,dx$ is:', options: ['$\\frac{\\pi}{4}$', '$\\frac{\\pi}{2}$', '$\\pi$', '$1$'], correctOption: 0, explanation: 'By King’s property, $2I = \\int_0^{\\pi/2} 1\\,dx = \\frac{\\pi}{2} \\Rightarrow I = \\frac{\\pi}{4}$.' },
+          { id: 'JEE-MA-02', subject: 'Mathematics', chapter: 'Matrices & Determinants', year: 'JEE Main', question: 'If $A$ is a $3 \\times 3$ matrix with $|A| = 4$, then $|2A|$ equals:', options: ['$8$', '$16$', '$32$', '$64$'], correctOption: 2, explanation: '$|kA| = k^n|A| = 2^3 \\times 4 = 32$.' },
+          { id: 'JEE-MA-03', subject: 'Mathematics', chapter: 'Probability', year: 'JEE Main', question: 'Two fair dice are thrown simultaneously. Probability of getting a sum of $9$ is:', options: ['$\\frac{1}{12}$', '$\\frac{1}{9}$', '$\\frac{1}{6}$', '$\\frac{5}{36}$'], correctOption: 1, explanation: 'Favorable pairs: $(3,6),(4,5),(5,4),(6,3) = 4/36 = 1/9$.' },
+          { id: 'JEE-MA-04', subject: 'Mathematics', chapter: 'Limits', year: 'JEE Main', question: 'The value of $\\lim_{x \\to 0} \\frac{1 - \\cos 2x}{x^2}$ is:', options: ['$0$', '$1$', '$2$', '$4$'], correctOption: 2, explanation: '$1 - \\cos 2x = 2\\sin^2 x \\Rightarrow \\lim_{x\\to 0} 2(\\sin x / x)^2 = 2$.' }
         ],
         neet: [
-          { id: 'n_f1', subject: 'Physics', chapter: 'Kinematics', title: 'Motion in 1D & Projectile Shortcuts', points: ['Equations: $v = u + at$, $s = ut + \\frac{1}{2}at^2$, $v^2 = u^2 + 2as$.', 'Free fall ratios in equal time intervals: $1 : 3 : 5 : 7$.', 'Projectile: $T = \\frac{2u\\sin\\theta}{g}$, $H = \\frac{u^2\\sin^2\\theta}{2g}$, $R = \\frac{u^2\\sin 2\\theta}{g}$.', 'Relation: $R\\tan\\theta = 4H$; Max range at $\\theta = 45^\\circ$ gives $R_{\\max} = u^2/g$.'], trap: 'Trap: Average speed over two equal distances at $v_1, v_2$ is $\\frac{2v_1v_2}{v_1+v_2}$ (harmonic mean), not $(v_1+v_2)/2$.' },
-          { id: 'n_f2', subject: 'Physics', chapter: 'Electrostatics', title: 'Coulomb, Potential & Capacitance', points: ['Coulomb Force: $F = \\frac{kq_1q_2}{r^2}$; Electric field $E = \\frac{kq}{r^2}$.', 'Gauss Law: $\\Phi = \\frac{q_{\\text{in}}}{\\varepsilon_0}$; Infinite sheet $E = \\frac{\\sigma}{2\\varepsilon_0}$.', 'Dipole axial: $E = \\frac{2kp}{r^3}$; Equatorial: $E = \\frac{kp}{r^3}$.', 'Capacitors: Series $\\frac{1}{C} = \\frac{1}{C_1} + \\frac{1}{C_2}$; Energy $U = \\frac{1}{2}CV^2 = \\frac{Q^2}{2C}$.'], trap: 'Trap: Inside a hollow charged conducting sphere, $E = 0$ everywhere, while potential $V = \\frac{kQ}{R}$ is constant!' },
-          { id: 'n_f3', subject: 'Physics', chapter: 'Current Electricity', title: 'Ohm’s Law, Cells & Heating', points: ['Resistance: $R = \\rho\\frac{l}{A}$; stretched wire (const volume) $R \\propto l^2 \\propto 1/r^4$.', 'Temperature dependence: $R_T = R_0(1 + \\alpha\\Delta T)$.', 'Terminal voltage (discharging): $V = E - Ir$; Power $P = VI = I^2R = V^2/R$.', 'Meter bridge balance: $\\frac{R}{S} = \\frac{l}{100 - l}$.'], trap: 'Trap: Bulbs rated at same voltage have $R \\propto 1/P_{\\text{rated}}$; in series, the lower-wattage bulb glows brighter!' },
-          { id: 'n_f4', subject: 'Physics', chapter: 'Ray Optics', title: 'Mirrors, Lenses & Instruments', points: ['Mirror: $\\frac{1}{v} + \\frac{1}{u} = \\frac{1}{f}$, $m = -\\frac{v}{u}$; Lens: $\\frac{1}{v} - \\frac{1}{u} = \\frac{1}{f}$, $m = \\frac{v}{u}$.', 'Lens Maker: $\\frac{1}{f} = (\\mu - 1)\\left(\\frac{1}{R_1} - \\frac{1}{R_2}\\right)$; Contact power $P = P_1 + P_2$.', 'Critical angle: $\\sin i_c = \\frac{1}{\\mu}$; Prism min deviation $\\delta_m = (\\mu - 1)A$ (thin prism).', 'Telescope (normal adjustment): $M = f_o/f_e$, length $L = f_o + f_e$.'], trap: 'Trap: Cutting a convex lens vertically doubles its focal length ($2f$); cutting horizontally keeps $f$ unchanged.' },
-          { id: 'n_f5', subject: 'Physics', chapter: 'Modern Physics', title: 'Photoelectric, Bohr & Nuclear', points: ['Photoelectric: $K_{\\max} = \\frac{hc}{\\lambda} - \\phi$, $hc \\approx 12400\\text{ eV}\\cdot\\text{\\AA}$.', 'de Broglie (electron): $\\lambda = \\frac{12.27}{\\sqrt{V}}\\,\\text{\\AA}$.', 'Bohr: $r_n \\propto n^2/Z$, $v_n \\propto Z/n$, $E_n = -13.6\\frac{Z^2}{n^2}\\text{ eV}$.', 'Radioactivity: $N = N_0 e^{-\\lambda t} = N_0(1/2)^n$, $t_{1/2} = \\frac{0.693}{\\lambda}$, $R = R_0 A^{1/3}$.'], trap: 'Trap: Reverse biasing a p-n junction widens the depletion layer and increases barrier potential.' },
-          { id: 'n_f6', subject: 'Chemistry', chapter: 'Thermodynamics', title: 'Laws, Work & Spontaneity', points: ['First Law: $\\Delta U = q + w$; $\\Delta H = \\Delta U + \\Delta n_g RT$.', 'Adiabatic: $PV^\\gamma = \\text{const}$, $TV^{\\gamma-1} = \\text{const}$, $w = \\frac{nR(T_2 - T_1)}{\\gamma - 1}$.', 'Gibbs Free Energy: $\\Delta G = \\Delta H - T\\Delta S$; Spontaneous when $\\Delta G < 0$.', 'Standard Equilibrium: $\\Delta G^\\circ = -2.303RT\\log K$.'], trap: 'Trap: Free expansion of an ideal gas in vacuum has $P_{\\text{ext}} = 0 \\Rightarrow w = 0$, $q = 0$, and $\\Delta U = 0$.' },
-          { id: 'n_f7', subject: 'Chemistry', chapter: 'Chemical Bonding', title: 'VSEPR, MOT & Hybridization', points: ['Steric Number $= \\frac{1}{2}(V + M - C + A)$: 2 ($sp$), 3 ($sp^2$), 4 ($sp^3$), 5 ($sp^3d$), 6 ($sp^3d^2$).', 'Bond Order $= \\frac{N_b - N_a}{2}$: $\\text{O}_2^+ (2.5) > \\text{O}_2 (2.0) > \\text{O}_2^- (1.5) > \\text{O}_2^{2-} (1.0)$.', 'Bond strength $\\propto$ Bond order; Bond length $\\propto 1/\\text{Bond order}$.', 'Fajan’s Rule: Small cation + large anion $\\Rightarrow$ high covalent character.'], trap: 'Trap: By MOT, $\\text{B}_2$ and $\\text{O}_2$ are paramagnetic, whereas $\\text{C}_2$ and $\\text{N}_2$ are diamagnetic.' },
-          { id: 'n_f8', subject: 'Chemistry', chapter: 'Equilibrium', title: 'pH, Buffers & Solubility Product', points: ['$K_p = K_c(RT)^{\\Delta n_g}$; Ionic product of water $K_w = 10^{-14}$ at $298\\text{ K}$.', 'Weak acid: $[\\text{H}^+] = \\sqrt{K_a C}$, $\\text{pH} = \\frac{1}{2}(\\text{p}K_a - \\log C)$.', 'Acidic buffer: $\\text{pH} = \\text{p}K_a + \\log\\frac{[\\text{Salt}]}{[\\text{Acid}]}$.', 'Salt of weak acid + weak base: $\\text{pH} = 7 + \\frac{1}{2}(\\text{p}K_a - \\text{p}K_b)$.'], trap: 'Trap: Common ion effect suppresses dissociation of weak electrolytes and decreases solubility of sparingly soluble salts.' },
-          { id: 'n_f9', subject: 'Chemistry', chapter: 'Organic GOC', title: 'Stability, Acidity & Basicity Orders', points: ['Carbocation & Free Radical stability: $3^\\circ > 2^\\circ > 1^\\circ > \\text{CH}_3^+$.', 'Carbanion stability: $\\text{CH}_3^- > 1^\\circ > 2^\\circ > 3^\\circ$.', 'Aromaticity (Hückel): Cyclic, planar, conjugated, $(4n + 2)\\pi$ electrons.', 'Aqueous basicity of methylamines: $2^\\circ > 1^\\circ > 3^\\circ > \\text{NH}_3$; ethylamines: $2^\\circ > 3^\\circ > 1^\\circ > \\text{NH}_3$.'], trap: 'Trap: $-\\text{NO}_2, -\\text{CN}, -\\text{CHO}$ are meta-directing ($-M$); halogens are ortho/para-directing despite being deactivating ($-I > +M$).' },
-          { id: 'n_f10', subject: 'Biology', chapter: 'Cell: The Unit of Life', title: 'Organelles & Membrane (NCERT)', points: ['Fluid Mosaic Model (Singer & Nicolson, 1972): Quasi-fluid lipid bilayer allows lateral movement of proteins.', 'Endomembrane system: ER, Golgi apparatus, Lysosomes, Vacuoles (NOT mitochondria/chloroplast/peroxisomes).', 'Golgi apparatus: Principal site for formation of glycoproteins and glycolipids.', 'Ribosomes: Prokaryotes $70\\text{S}$ ($50\\text{S}+30\\text{S}$); Eukaryotes $80\\text{S}$ ($60\\text{S}+40\\text{S}$).'], trap: 'Trap: Mitochondria and chloroplasts are semi-autonomous with circular dsDNA and $70\\text{S}$ ribosomes.' },
-          { id: 'n_f11', subject: 'Biology', chapter: 'Biomolecules', title: 'Enzymes, Proteins & Nucleic Acids', points: ['Primary protein = peptide bonds; Secondary = $\\alpha$-helix/$\\beta$-pleated (H-bonds); Tertiary = 3D hollow woolen ball.', 'Most abundant protein: RuBisCO (biosphere), Collagen (animal world).', 'Michaelis constant $K_m$: Substrate conc at which velocity is $\\frac{1}{2}V_{\\max}$.', 'Competitive inhibition (e.g., Malonate on Succinic dehydrogenase): $K_m$ increases, $V_{\\max}$ unchanged.'], trap: 'Trap: Secondary metabolites include alkaloids (morphine), terpenoids, lectins (Concanavalin A), and toxins (abrin, ricin).' },
-          { id: 'n_f12', subject: 'Biology', chapter: 'Photosynthesis', title: 'Light Reaction, C3 & C4 Cycles', points: ['Non-cyclic photophosphorylation (Z-scheme): Involves PS II & PS I, produces ATP + $\\text{NADPH} + \\text{O}_2$.', 'Cyclic photophosphorylation (stroma lamellae): PS I only, produces ONLY ATP (no NADPH, no $\\text{O}_2$).', 'Calvin Cycle (C3): 1 glucose needs $6\\text{ CO}_2$, $18\\text{ ATP}$, $12\\text{ NADPH}$; primary acceptor is RuBP (5C).', 'C4 Pathway (Kranz anatomy): Primary acceptor PEP (3C) in mesophyll; first product OAA (4C); zero photorespiration.'], trap: 'Trap: Water splitting complex is associated with PS II on the inner side (lumen side) of the thylakoid membrane.' },
-          { id: 'n_f13', subject: 'Biology', chapter: 'Human Physiology — Neural Control', title: 'Nerve Impulse, Synapse & Brain', points: ['Resting membrane potential: $-70\\text{ mV}$ ($\\text{Na}^+/\\text{K}^+$ pump transports $3\\text{ Na}^+$ out for $2\\text{ K}^+$ in).', 'Depolarisation: Rapid influx of $\\text{Na}^+$ ions; Repolarisation: Efflux of $\\text{K}^+$ ions.', 'Hypothalamus: Regulates body temperature, urge for eating and drinking, and neurosecretory hormones.', 'Medulla oblongata: Controls respiration, cardiovascular reflexes, and gastric secretions.'], trap: 'Trap: Electrical synapses are rare in humans and faster than chemical synapses (which use neurotransmitters like ACh).' },
-          { id: 'n_f14', subject: 'Biology', chapter: 'Genetics — Principles of Inheritance', title: 'Mendelian Ratios & Disorders', points: ['Monohybrid $F_2$: Phenotypic $3:1$, Genotypic $1:2:1$; Test cross $1:1$.', 'Dihybrid $F_2$: Phenotypic $9:3:3:1$; Test cross $1:1:1:1$.', 'Incomplete dominance (Snapdragon / Antirrhinum): Phenotypic = Genotypic = $1:2:1$.', 'Chromosomal disorders: Down’s ($47, +21$), Klinefelter’s ($47, \\text{XXY}$), Turner’s ($45, \\text{XO}$).'], trap: 'Trap: Haemophilia & Colour blindness are X-linked recessive; Sickle-cell anaemia & Phenylketonuria are autosomal recessive.' },
-          { id: 'n_f15', subject: 'Biology', chapter: 'Biotechnology', title: 'rDNA Tools, PCR & Gel Electrophoresis', points: ['EcoRI palindromic site: $5\'-\\text{GAATTC}-3\'$ (cuts between G and A, forming sticky ends).', 'Gel Electrophoresis: Negatively charged DNA moves toward Anode (+); stained with Ethidium bromide + UV (bright orange).', 'PCR steps: Denaturation ($94^\\circ\\text{C}$) $\\rightarrow$ Annealing $\\rightarrow$ Extension (Taq polymerase from *Thermus aquaticus*).', 'pBR322 markers: $amp^R$ (PstI, PvuI) and $tet^R$ (BamHI, SalI).'], trap: 'Trap: Chitinase breaks fungal cell walls, Cellulase breaks plant walls, Lysozyme breaks bacterial walls; chilled ethanol precipitates DNA.' }
+          { id: 'NEET-PH-01', subject: 'Physics', chapter: 'Units & Measurements', year: 'NEET PYQ', question: 'The dimensional formula of Planck’s constant $h$ is identical to that of:', options: ['Linear momentum', 'Angular momentum', 'Torque', 'Force'], correctOption: 1, explanation: 'Both $h = E/\\nu$ and angular momentum $L = mvr$ have dimensions $[ML^2T^{-1}]$.' },
+          { id: 'NEET-PH-02', subject: 'Physics', chapter: 'Work, Energy & Power', year: 'NEET PYQ', question: 'If linear momentum of a body increases by $50\\%$, its kinetic energy increases by:', options: ['$50\\%$', '$100\\%$', '$125\\%$', '$150\\%$'], correctOption: 2, explanation: '$K \\propto p^2 \\Rightarrow K\' = (1.5)^2 K = 2.25K$ (an increase of $125\\%$).' },
+          { id: 'NEET-PH-03', subject: 'Physics', chapter: 'Current Electricity', year: 'NEET PYQ', question: 'A wire of resistance $R$ is stretched to double its length at constant volume. Its new resistance is:', options: ['$R$', '$2R$', '$4R$', '$8R$'], correctOption: 2, explanation: 'At constant volume, $R \\propto l^2$, so doubling $l$ yields $R\' = 4R$.' },
+          { id: 'NEET-PH-04', subject: 'Physics', chapter: 'Ray Optics', year: 'NEET PYQ', question: 'A convex lens ($f = 20\\text{ cm}$) is in contact with a concave lens ($f = -40\\text{ cm}$). Power of combination is:', options: ['$+2.5\\text{ D}$', '$-2.5\\text{ D}$', '$+7.5\\text{ D}$', '$+5.0\\text{ D}$'], correctOption: 0, explanation: '$P = \\frac{100}{20} - \\frac{100}{40} = 5 - 2.5 = +2.5\\text{ D}$.' },
+          { id: 'NEET-CH-01', subject: 'Chemistry', chapter: 'Structure of Atom', year: 'NEET PYQ', question: 'Maximum number of electrons in a subshell with azimuthal quantum number $l = 3$ is:', options: ['$6$', '$10$', '$14$', '$18$'], correctOption: 2, explanation: 'Max electrons $= 2(2l+1) = 14$ ($f$-subshell).' },
+          { id: 'NEET-CH-02', subject: 'Chemistry', chapter: 'Chemical Bonding', year: 'NEET PYQ', question: 'Which of the following species has a bond order of $2.5$?', options: ['$\\text{O}_2$', '$\\text{O}_2^+$', '$\\text{O}_2^-$', '$\\text{O}_2^{2-}$'], correctOption: 1, explanation: '$\\text{O}_2^+$ has 15 electrons: $\\text{BO} = (10 - 5)/2 = 2.5$.' },
+          { id: 'NEET-CH-03', subject: 'Chemistry', chapter: 'Solutions', year: 'NEET PYQ', question: 'The van’t Hoff factor $i$ for a dilute aqueous solution of $\\text{K}_2\\text{SO}_4$ (100% dissociated) is:', options: ['$1$', '$2$', '$3$', '$4$'], correctOption: 2, explanation: '$\\text{K}_2\\text{SO}_4 \\rightarrow 2\\text{K}^+ + \\text{SO}_4^{2-}$ gives 3 ions ($i = 3$).' },
+          { id: 'NEET-CH-04', subject: 'Chemistry', chapter: 'Organic Chemistry', year: 'NEET PYQ', question: 'Which of the following undergoes the Cannizzaro reaction?', options: ['Acetaldehyde', 'Acetone', 'Formaldehyde', 'Propanal'], correctOption: 2, explanation: 'Formaldehyde ($\\text{HCHO}$) has no $\\alpha$-H, so it undergoes Cannizzaro disproportionation.' },
+          { id: 'NEET-BI-01', subject: 'Biology', chapter: 'Biological Classification', year: 'NEET PYQ', question: 'Which organisms are known as the chief "producers" in the oceans?', options: ['Dinoflagellates', 'Diatoms', 'Cyanobacteria', 'Euglenoids'], correctOption: 1, explanation: 'NCERT Class 11 Ch. 2: Diatoms (Chrysophytes) are the chief producers in the oceans.' },
+          { id: 'NEET-BI-02', subject: 'Biology', chapter: 'Cell: The Unit of Life', year: 'NEET PYQ', question: 'Which organelle is the primary site for synthesis of glycoproteins and glycolipids?', options: ['Lysosome', 'Golgi apparatus', 'Peroxisome', 'Vacuole'], correctOption: 1, explanation: 'NCERT Class 11 Ch. 8: Golgi apparatus forms glycoproteins and glycolipids.' },
+          { id: 'NEET-BI-03', subject: 'Biology', chapter: 'Cell Cycle & Division', year: 'NEET PYQ', question: 'Crossing over between non-sister chromatids occurs during which substage of Prophase I?', options: ['Leptotene', 'Zygotene', 'Pachytene', 'Diplotene'], correctOption: 2, explanation: 'Crossing over mediated by recombinase occurs during Pachytene.' },
+          { id: 'NEET-BI-04', subject: 'Biology', chapter: 'Molecular Basis of Inheritance', year: 'NEET PYQ', question: 'Which of the following is NOT a stop (nonsense) codon?', options: ['UAA', 'UAG', 'UGA', 'AUG'], correctOption: 3, explanation: 'AUG is the start codon coding for Methionine; UAA, UAG, UGA are stop codons.' }
         ]
       };
 
       // =====================================================================
-      // 4. COMPLETE SYLLABUS (58 JEE + 79 NEET CHAPTERS)
+      // 3. READ NOW FORMULA HUB DATA (JEE & NEET)
       // =====================================================================
-      const JEE_SYLLABUS = [
-        ...['Units & Measurements','Kinematics','Laws of Motion','Work, Energy & Power','Rotational Motion','Gravitation','Properties of Solids & Liquids','Thermodynamics & KTG','Oscillations & Waves','Electrostatics','Capacitors','Current Electricity','Moving Charges & Magnetism','Electromagnetic Induction','Alternating Current','Electromagnetic Waves','Ray Optics','Wave Optics','Modern Physics','Semiconductors & Electronics'].map((n,i)=>({id:`jp_${i}`,subject:'Physics',name:n})),
-        ...['Mole Concept','Atomic Structure','Chemical Thermodynamics','Chemical & Ionic Equilibrium','Solutions','Electrochemistry','Chemical Kinetics','Periodic Table','Chemical Bonding','d & f Block Elements','Coordination Compounds','p-Block Elements','GOC & Isomerism','Hydrocarbons','Haloalkanes & Haloarenes','Alcohols, Phenols & Ethers','Aldehydes, Ketones & Acids','Amines','Biomolecules','Practical Organic Chemistry','Purification & Characterization','Redox Reactions'].map((n,i)=>({id:`jc_${i}`,subject:'Chemistry',name:n})),
-        ...['Sets, Relations & Functions','Complex Numbers & Quadratic Eq.','Matrices & Determinants','Permutations & Combinations','Binomial Theorem','Sequence & Series','Limits, Continuity & Differentiability','Application of Derivatives','Indefinite & Definite Integration','Area Under Curves & Diff. Eq.','Straight Lines & Circles','Conic Sections','Vectors','3D Geometry','Probability','Statistics & Trigonometry'].map((n,i)=>({id:`jm_${i}`,subject:'Mathematics',name:n}))
-      ];
+      const READ_NOW_DATA = {
+        jee: [
+          { id: 'jf1', subject: 'Physics', chapter: 'Kinematics', title: '1D & Projectile Motion', points: ['$v = u + at$, $s = ut + \\frac{1}{2}at^2$, $v^2 - u^2 = 2as$.', 'Projectile: $T = \\frac{2u\\sin\\theta}{g}$, $H = \\frac{u^2\\sin^2\\theta}{2g}$, $R = \\frac{u^2\\sin 2\\theta}{g}$.', 'Trajectory: $y = x\\tan\\theta\\left(1 - \\frac{x}{R}\\right)$.'], trap: 'Trap: Range $R$ is identical for $\\theta$ and $90^\\circ - \\theta$, while $H_1/H_2 = \\tan^2\\theta$.' },
+          { id: 'jf2', subject: 'Physics', chapter: 'Rotational Motion', title: 'Moment of Inertia & Rolling', points: ['MI: Solid Sphere $\\frac{2}{5}MR^2$, Disc $\\frac{1}{2}MR^2$, Ring $MR^2$.', 'Parallel Axis: $I = I_{\\text{cm}} + Md^2$; Perpendicular Axis: $I_z = I_x + I_y$.', 'Rolling on incline: $a = \\frac{g\\sin\\theta}{1 + k^2/R^2}$.'], trap: 'Trap: Friction in pure rolling is static, not $\\mu N$, unless on the verge of slipping.' },
+          { id: 'jf3', subject: 'Physics', chapter: 'Electrostatics', title: 'Gauss Law, Dipole & Capacitors', points: ['Gauss Law: $\\oint \\vec{E}\\cdot d\\vec{A} = \\frac{q_{\\text{in}}}{\\varepsilon_0}$.', 'Dipole: Axial $E = \\frac{2kp}{r^3}$; Equatorial $E = \\frac{kp}{r^3}$.', 'Capacitor energy: $U = \\frac{1}{2}CV^2 = \\frac{Q^2}{2C}$.'], trap: 'Trap: Inserting dielectric with battery disconnected keeps $Q$ constant ($U \\downarrow$ by $K$).' },
+          { id: 'jf4', subject: 'Chemistry', chapter: 'Thermodynamics', title: 'Enthalpy, Entropy & Gibbs', points: ['$\\Delta U = q + w$; $\\Delta H = \\Delta U + \\Delta n_g RT$.', 'Gibbs: $\\Delta G = \\Delta H - T\\Delta S$; $\\Delta G^\\circ = -2.303RT\\log K$.', 'Isothermal rev work: $w = -2.303nRT\\log(V_2/V_1)$.'], trap: 'Trap: $\\Delta H$ is in kJ while $\\Delta S$ is in J/K — divide $\\Delta S$ by 1000!' },
+          { id: 'jf5', subject: 'Chemistry', chapter: 'Coordination Compounds', title: 'CFT & Magnetic Moment', points: ['Spin-only magnetic moment: $\\mu = \\sqrt{n(n+2)}\\text{ BM}$.', 'Strong ligands: $\\text{CO} > \\text{CN}^- > \\text{en} > \\text{NH}_3$.', 'CFSE relation: $\\Delta_t = \\frac{4}{9}\\Delta_o$.'], trap: 'Trap: $[\\text{Ni(CN)}_4]^{2-}$ is square planar ($dsp^2$), $[\\text{NiCl}_4]^{2-}$ is tetrahedral ($sp^3$).' },
+          { id: 'jf6', subject: 'Mathematics', chapter: 'Matrices & Determinants', title: 'Adjoint & Inverse Properties', points: ['$|kA| = k^n|A|$, $|AB| = |A||B|$, $|\\text{adj } A| = |A|^{n-1}$.', '$A(\\text{adj } A) = |A|I_n$; $A^{-1} = \\frac{\\text{adj } A}{|A|}$.', '$\\text{adj}(\\text{adj } A) = |A|^{n-2}A$.'], trap: 'Trap: Reversal law applies: $(AB)^{-1} = B^{-1}A^{-1}$.' },
+          { id: 'jf7', subject: 'Mathematics', chapter: 'Calculus', title: 'Standard Limits & Definite Integrals', points: ['$\\lim_{x\\to 0}\\frac{\\sin x}{x} = 1$, $\\lim_{x\\to 0}(1+x)^{1/x} = e$.', 'King’s Property: $\\int_a^b f(x)\\,dx = \\int_a^b f(a+b-x)\\,dx$.', 'Leibniz Rule: $\\frac{d}{dx}\\int_{g(x)}^{h(x)} f(t)\\,dt = f(h(x))h\'(x) - f(g(x))g\'(x)$.'], trap: 'Trap: For $1^\\infty$ form, $\\lim f(x)^{g(x)} = e^{\\lim (f(x)-1)g(x)}$.' },
+          { id: 'jf8', subject: 'Mathematics', chapter: 'Vectors & 3D', title: 'Products & Shortest Distance', points: ['$\\vec{a}\\cdot\\vec{b} = ab\\cos\\theta$; $|\\vec{a}\\times\\vec{b}| = ab\\sin\\theta$.', 'Skew lines SD: $d = \\frac{|(\\vec{a}_2-\\vec{a}_1)\\cdot(\\vec{b}_1\\times\\vec{b}_2)|}{|\\vec{b}_1\\times\\vec{b}_2|}$.', 'Point to plane: $\\frac{|ax_1+by_1+cz_1+d|}{\\sqrt{a^2+b^2+c^2}}$.'], trap: 'Trap: If $\\vec{b}_1 \\parallel \\vec{b}_2$, use parallel-line formula instead of skew formula.' }
+        ],
+        neet: [
+          { id: 'nf1', subject: 'Physics', chapter: 'Kinematics', title: '1D & Projectile Shortcuts', points: ['Free fall ratios in equal intervals: $1 : 3 : 5 : 7$.', '$T = \\frac{2u\\sin\\theta}{g}$, $H = \\frac{u^2\\sin^2\\theta}{2g}$, $R = \\frac{u^2\\sin 2\\theta}{g}$.', 'Relation: $R\\tan\\theta = 4H$.'], trap: 'Trap: Avg speed over equal distances is $\\frac{2v_1v_2}{v_1+v_2}$, not $(v_1+v_2)/2$.' },
+          { id: 'nf2', subject: 'Physics', chapter: 'Current Electricity', title: 'Resistance, Cells & Power', points: ['Stretched wire (const vol): $R \\propto l^2 \\propto 1/r^4$.', 'Terminal voltage (discharging): $V = E - Ir$.', 'Power: $P = VI = I^2R = V^2/R$.'], trap: 'Trap: In series, the lower-wattage bulb (higher $R$) glows brighter!' },
+          { id: 'nf3', subject: 'Physics', chapter: 'Modern Physics', title: 'Photoelectric, Bohr & Nuclear', points: ['$K_{\\max} = \\frac{hc}{\\lambda} - \\phi$, $hc \\approx 12400\\text{ eV}\\cdot\\text{\\AA}$.', 'de Broglie (electron): $\\lambda = \\frac{12.27}{\\sqrt{V}}\\,\\text{\\AA}$.', 'Radioactivity: $t_{1/2} = \\frac{0.693}{\\lambda}$, $R = R_0 A^{1/3}$.'], trap: 'Trap: Reverse bias widens the depletion layer in a p-n junction.' },
+          { id: 'nf4', subject: 'Chemistry', chapter: 'Chemical Bonding', title: 'VSEPR & Bond Order', points: ['Steric Number $= \\frac{1}{2}(V + M - C + A)$.', 'Bond Order $= \\frac{N_b - N_a}{2}$: $\\text{O}_2^+(2.5) > \\text{O}_2(2.0) > \\text{O}_2^-(1.5)$.', 'Fajan’s Rule: Small cation + large anion $\\Rightarrow$ covalent.'], trap: 'Trap: $\\text{B}_2$ and $\\text{O}_2$ are paramagnetic; $\\text{C}_2$ and $\\text{N}_2$ are diamagnetic.' },
+          { id: 'nf5', subject: 'Chemistry', chapter: 'Equilibrium', title: 'pH & Buffer Equations', points: ['$K_p = K_c(RT)^{\\Delta n_g}$; $K_w = 10^{-14}$ at $298\\text{ K}$.', 'Acidic buffer: $\\text{pH} = \\text{p}K_a + \\log\\frac{[\\text{Salt}]}{[\\text{Acid}]}$.', 'Weak acid: $\\text{pH} = \\frac{1}{2}(\\text{p}K_a - \\log C)$.'], trap: 'Trap: Common ion effect suppresses dissociation of weak electrolytes.' },
+          { id: 'nf6', subject: 'Biology', chapter: 'Cell: The Unit of Life', title: 'Organelles (NCERT High-Yield)', points: ['Endomembrane system: ER, Golgi, Lysosomes, Vacuoles.', 'Golgi apparatus: Site of glycoprotein & glycolipid formation.', 'Ribosomes: Prokaryotes $70\\text{S}$; Eukaryotes $80\\text{S}$.'], trap: 'Trap: Mitochondria & chloroplasts have circular dsDNA and $70\\text{S}$ ribosomes.' },
+          { id: 'nf7', subject: 'Biology', chapter: 'Photosynthesis', title: 'C3 & C4 Pathways', points: ['Non-cyclic: PS II & PS I, yields ATP + $\\text{NADPH} + \\text{O}_2$.', 'Calvin Cycle (C3): 1 glucose needs $6\\text{ CO}_2, 18\\text{ ATP}, 12\\text{ NADPH}$.', 'C4 (Kranz): Primary acceptor PEP (3C); first product OAA (4C).'], trap: 'Trap: Water splitting complex is on the lumen side of PS II.' },
+          { id: 'nf8', subject: 'Biology', chapter: 'Biotechnology', title: 'rDNA Tools & PCR', points: ['EcoRI cuts $5\'-\\text{GAATTC}-3\'$ between G and A.', 'Gel Electrophoresis: DNA moves to Anode (+); EtBr + UV = bright orange.', 'PCR: Denaturation ($94^\\circ\\text{C}$) $\\rightarrow$ Annealing $\\rightarrow$ Extension (Taq).'], trap: 'Trap: Chitinase (fungi), Cellulase (plant), Lysozyme (bacteria); chilled ethanol precipitates DNA.' }
+        ]
+      };
 
-      const NEET_SYLLABUS = [
-        ...['Units & Measurements','Motion in a Straight Line','Motion in a Plane','Laws of Motion','Work, Energy & Power','System of Particles & Rotational Motion','Gravitation','Mechanical Properties of Solids','Mechanical Properties of Fluids','Thermal Properties of Matter','Thermodynamics','Kinetic Theory','Oscillations','Waves','Electric Charges & Fields','Electrostatic Potential & Capacitance','Current Electricity','Moving Charges & Magnetism','Magnetism & Matter','Electromagnetic Induction','Alternating Current','Electromagnetic Waves','Ray Optics & Optical Instruments','Wave Optics','Dual Nature, Atoms, Nuclei & Semiconductors'].map((n,i)=>({id:`np_${i}`,subject:'Physics',name:n})),
-        ...['Some Basic Concepts of Chemistry','Structure of Atom','Classification of Elements & Periodicity','Chemical Bonding & Molecular Structure','Chemical Thermodynamics','Equilibrium','Redox Reactions','Solutions','Electrochemistry','Chemical Kinetics','p-Block Elements','d and f Block Elements','Coordination Compounds','Organic Chemistry - Basic Principles','Hydrocarbons','Haloalkanes & Haloarenes','Alcohols, Phenols & Ethers','Aldehydes, Ketones & Carboxylic Acids','Amines','Biomolecules','Purification & Characterization','Principles Related to Practical Chemistry'].map((n,i)=>({id:`nc_${i}`,subject:'Chemistry',name:n})),
-        ...['The Living World','Biological Classification','Plant Kingdom','Animal Kingdom','Morphology of Flowering Plants','Anatomy of Flowering Plants','Structural Organisation in Animals','Cell: The Unit of Life','Biomolecules (Bio)','Cell Cycle & Cell Division','Photosynthesis in Higher Plants','Respiration in Plants','Plant Growth & Development','Breathing & Exchange of Gases','Body Fluids & Circulation','Excretory Products & Elimination','Locomotion & Movement','Neural Control & Coordination','Chemical Coordination & Integration','Sexual Reproduction in Flowering Plants','Human Reproduction','Reproductive Health','Principles of Inheritance & Variation','Molecular Basis of Inheritance','Evolution','Human Health & Disease','Microbes in Human Welfare','Biotechnology: Principles & Processes','Biotechnology & Its Applications','Organisms & Populations','Ecosystem','Biodiversity & Conservation'].map((n,i)=>({id:`nb_${i}`,subject:'Biology',name:n}))
-      ];
+      // =====================================================================
+      // 4. SYLLABUS DATA (JEE PCM & NEET PCB)
+      // =====================================================================
+      const SYLLABUS_DATA = {
+        jee: [
+          ...['Units & Measurements','Kinematics','Laws of Motion','Work, Energy & Power','Rotational Motion','Gravitation','Thermodynamics & KTG','Oscillations & Waves','Electrostatics','Current Electricity','Magnetism','EMI & AC','Ray & Wave Optics','Modern Physics','Semiconductors'].map((n,i)=>({id:`jp_${i}`,subject:'Physics',name:n})),
+          ...['Mole Concept','Atomic Structure','Thermodynamics','Equilibrium','Solutions','Electrochemistry','Chemical Kinetics','Chemical Bonding','Coordination Compounds','p, d & f Block','GOC & Hydrocarbons','Haloalkanes & Alcohols','Aldehydes, Ketones & Amines','Biomolecules'].map((n,i)=>({id:`jc_${i}`,subject:'Chemistry',name:n})),
+          ...['Sets & Functions','Complex Numbers & Quadratic','Matrices & Determinants','P&C & Binomial','Sequence & Series','Limits & Continuity','Differentiation & AOD','Indefinite & Definite Integration','Differential Equations','Straight Lines & Circles','Conic Sections','Vectors & 3D','Probability & Statistics'].map((n,i)=>({id:`jm_${i}`,subject:'Mathematics',name:n}))
+        ],
+        neet: [
+          ...['Units & Measurements','Kinematics','Laws of Motion','Work, Energy & Power','Rotational Motion','Gravitation','Properties of Matter','Thermodynamics & KTG','Oscillations & Waves','Electrostatics','Current Electricity','Magnetism & EMI','Alternating Current','Ray & Wave Optics','Modern Physics & Semiconductors'].map((n,i)=>({id:`np_${i}`,subject:'Physics',name:n})),
+          ...['Basic Concepts','Structure of Atom','Periodicity & Bonding','Thermodynamics','Equilibrium','Solutions','Electrochemistry','Chemical Kinetics','p, d & f Block','Coordination Compounds','GOC & Hydrocarbons','Haloalkanes & Alcohols','Carbonyls & Amines','Biomolecules'].map((n,i)=>({id:`nc_${i}`,subject:'Chemistry',name:n})),
+          ...['Living World & Classification','Plant & Animal Kingdom','Morphology & Anatomy','Cell: Unit of Life','Biomolecules (Bio)','Cell Cycle & Division','Photosynthesis & Respiration','Human Physiology (Digestion-Neural)','Reproduction in Plants & Humans','Genetics & Inheritance','Molecular Basis & Evolution','Human Health & Microbes','Biotechnology','Ecology & Biodiversity'].map((n,i)=>({id:`nb_${i}`,subject:'Biology',name:n}))
+        ]
+      };
 
       // =====================================================================
-      // 5. EXAM-ISOLATED STATE
+      // 5. EXAM-ISOLATED USER STATE
       // =====================================================================
-      let questionBank = [];
-      let bankSourceLabel = '';
-      let attemptLog = [];
-      let mistakesSet = new Set();
-      let bookmarksSet = new Set();
-      let solvedSet = new Set();
-      let readNowSet = new Set();
-      let customFormulas = [];
-      let syllabusState = {};
-      let mockHistory = [];
-      let todoList = [];
-      let dailyGoal = 30;
-      let examCountdown = { title: '', date: '' };
+      let attemptLog = [], mistakesSet = new Set(), bookmarksSet = new Set(), solvedSet = new Set();
+      let readNowSet = new Set(), customFormulas = [], syllabusState = {}, mockHistory = [], todoList = [];
+      let dailyGoal = 30, examCountdown = { title: '', date: '' };
 
       function getDefaultTodos(ex) {
         return ex === 'neet'
-          ? [
-              { id: 't1', text: 'Solve 30 NCERT Biology & Chemistry PYQs', done: false },
-              { id: 't2', text: 'Revise 2 Formula Sheets in Read Now Hub', done: false },
-              { id: 't3', text: 'Take a 10-Q Timed Mock Sprint', done: false }
-            ]
-          : [
-              { id: 't1', text: 'Solve 20 Physics & Maths PYQs under 90s/Q', done: false },
-              { id: 't2', text: 'Revise Rotational Motion & Calculus formulas', done: false },
-              { id: 't3', text: 'Take a 10-Q Timed Mock Sprint', done: false }
-            ];
+          ? [{ id: 't1', text: 'Solve 30 NCERT Biology & Chemistry PYQs', done: false }, { id: 't2', text: 'Revise 2 Formula Sheets in Read Now Hub', done: false }]
+          : [{ id: 't1', text: 'Solve 20 Physics & Maths PYQs under 90s/Q', done: false }, { id: 't2', text: 'Take a 10-Q Timed Mock Sprint', done: false }];
       }
 
       function loadIsolatedExamState() {
@@ -1198,6 +1049,8 @@
         const savedTodos = loadLS(lsKey('todos'), null);
         todoList = Array.isArray(savedTodos) ? savedTodos : getDefaultTodos(currentExam);
       }
+
+      function activeBank() { return banks[currentExam]; }
 
       // =====================================================================
       // 6. UTILITIES: TOAST, THEME, KATEX, POMODORO
@@ -1274,7 +1127,7 @@
       window.resetPomo = function () { clearInterval(pomoInt); pomoRun = false; pomoSecs = pomoInit; updatePomoUI(); };
 
       // =====================================================================
-      // 7. CHUNKED JSON/JSONL PARSER & GITHUB AUTO-LOADER
+      // 7. ROBUST CHUNKED PARSER & RACE-CONDITION-SAFE GITHUB AUTO-LOADER
       // =====================================================================
       function detectSubject(raw, id, qText, exam) {
         const s = String(raw || '').toLowerCase();
@@ -1389,30 +1242,39 @@
           if (!opts) { const e = extractOptionsFromText(u); qText = e.qText; opts = e.options; }
           if (!opts || opts.length < 4) return null;
           const { chapter, year } = cleanChapterAndYear(meta.chapter || meta.topic, meta.tags, exam);
-          return { id: String(row.id || meta.id || `${exam.toUpperCase()}-D-${idx+1}`), subject: detectSubject(meta.subject || meta.chapter, row.id || meta.id, qText, exam), chapter, year, question: qText, options: opts, correctOption: resolveAnsIdx(row.answer ?? meta.correct_answer ?? meta.answer, a), explanation: a.trim() };
+          return {
+            id: String(row.id || meta.id || `${exam.toUpperCase()}-D-${idx + 1}`),
+            subject: detectSubject(meta.subject || meta.chapter, row.id || meta.id, qText, exam),
+            chapter, year, question: qText, options: opts,
+            correctOption: resolveAnsIdx(row.answer ?? meta.correct_answer ?? meta.answer ?? meta.gold, a),
+            explanation: a.trim()
+          };
         }
-        const rawQ = String(row.question || row.question_text || row.prompt || '').trim();
+        const rawQ = String(row.question || row.problem || row.prompt || row.text || row.question_text || '').trim();
         if (!rawQ) return null;
         let opts = getOpts(row);
         let qText = rawQ.replace(/^\s*\[(?:NEET|JEE)[^\]]*\]\s*/i, '').trim();
         if (!opts) { const e = extractOptionsFromText(rawQ); qText = e.qText; opts = e.options; }
         if (!opts || opts.length < 2) return null;
         const { chapter, year } = cleanChapterAndYear(row.chapter || row.topic, row.tags, exam);
-        const exp = String(row.explanation || row.solution || '').trim();
-        return { id: String(row.question_id || row.id || `${exam.toUpperCase()}-${idx+1}`), subject: detectSubject(row.subject, row.question_id || row.id, qText, exam), chapter, year, question: qText, options: opts, correctOption: resolveAnsIdx(row.answer ?? row.correct_answer ?? row.correct_option ?? row.correct, exp), explanation: exp };
+        const exp = String(row.solution || row.explanation || '').trim();
+        return {
+          id: String(row.question_id || row.id || `${exam.toUpperCase()}-${idx + 1}`),
+          subject: detectSubject(row.subject, row.question_id || row.id, qText, exam),
+          chapter, year: row.year ? String(row.year) : year,
+          question: qText, options: opts,
+          correctOption: resolveAnsIdx(row.answer ?? row.correct_answer ?? row.correct_option ?? row.gold ?? row.correct, exp),
+          explanation: exp
+        };
       }
 
-      async function parseTextChunked(text, exam, outArr, seenSet) {
-        const cfg = EXAM_CFG[exam];
+      async function parseTextChunked(text, targetExam, outArr, seenSet, onProgress) {
+        const cfg = EXAM_CFG[targetExam];
         const trimmed = text.trim();
         if (!trimmed) return;
-        const banner = document.getElementById('loader-banner');
-        const lText = document.getElementById('loader-text');
-        const lPct = document.getElementById('loader-pct');
-        const lBar = document.getElementById('loader-bar');
 
         const processItem = (obj) => {
-          const p = parseQuestionRow(obj, outArr.length, exam);
+          const p = parseQuestionRow(obj, outArr.length, targetExam);
           if (!p || p.subject === cfg.forbidden || !cfg.subjects.includes(p.subject)) return;
           const k = p.id + '|' + p.question.slice(0, 60).toLowerCase();
           if (!seenSet.has(k)) { seenSet.add(k); outArr.push(p); }
@@ -1423,11 +1285,8 @@
             const arr = JSON.parse(trimmed);
             for (let i = 0; i < arr.length; i++) {
               processItem(arr[i]);
-              if (i > 0 && i % 1000 === 0) {
-                const pct = Math.round((i / arr.length) * 100);
-                banner.classList.remove('hidden');
-                lText.textContent = `Parsing ${cfg.name} (${outArr.length.toLocaleString()} Qs)...`;
-                lPct.textContent = `${pct}%`; lBar.style.width = `${pct}%`;
+              if (i > 0 && i % 800 === 0) {
+                if (onProgress) onProgress(Math.round((i / arr.length) * 100), outArr.length);
                 await new Promise(r => setTimeout(r, 0));
               }
             }
@@ -1438,65 +1297,150 @@
             const ln = lines[i].trim();
             if (!ln) continue;
             try { processItem(JSON.parse(ln)); } catch {}
-            if (i > 0 && i % 1000 === 0) {
-              const pct = Math.round((i / lines.length) * 100);
-              banner.classList.remove('hidden');
-              lText.textContent = `Parsing ${cfg.name} (${outArr.length.toLocaleString()} Qs)...`;
-              lPct.textContent = `${pct}%`; lBar.style.width = `${pct}%`;
+            if (i > 0 && i % 800 === 0) {
+              if (onProgress) onProgress(Math.round((i / lines.length) * 100), outArr.length);
               await new Promise(r => setTimeout(r, 0));
             }
           }
         }
       }
 
-      async function autoLoadExamBank() {
-        const cfg = EXAM_CFG[currentExam];
-        const loaded = [], seen = new Set();
-        document.getElementById('bank-status-badge').textContent = `Loading ${cfg.name}...`;
-        document.getElementById('dash-bank-pill').textContent = `Loading ${cfg.name}...`;
+      function syncBankStatusUI() {
+        const txt = bankMeta[currentExam].statusText;
+        document.getElementById('bank-status-badge').textContent = txt;
+        document.getElementById('dash-bank-pill').textContent = txt;
+      }
 
-        const results = await Promise.allSettled(
-          cfg.githubFiles.map(async f => {
-            const res = await fetch(`./${encodeURI(f)}`);
-            if (!res.ok) throw new Error('404');
-            return res.text();
-          })
-        );
-        for (const r of results) {
-          if (r.status === 'fulfilled' && r.value) await parseTextChunked(r.value, currentExam, loaded, seen);
+      // Race-condition-safe GitHub Pages auto-loader
+      async function autoLoadExamBank(targetExam) {
+        const cfg = EXAM_CFG[targetExam];
+        // If already loaded from repo or currently loading, just sync UI if active
+        if (bankMeta[targetExam].loadedFromRepo || bankMeta[targetExam].loading) {
+          if (targetExam === currentExam) syncBankStatusUI();
+          return;
         }
-        document.getElementById('loader-banner').classList.add('hidden');
+
+        // Seed fallback immediately so UI is never blank while fetching
+        if (banks[targetExam].length === 0) {
+          banks[targetExam] = [...FALLBACK_PYQS[targetExam]];
+        }
+        bankMeta[targetExam].loading = true;
+        bankMeta[targetExam].statusText = `Loading ${cfg.name} files...`;
+        if (targetExam === currentExam) syncBankStatusUI();
+
+        const loaded = [], seen = new Set();
+        const banner = document.getElementById('loader-banner');
+        const lText = document.getElementById('loader-text');
+        const lPct = document.getElementById('loader-pct');
+        const lBar = document.getElementById('loader-bar');
+
+        const fetchFile = async (filename) => {
+          const res = await fetch(`./${encodeURI(filename)}`);
+          if (!res.ok) return null;
+          return res.text();
+        };
+
+        const files = [...cfg.githubFiles];
+        let filesFound = 0;
+
+        for (let i = 0; i < files.length; i++) {
+          const statusMsg = `Loading ${cfg.name} files (${i + 1}/${files.length})...`;
+          bankMeta[targetExam].statusText = statusMsg;
+          if (targetExam === currentExam) syncBankStatusUI();
+
+          try {
+            const txt = await fetchFile(files[i]);
+            if (txt) {
+              filesFound++;
+              await parseTextChunked(txt, targetExam, loaded, seen, (pct, count) => {
+                if (targetExam === currentExam) {
+                  banner.classList.remove('hidden');
+                  lText.textContent = `Parsing ${files[i]} (${count.toLocaleString()} Qs)...`;
+                  lPct.textContent = `${pct}%`;
+                  lBar.style.width = `${pct}%`;
+                }
+              });
+            }
+          } catch {}
+        }
+
+        // NEET-only fallback filename if neet_complete_dataset.jsonl 404s
+        if (targetExam === 'neet' && filesFound === 0 && cfg.fallbackFile) {
+          try {
+            const txt = await fetchFile(cfg.fallbackFile);
+            if (txt) {
+              filesFound++;
+              await parseTextChunked(txt, 'neet', loaded, seen, (pct, count) => {
+                if (currentExam === 'neet') {
+                  banner.classList.remove('hidden');
+                  lText.textContent = `Parsing ${cfg.fallbackFile} (${count.toLocaleString()} Qs)...`;
+                  lPct.textContent = `${pct}%`;
+                  lBar.style.width = `${pct}%`;
+                }
+              });
+            }
+          } catch {}
+        }
+
+        if (targetExam === currentExam) banner.classList.add('hidden');
+        bankMeta[targetExam].loading = false;
 
         if (loaded.length > 0) {
-          questionBank = loaded;
-          bankSourceLabel = `${loaded.length.toLocaleString()} ${cfg.name} PYQs (Repo)`;
+          banks[targetExam] = loaded;
+          bankMeta[targetExam].loadedFromRepo = true;
+          bankMeta[targetExam].statusText = `${loaded.length.toLocaleString()} ${cfg.name} PYQs Loaded`;
         } else {
-          questionBank = currentExam === 'neet' ? [...NEET_PYQS] : [...JEE_PYQS];
-          bankSourceLabel = `${questionBank.length} Curated ${cfg.name} PYQs`;
+          banks[targetExam] = [...FALLBACK_PYQS[targetExam]];
+          bankMeta[targetExam].statusText = `${banks[targetExam].length} Built-in ${cfg.name} PYQs`;
         }
-        document.getElementById('bank-status-badge').textContent = bankSourceLabel;
-        document.getElementById('dash-bank-pill').textContent = bankSourceLabel;
-        populateChapterDropdown();
-        applyPracticeFilters();
-        renderDashboard();
+
+        // Only update the UI if the user is still on targetExam
+        if (targetExam === currentExam) {
+          syncBankStatusUI();
+          populateChapterDropdown();
+          applyPracticeFilters();
+          renderDashboard();
+        }
       }
 
       window.handleLocalDatasetImport = async function (e) {
-        const f = e.target.files[0];
-        if (!f) return;
-        const cfg = EXAM_CFG[currentExam];
+        const files = [...(e.target.files || [])];
+        if (!files.length) return;
+        const targetExam = currentExam;
+        const cfg = EXAM_CFG[targetExam];
         const loaded = [], seen = new Set();
-        await parseTextChunked(await f.text(), currentExam, loaded, seen);
-        document.getElementById('loader-banner').classList.add('hidden');
+        const banner = document.getElementById('loader-banner');
+        const lText = document.getElementById('loader-text');
+        const lPct = document.getElementById('loader-pct');
+        const lBar = document.getElementById('loader-bar');
+
+        for (const f of files) {
+          const txt = await f.text();
+          await parseTextChunked(txt, targetExam, loaded, seen, (pct, count) => {
+            if (targetExam === currentExam) {
+              banner.classList.remove('hidden');
+              lText.textContent = `Importing ${f.name} (${count.toLocaleString()} Qs)...`;
+              lPct.textContent = `${pct}%`;
+              lBar.style.width = `${pct}%`;
+            }
+          });
+        }
+        banner.classList.add('hidden');
+
         if (loaded.length > 0) {
-          questionBank = loaded;
-          bankSourceLabel = `${loaded.length.toLocaleString()} ${cfg.name} PYQs (Local)`;
-          document.getElementById('bank-status-badge').textContent = bankSourceLabel;
-          document.getElementById('dash-bank-pill').textContent = bankSourceLabel;
-          populateChapterDropdown();
-          applyPracticeFilters();
-          showToast(`Imported ${loaded.length.toLocaleString()} ${cfg.name} questions!`, 'success');
-        } else showToast(`No valid ${cfg.name} MCQs found in "${f.name}".`, 'error');
+          banks[targetExam] = loaded;
+          bankMeta[targetExam].loadedFromRepo = true;
+          bankMeta[targetExam].statusText = `${loaded.length.toLocaleString()} ${cfg.name} PYQs (Imported)`;
+          if (targetExam === currentExam) {
+            syncBankStatusUI();
+            populateChapterDropdown();
+            applyPracticeFilters();
+            renderDashboard();
+            showToast(`Imported ${loaded.length.toLocaleString()} ${cfg.name} questions!`, 'success');
+          }
+        } else {
+          showToast(`No valid ${cfg.name} MCQs found in selected file(s).`, 'error');
+        }
         e.target.value = '';
       };
 
@@ -1519,8 +1463,8 @@
         const streak = computeStreak();
         document.getElementById('dash-streak').textContent = streak;
         document.getElementById('prac-streak-badge').textContent = streak;
+        syncBankStatusUI();
 
-        // Countdown
         const targetTitle = examCountdown.title || cfg.defaultTitle;
         const targetDate = examCountdown.date || cfg.defaultDate;
         const diffMs = new Date(`${targetDate}T00:00:00`).getTime() - new Date(`${getDateKey()}T00:00:00`).getTime();
@@ -1529,7 +1473,6 @@
         document.getElementById('dash-days-left').textContent = daysLeft;
         document.getElementById('dash-target-date-lbl').textContent = new Date(`${targetDate}T00:00:00`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
-        // Daily Goal Ring
         const today = getDateKey();
         const todayCnt = attemptLog.filter(a => a.dateKey === today).length;
         const pct = Math.min(100, Math.round((todayCnt / Math.max(1, dailyGoal)) * 100));
@@ -1540,68 +1483,41 @@
         document.getElementById('dash-goal-val').textContent = dailyGoal;
         document.getElementById('dash-goal-input').value = dailyGoal;
 
-        // 5 KPI Cards
         const tot = attemptLog.length;
         const cor = attemptLog.filter(a => a.isCorrect).length;
         const acc = tot ? Math.round((cor / tot) * 100) : 0;
         const avgT = tot ? Math.round(attemptLog.reduce((s, a) => s + (a.timeSec || 0), 0) / tot) : 0;
         const allF = getAllFormulasForExam();
         const readF = allF.filter(f => readNowSet.has(f.id)).length;
-        const syl = currentExam === 'neet' ? NEET_SYLLABUS : JEE_SYLLABUS;
-        const sylDone = syl.filter(c => ['Revised', 'Mastered'].includes(syllabusState[c.id])).length;
-        const sylPct = Math.round((sylDone / syl.length) * 100);
 
         document.getElementById('kpi-solved').textContent = tot;
         document.getElementById('kpi-acc').textContent = `${acc}%`;
         document.getElementById('kpi-time').textContent = `${avgT}s`;
         document.getElementById('kpi-bench').textContent = `Goal ≤ ${cfg.benchSec}s`;
+        document.getElementById('kpi-bookmarks').textContent = bookmarksSet.size;
         document.getElementById('kpi-formulas').textContent = `${readF}/${allF.length}`;
-        document.getElementById('kpi-syl').textContent = `${sylPct}%`;
-        document.getElementById('kpi-syl-sub').textContent = `${sylDone} / ${syl.length} Chapters`;
 
-        // Daily Study Checklist
         renderTodoList();
 
-        // Smart Focus (Weakest Subject)
         const sf = document.getElementById('dash-smart-focus');
         const subjStats = cfg.subjects.map(s => {
           const arr = attemptLog.filter(a => a.subject === s);
           const n = arr.length;
-          return {
-            subj: s, n,
-            acc: n ? Math.round((arr.filter(x => x.isCorrect).length / n) * 100) : null,
-            avgT: n ? Math.round(arr.reduce((sum, x) => sum + x.timeSec, 0) / n) : null
-          };
-        });
-        const attemptedSubs = subjStats.filter(s => s.n > 0);
-        if (!attemptedSubs.length) {
-          sf.innerHTML = `
-            <p class="text-xs text-sec leading-relaxed">Solve a few PYQs to unlock AI-free weakest-subject detection based on your accuracy &amp; speed.</p>
-            <button onclick="switchTab('practice')" class="px-3.5 py-2 rounded-xl bg-acc text-xs font-extrabold">Start Practicing &rarr;</button>`;
+          return { subj: s, n, acc: n ? Math.round((arr.filter(x => x.isCorrect).length / n) * 100) : null, avgT: n ? Math.round(arr.reduce((sum, x) => sum + x.timeSec, 0) / n) : null };
+        }).filter(s => s.n > 0);
+
+        if (!subjStats.length) {
+          sf.innerHTML = `<p class="text-xs text-sec leading-relaxed">Solve a few PYQs to unlock weakest-subject detection based on your accuracy &amp; speed.</p><button onclick="switchTab('practice')" class="px-3.5 py-2 rounded-xl bg-acc text-xs font-extrabold">Start Practicing &rarr;</button>`;
         } else {
-          attemptedSubs.sort((a, b) => (a.acc - b.acc) || (b.avgT - a.avgT));
-          const weak = attemptedSubs[0];
-          sf.innerHTML = `
-            <div class="p-3.5 rounded-xl surface-elevated flex items-center justify-between gap-3">
-              <div>
-                <div class="text-sm font-extrabold text-rg">${weak.subj} Needs Focus</div>
-                <div class="text-[11px] text-sec mt-0.5">Accuracy: <span class="font-mono font-bold text-[var(--text-primary)]">${weak.acc}%</span> &bull; Avg Speed: <span class="font-mono font-bold text-[var(--text-primary)]">${weak.avgT}s/Q</span></div>
-              </div>
-              <button onclick="practiceWeakSubject('${weak.subj}')" class="px-3.5 py-2 rounded-xl bg-acc text-xs font-extrabold shrink-0">Practice Now</button>
-            </div>`;
+          subjStats.sort((a, b) => (a.acc - b.acc) || (b.avgT - a.avgT));
+          const weak = subjStats[0];
+          sf.innerHTML = `<div class="p-3.5 rounded-xl surface-elevated flex items-center justify-between gap-3"><div><div class="text-sm font-extrabold text-rg">${weak.subj} Needs Focus</div><div class="text-[11px] text-sec mt-0.5">Accuracy: <span class="font-mono font-bold text-[var(--text-primary)]">${weak.acc}%</span> &bull; Speed: <span class="font-mono font-bold text-[var(--text-primary)]">${weak.avgT}s/Q</span></div></div><button onclick="practiceWeakSubject('${weak.subj}')" class="px-3.5 py-2 rounded-xl bg-acc text-xs font-extrabold shrink-0">Practice</button></div>`;
         }
 
-        // Recent Mock Scores
         const rm = document.getElementById('dash-recent-mocks');
-        if (!mockHistory.length) {
-          rm.innerHTML = `<div class="text-xs text-mut py-3 text-center">No Mock Sprints or PDF CBT tests completed yet.</div>`;
-        } else {
-          rm.innerHTML = mockHistory.slice(0, 3).map(m => `
-            <div class="p-2.5 rounded-xl surface-elevated flex items-center justify-between text-xs">
-              <div><div class="font-bold">${m.title}</div><div class="text-[10px] text-mut">${m.date}</div></div>
-              <div class="font-mono font-extrabold text-acc">${m.score}/${m.maxScore} <span class="text-emerald-400">(${m.accuracy}%)</span></div>
-            </div>`).join('');
-        }
+        rm.innerHTML = !mockHistory.length
+          ? `<div class="text-xs text-mut py-3 text-center">No Mock Sprints or PDF CBT tests completed yet.</div>`
+          : mockHistory.slice(0, 3).map(m => `<div class="p-2.5 rounded-xl surface-elevated flex items-center justify-between text-xs"><div><div class="font-bold">${m.title}</div><div class="text-[10px] text-mut">${m.date}</div></div><div class="font-mono font-extrabold text-acc">${m.score}/${m.maxScore} <span class="text-emerald-400">(${m.accuracy}%)</span></div></div>`).join('');
       }
 
       window.updateDailyGoal = function (v) {
@@ -1609,7 +1525,6 @@
         saveLS(lsKey('daily_q_goal'), dailyGoal);
         renderDashboard();
       };
-
       window.openCountdownModal = function () {
         const cfg = EXAM_CFG[currentExam];
         document.getElementById('cd-title-input').value = examCountdown.title || cfg.defaultTitle;
@@ -1632,28 +1547,15 @@
         const done = todoList.filter(t => t.done).length;
         document.getElementById('todo-progress-pill').textContent = `${done} / ${todoList.length} Done`;
         const box = document.getElementById('todo-list');
-        if (!todoList.length) {
-          box.innerHTML = `<div class="text-xs text-mut text-center py-4">No study tasks yet. Add one above!</div>`;
-          return;
-        }
-        box.innerHTML = todoList.map(t => `
-          <div class="p-3 rounded-xl surface-elevated flex items-center justify-between gap-2.5">
-            <label class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
-              <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodoTask('${t.id}')" class="w-4 h-4 accent-[var(--accent)] rounded shrink-0" />
-              <span class="text-xs font-semibold truncate ${t.done ? 'line-through text-mut' : ''}">${t.text}</span>
-            </label>
-            <button onclick="deleteTodoTask('${t.id}')" class="text-xs font-bold text-mut hover:text-rose-400 px-1.5">&times;</button>
-          </div>`).join('');
+        if (!todoList.length) { box.innerHTML = `<div class="text-xs text-mut text-center py-4">No study tasks yet. Add one above!</div>`; return; }
+        box.innerHTML = todoList.map(t => `<div class="p-3 rounded-xl surface-elevated flex items-center justify-between gap-2.5"><label class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0"><input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodoTask('${t.id}')" class="w-4 h-4 accent-[var(--accent)] rounded shrink-0" /><span class="text-xs font-semibold truncate ${t.done ? 'line-through text-mut' : ''}">${t.text}</span></label><button onclick="deleteTodoTask('${t.id}')" class="text-xs font-bold text-mut hover:text-rose-400 px-1.5">&times;</button></div>`).join('');
       }
       window.addTodoTask = function (e) {
         e.preventDefault();
-        const inp = document.getElementById('todo-input');
-        const txt = inp.value.trim();
+        const inp = document.getElementById('todo-input'), txt = inp.value.trim();
         if (!txt) return;
         todoList.unshift({ id: 't_' + Date.now(), text: txt, done: false });
-        saveLS(lsKey('todos'), todoList);
-        inp.value = '';
-        renderTodoList();
+        saveLS(lsKey('todos'), todoList); inp.value = ''; renderTodoList();
       };
       window.toggleTodoTask = function (id) {
         const item = todoList.find(t => t.id === id);
@@ -1661,31 +1563,22 @@
       };
       window.deleteTodoTask = function (id) {
         todoList = todoList.filter(t => t.id !== id);
-        saveLS(lsKey('todos'), todoList);
-        renderTodoList();
+        saveLS(lsKey('todos'), todoList); renderTodoList();
       };
 
-      // Quick Launch Helpers
       window.quickStartTenQSprint = function () {
-        window.switchTab('sprint');
-        window.resetSprintToSetup();
-        window.selectSprintCount(10);
-        document.getElementById('sprint-subject').value = 'All';
-        window.startMockSprint();
+        window.switchTab('sprint'); window.resetSprintToSetup(); window.selectSprintCount(10);
+        document.getElementById('sprint-subject').value = 'All'; window.startMockSprint();
       };
       window.jumpToReviewMistakes = function () {
         window.switchTab('practice');
-        const targetFilter = mistakesSet.size > 0 ? 'wrong' : 'bookmarked';
-        document.getElementById('prac-status-filter').value = targetFilter;
+        document.getElementById('prac-status-filter').value = mistakesSet.size > 0 ? 'wrong' : 'bookmarked';
         window.applyPracticeFilters();
       };
-      window.practiceWeakSubject = function (subj) {
-        window.switchTab('practice');
-        window.selectPracSubj(subj);
-      };
+      window.practiceWeakSubject = function (subj) { window.switchTab('practice'); window.selectPracSubj(subj); };
 
       // =====================================================================
-      // 9. TAB 2: PYQ PRACTICE + STOPWATCH + SHORTCUTS
+      // 9. TAB 2: PYQ PRACTICE + STOPWATCH + 25-Q PAGINATION
       // =====================================================================
       let pracSubj = 'All', pracFiltered = [], pracIdx = 0, pracSel = null, pracSub = false, pracSol = false;
       let qSecs = 0, qWatchInt = null;
@@ -1715,7 +1608,7 @@
       window.selectPracSubj = function (s) { pracSubj = s; renderPracticeSubjectPills(); populateChapterDropdown(); window.applyPracticeFilters(); };
 
       function populateChapterDropdown() {
-        const chaps = [...new Set(questionBank.filter(q => pracSubj === 'All' || q.subject === pracSubj).map(q => q.chapter || 'General'))].sort();
+        const chaps = [...new Set(activeBank().filter(q => pracSubj === 'All' || q.subject === pracSubj).map(q => q.chapter || 'General'))].sort();
         document.getElementById('prac-chapter-filter').innerHTML =
           `<option value="All">All Chapters (${chaps.length})</option>` +
           chaps.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('');
@@ -1725,7 +1618,7 @@
         const st = document.getElementById('prac-status-filter').value;
         const ch = document.getElementById('prac-chapter-filter').value;
         const qs = document.getElementById('prac-search-input').value.trim().toLowerCase();
-        pracFiltered = questionBank.filter(q => {
+        pracFiltered = activeBank().filter(q => {
           if (pracSubj !== 'All' && q.subject !== pracSubj) return false;
           if (ch !== 'All' && (q.chapter || 'General') !== ch) return false;
           if (st === 'unsolved' && solvedSet.has(q.id)) return false;
@@ -1770,7 +1663,7 @@
         const isCorrect = pracSel === q.correctOption;
         pracSub = true; pracSol = true;
         const now = new Date();
-        attemptLog.unshift({ id: q.id, timestamp: now.getTime(), dateKey: getDateKey(now), weekKey: getWeekMonday(now), subject: q.subject, chapter: q.chapter || 'General', isCorrect, timeSec: Math.max(1, qSecs) });
+        attemptLog.unshift({ id: q.id, timestamp: now.getTime(), dateKey: getDateKey(now), subject: q.subject, chapter: q.chapter || 'General', isCorrect, timeSec: Math.max(1, qSecs) });
         if (attemptLog.length > 2500) attemptLog.length = 2500;
         saveLS(lsKey('attempts'), attemptLog);
         solvedSet.add(q.id); saveLS(lsKey('solved_ids'), [...solvedSet]);
@@ -1829,7 +1722,7 @@
             }).join('')}
           </div>
           ${pracSub ? `<div class="mt-4 p-4 rounded-xl border text-xs sm:text-sm font-bold flex flex-wrap items-center justify-between gap-2 ${isOk ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'bg-rose-500/15 border-rose-500/40 text-rose-400'}"><span>${isOk ? '✓ Correct! (+4 Marks)' : `✕ Incorrect (-1 Mark) — Correct: Option ${letters[q.correctOption]}`}</span><span class="font-mono px-2.5 py-1 rounded-lg surface-elevated">Time: ${qSecs}s</span></div>` : ''}
-          ${pracSol ? `<div class="mt-4 p-4 rounded-xl surface-elevated text-xs sm:text-sm space-y-1.5"><div class="font-extrabold text-rg">Solution (Option ${letters[q.correctOption]})</div><div class="text-sec leading-relaxed whitespace-pre-line">${q.explanation || 'Refer to NCERT concept.'}</div></div>` : ''}
+          ${pracSol ? `<div class="mt-4 p-4 rounded-xl surface-elevated text-xs sm:text-sm space-y-1.5"><div class="font-extrabold text-rg">Solution (Option ${letters[q.correctOption]})</div><div class="text-sec leading-relaxed whitespace-pre-line">${q.explanation || 'Refer to standard NCERT concept.'}</div></div>` : ''}
           <div class="mt-6 pt-4 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-2">
             <button onclick="navPractice(-1)" class="px-4 py-2.5 rounded-xl surface-elevated text-xs sm:text-sm font-bold">← Previous</button>
             <div class="flex flex-wrap gap-2">
@@ -1884,7 +1777,7 @@
 
       window.startMockSprint = function () {
         const subj = document.getElementById('sprint-subject').value;
-        const pool = questionBank.filter(q => subj === 'All' || q.subject === subj);
+        const pool = activeBank().filter(q => subj === 'All' || q.subject === subj);
         if (!pool.length) return showToast('No questions available.', 'error');
         const reqN = spCountMode === 'custom' ? Math.max(3, Math.min(100, parseInt(document.getElementById('sprint-custom-count').value, 10) || 15)) : spCountMode;
         const count = Math.min(reqN, pool.length);
@@ -1992,10 +1885,9 @@
       };
 
       // =====================================================================
-      // 11. TAB 4: UPGRADED "READ NOW" FORMULA HUB + CHAPTER SELECTOR
+      // 11. TAB 4: READ NOW FORMULA HUB
       // =====================================================================
       let rnSubj = 'All';
-
       function renderReadNowPills() {
         const subs = ['All', ...EXAM_CFG[currentExam].subjects];
         document.getElementById('readnow-subject-pills').innerHTML = subs.map(s =>
@@ -2003,43 +1895,29 @@
         ).join('');
         populateReadNowChapters();
       }
-      window.selectReadNowSubj = function (s) {
-        rnSubj = s;
-        renderReadNowPills();
-        window.renderReadNow();
-      };
-
+      window.selectReadNowSubj = function (s) { rnSubj = s; renderReadNowPills(); window.renderReadNow(); };
       function populateReadNowChapters() {
         const items = getAllFormulasForExam().filter(it => rnSubj === 'All' || it.subject === rnSubj);
         const chaps = [...new Set(items.map(it => it.chapter))].sort();
-        const sel = document.getElementById('readnow-chapter-select');
-        const prev = sel.value;
-        sel.innerHTML = `<option value="All">All Chapters (${chaps.length})</option>` +
-          chaps.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('');
+        const sel = document.getElementById('readnow-chapter-select'), prev = sel.value;
+        sel.innerHTML = `<option value="All">All Chapters (${chaps.length})</option>` + chaps.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('');
         if (chaps.includes(prev)) sel.value = prev;
       }
-
       window.toggleReadNowDone = function (id) {
         if (readNowSet.has(id)) readNowSet.delete(id);
-        else { readNowSet.add(id); showToast('Marked chapter as Read!', 'success'); }
+        else { readNowSet.add(id); showToast('Marked as Read!', 'success'); }
         saveLS(lsKey('readnow_done'), [...readNowSet]);
         window.renderReadNow();
       };
-
       window.deleteCustomFormula = function (id) {
         customFormulas = customFormulas.filter(f => f.id !== id);
         saveLS(lsKey('custom_formulas'), customFormulas);
-        populateReadNowChapters();
-        window.renderReadNow();
-        showToast('Deleted custom formula card.', 'info');
+        populateReadNowChapters(); window.renderReadNow();
+        showToast('Deleted custom formula.', 'info');
       };
-
       window.openCustomFormulaModal = function () {
         document.getElementById('cf-subject').innerHTML = EXAM_CFG[currentExam].subjects.map(s => `<option value="${s}">${s}</option>`).join('');
-        document.getElementById('cf-chapter').value = '';
-        document.getElementById('cf-title').value = '';
-        document.getElementById('cf-points').value = '';
-        document.getElementById('cf-trap').value = '';
+        ['cf-chapter','cf-title','cf-points','cf-trap'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('custom-formula-modal').classList.remove('hidden');
       };
       window.closeCustomFormulaModal = function () { document.getElementById('custom-formula-modal').classList.add('hidden'); };
@@ -2051,29 +1929,21 @@
         const pts = document.getElementById('cf-points').value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
         const trap = document.getElementById('cf-trap').value.trim();
         if (!ch || !title || !pts.length) return;
-        customFormulas.unshift({
-          id: 'cf_' + Date.now(), subject: subj, chapter: ch, title, points: pts,
-          trap: trap || 'Custom Note: Review before mock tests.', isCustom: true
-        });
+        customFormulas.unshift({ id: 'cf_' + Date.now(), subject: subj, chapter: ch, title, points: pts, trap: trap || 'Custom Note', isCustom: true });
         saveLS(lsKey('custom_formulas'), customFormulas);
-        window.closeCustomFormulaModal();
-        populateReadNowChapters();
-        window.renderReadNow();
+        window.closeCustomFormulaModal(); populateReadNowChapters(); window.renderReadNow();
         showToast(`Added "${ch}" formula card!`, 'success');
       };
-
       window.renderReadNow = function () {
         const allItems = getAllFormulasForExam();
         const doneCount = allItems.filter(it => readNowSet.has(it.id)).length;
-        const pct = allItems.length ? Math.round((doneCount / allItems.length) * 100) : 0;
         document.getElementById('readnow-heading').textContent = `Read Now — ${EXAM_CFG[currentExam].name} Formula Hub`;
         document.getElementById('readnow-progress-txt').textContent = `${doneCount} / ${allItems.length} Read`;
-        document.getElementById('readnow-progress-bar').style.width = `${pct}%`;
+        document.getElementById('readnow-progress-bar').style.width = `${allItems.length ? Math.round((doneCount / allItems.length) * 100) : 0}%`;
 
         const chapF = document.getElementById('readnow-chapter-select').value;
         const unreadOnly = document.getElementById('readnow-unread-only').checked;
         const q = (document.getElementById('readnow-search').value || '').trim().toLowerCase();
-
         const filtered = allItems.filter(it => {
           if (rnSubj !== 'All' && it.subject !== rnSubj) return false;
           if (chapF !== 'All' && it.chapter !== chapF) return false;
@@ -2083,33 +1953,10 @@
         });
 
         const grid = document.getElementById('readnow-grid');
-        if (!filtered.length) {
-          grid.innerHTML = `<div class="md:col-span-2 surface-card rounded-2xl p-10 text-center text-sec text-sm font-semibold">No formula cards match your filter.</div>`;
-          return;
-        }
+        if (!filtered.length) { grid.innerHTML = `<div class="md:col-span-2 surface-card rounded-2xl p-10 text-center text-sec text-sm font-semibold">No formula cards match your filter.</div>`; return; }
         grid.innerHTML = filtered.map(it => {
           const isRead = readNowSet.has(it.id);
-          return `
-            <article class="surface-card surface-card-hover rounded-2xl p-5 flex flex-col justify-between gap-4">
-              <div class="space-y-3">
-                <div class="flex items-center justify-between gap-2">
-                  <div class="flex flex-wrap items-center gap-1.5">
-                    <span class="px-2.5 py-0.5 rounded-lg bg-acc-soft text-[11px] font-extrabold">${it.subject}</span>
-                    <span class="px-2.5 py-0.5 rounded-lg surface-elevated text-[11px] font-bold">${it.chapter}</span>
-                    ${it.isCustom ? `<span class="px-2 py-0.5 rounded-lg bg-rg-soft text-[10px] font-extrabold">Custom</span>` : ''}
-                  </div>
-                  <div class="flex items-center gap-1.5 shrink-0">
-                    ${it.isCustom ? `<button onclick="deleteCustomFormula('${it.id}')" class="px-2 py-1 rounded-lg surface-elevated text-xs text-rose-400" title="Delete">&times;</button>` : ''}
-                    <button onclick="toggleReadNowDone('${it.id}')" class="px-3 py-1 rounded-xl text-xs font-extrabold transition ${isRead ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'surface-elevated text-sec'}">${isRead ? '✓ Read' : 'Mark Read'}</button>
-                  </div>
-                </div>
-                <h3 class="text-base font-extrabold">${it.title}</h3>
-                <ul class="space-y-2 text-xs sm:text-sm text-sec list-disc pl-4 leading-relaxed">
-                  ${it.points.map(p => `<li>${p}</li>`).join('')}
-                </ul>
-              </div>
-              <div class="p-3 rounded-xl bg-rg-soft text-xs font-semibold leading-relaxed">${it.trap}</div>
-            </article>`;
+          return `<article class="surface-card surface-card-hover rounded-2xl p-5 flex flex-col justify-between gap-4"><div class="space-y-3"><div class="flex items-center justify-between gap-2"><div class="flex flex-wrap items-center gap-1.5"><span class="px-2.5 py-0.5 rounded-lg bg-acc-soft text-[11px] font-extrabold">${it.subject}</span><span class="px-2.5 py-0.5 rounded-lg surface-elevated text-[11px] font-bold">${it.chapter}</span>${it.isCustom ? `<span class="px-2 py-0.5 rounded-lg bg-rg-soft text-[10px] font-extrabold">Custom</span>` : ''}</div><div class="flex items-center gap-1.5 shrink-0">${it.isCustom ? `<button onclick="deleteCustomFormula('${it.id}')" class="px-2 py-1 rounded-lg surface-elevated text-xs text-rose-400">&times;</button>` : ''}<button onclick="toggleReadNowDone('${it.id}')" class="px-3 py-1 rounded-xl text-xs font-extrabold transition ${isRead ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'surface-elevated text-sec'}">${isRead ? '✓ Read' : 'Mark Read'}</button></div></div><h3 class="text-base font-extrabold">${it.title}</h3><ul class="space-y-2 text-xs sm:text-sm text-sec list-disc pl-4 leading-relaxed">${it.points.map(p => `<li>${p}</li>`).join('')}</ul></div><div class="p-3 rounded-xl bg-rg-soft text-xs font-semibold leading-relaxed">${it.trap}</div></article>`;
         }).join('');
         renderMath(grid);
       };
@@ -2285,9 +2132,7 @@
           const list = attemptLog.filter(a => a.subject === subj), n = list.length;
           const sA = n ? Math.round((list.filter(x => x.isCorrect).length / n) * 100) : 0;
           const sT = n ? Math.round(list.reduce((s, x) => s + x.timeSec, 0) / n) : 0;
-          const status = !n ? 'No Data' : (sA >= 75 && sT <= bench) ? 'Strong' : sA < 75 ? 'Focus Accuracy' : 'Focus Speed';
-          const badge = !n ? 'surface-input text-mut' : status === 'Strong' ? 'bg-emerald-500/15 text-emerald-400' : status === 'Focus Accuracy' ? 'bg-rose-500/15 text-rose-400' : 'bg-rg-soft';
-          return `<div class="surface-elevated rounded-2xl p-4 space-y-3"><div class="flex items-center justify-between"><span class="font-extrabold text-sm">${subj}</span><span class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold ${badge}">${status}</span></div><div class="grid grid-cols-3 gap-2 text-center"><div class="p-2 rounded-xl surface-input"><div class="text-[10px] text-mut font-bold">Solved</div><div class="font-mono font-extrabold text-sm">${n}</div></div><div class="p-2 rounded-xl surface-input"><div class="text-[10px] text-mut font-bold">Acc</div><div class="font-mono font-extrabold text-sm text-emerald-400">${sA}%</div></div><div class="p-2 rounded-xl surface-input"><div class="text-[10px] text-mut font-bold">Avg</div><div class="font-mono font-extrabold text-sm text-rg">${sT}s</div></div></div><div class="w-full h-1.5 rounded-full surface-input overflow-hidden"><div class="h-full bg-acc rounded-full" style="width:${sA}%"></div></div></div>`;
+          return `<div class="surface-elevated rounded-2xl p-4 space-y-3"><div class="flex items-center justify-between"><span class="font-extrabold text-sm">${subj}</span><span class="font-mono text-xs font-bold text-emerald-400">${sA}%</span></div><div class="grid grid-cols-2 gap-2 text-center"><div class="p-2 rounded-xl surface-input"><div class="text-[10px] text-mut font-bold">Solved</div><div class="font-mono font-extrabold text-sm">${n}</div></div><div class="p-2 rounded-xl surface-input"><div class="text-[10px] text-mut font-bold">Avg Time</div><div class="font-mono font-extrabold text-sm text-rg">${sT}s</div></div></div><div class="w-full h-1.5 rounded-full surface-input overflow-hidden"><div class="h-full bg-acc rounded-full" style="width:${sA}%"></div></div></div>`;
         }).join('');
 
         const days = [];
@@ -2306,20 +2151,6 @@
         document.getElementById('c7-t-bars').innerHTML = days.map(d => `<div class="flex-1 flex flex-col items-center gap-1 h-full justify-end"><span class="text-[10px] font-mono text-sec">${d.avgT ? d.avgT+'s' : ''}</span><div class="w-full max-w-[24px] rounded-t-lg" style="background:var(--rosegold);height:${d.avgT ? Math.max(8, Math.round((d.avgT/maxT)*100)) : 4}%"></div><span class="text-[10px] text-mut font-bold">${d.lbl}</span></div>`).join('');
         document.getElementById('c7-a-bars').innerHTML = days.map(d => `<div class="flex-1 flex flex-col items-center gap-1 h-full justify-end"><span class="text-[10px] font-mono text-sec">${d.cnt ? d.acc+'%' : ''}</span><div class="w-full max-w-[24px] rounded-t-lg bg-emerald-500" style="height:${d.cnt ? Math.max(8, d.acc) : 4}%"></div><span class="text-[10px] text-mut font-bold">${d.lbl}</span></div>`).join('');
 
-        const wkMap = {}; attemptLog.forEach(a => { const k = a.weekKey || getWeekMonday(new Date(a.timestamp)); (wkMap[k] = wkMap[k] || []).push(a); });
-        const wks = Object.keys(wkMap).sort((a, b) => b.localeCompare(a));
-        document.getElementById('an-weekly-tbody').innerHTML = !wks.length
-          ? `<tr><td colspan="5" class="p-6 text-center text-mut font-semibold">Solve questions in PYQ Practice to see weekly trends.</td></tr>`
-          : wks.map((wk, idx) => {
-              const arr = wkMap[wk], wa = Math.round((arr.filter(x => x.isCorrect).length / arr.length) * 100), wt = Math.round(arr.reduce((s, x) => s + x.timeSec, 0) / arr.length);
-              let wow = '<span class="text-mut">—</span>';
-              if (idx < wks.length - 1) {
-                const pArr = wkMap[wks[idx + 1]], diff = wa - Math.round((pArr.filter(x => x.isCorrect).length / pArr.length) * 100);
-                wow = `<span class="px-2 py-0.5 rounded-md font-mono font-bold ${diff >= 0 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'}">${diff >= 0 ? '+' : ''}${diff}%</span>`;
-              }
-              return `<tr><td class="p-3 font-bold">${formatWeekRange(wk)}</td><td class="p-3 font-mono font-bold">${arr.length}</td><td class="p-3 font-mono">${wt}s</td><td class="p-3 font-mono font-bold text-emerald-400">${wa}%</td><td class="p-3 text-right">${wow}</td></tr>`;
-            }).join('');
-
         document.getElementById('an-mock-history').innerHTML = !mockHistory.length
           ? `<div class="py-8 text-center text-xs text-mut font-semibold">No Mock Sprints or PDF CBT tests graded yet.</div>`
           : mockHistory.map(m => `<div class="p-3 rounded-xl surface-elevated flex items-center justify-between text-xs"><div><div class="font-extrabold">${m.title}</div><div class="text-mut text-[11px]">${m.date}</div></div><div class="flex gap-1.5 font-mono font-bold"><span class="px-2 py-1 rounded-lg bg-acc-soft">${m.score}/${m.maxScore}</span><span class="px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-400">${m.accuracy}%</span></div></div>`).join('');
@@ -2328,13 +2159,13 @@
       // =====================================================================
       // 14. TAB 7: SYLLABUS TRACKER (4-STATE CYCLE)
       // =====================================================================
-      const SYL_STATES = ['Not Started', 'Studying', 'Revised', 'Mastered'];
+      const SYL_STATES = ['Not Started', 'In Progress', 'Revised', 'Mastered'];
       let sylSubj = 'All';
 
-      function getActiveSyl() { return currentExam === 'neet' ? NEET_SYLLABUS : JEE_SYLLABUS; }
+      function getActiveSyl() { return SYLLABUS_DATA[currentExam] || []; }
       function getChapState(id) {
         const v = syllabusState[id];
-        if (v === 'Learning') return 'Studying';
+        if (v === 'Studying' || v === 'Learning') return 'In Progress';
         return SYL_STATES.includes(v) ? v : 'Not Started';
       }
       window.cycleChapState = function (id) {
@@ -2354,10 +2185,10 @@
         const list = getActiveSyl();
         const done = list.filter(c => ['Revised', 'Mastered'].includes(getChapState(c.id))).length;
         document.getElementById('syl-heading').textContent = `${EXAM_CFG[currentExam].name} Syllabus Tracker (${list.length} Chapters)`;
-        document.getElementById('syl-pct').textContent = `${Math.round((done / list.length) * 100)}%`;
+        document.getElementById('syl-pct').textContent = `${list.length ? Math.round((done / list.length) * 100) : 0}%`;
         document.getElementById('syl-done').textContent = `${done} / ${list.length}`;
         document.getElementById('syl-subject-bars').innerHTML = EXAM_CFG[currentExam].subjects.map(subj => {
-          const sl = list.filter(c => c.subject === subj), sd = sl.filter(c => ['Revised', 'Mastered'].includes(getChapState(c.id))).length, sp = Math.round((sd / sl.length) * 100);
+          const sl = list.filter(c => c.subject === subj), sd = sl.filter(c => ['Revised', 'Mastered'].includes(getChapState(c.id))).length, sp = sl.length ? Math.round((sd / sl.length) * 100) : 0;
           return `<div class="surface-elevated rounded-2xl p-3.5 space-y-2"><div class="flex justify-between text-xs font-extrabold"><span>${subj}</span><span class="font-mono text-sec">${sd}/${sl.length} (${sp}%)</span></div><div class="w-full h-2 rounded-full surface-input overflow-hidden"><div class="h-full bg-acc rounded-full" style="width:${sp}%"></div></div></div>`;
         }).join('');
         window.renderSyllabusList();
@@ -2365,7 +2196,7 @@
       window.renderSyllabusList = function () {
         const stF = document.getElementById('syl-status-filter').value;
         const filtered = getActiveSyl().filter(c => (sylSubj === 'All' || c.subject === sylSubj) && (stF === 'All' || getChapState(c.id) === stF));
-        const badgeCls = { 'Not Started': 'surface-input text-mut', 'Studying': 'bg-rg-soft', 'Revised': 'bg-acc-soft', 'Mastered': 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' };
+        const badgeCls = { 'Not Started': 'surface-input text-mut', 'In Progress': 'bg-rg-soft', 'Revised': 'bg-acc-soft', 'Mastered': 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' };
         document.getElementById('syl-grid').innerHTML = filtered.map(c => {
           const st = getChapState(c.id);
           return `<button onclick="cycleChapState('${c.id}')" class="surface-card surface-card-hover rounded-2xl p-4 text-left flex items-center justify-between gap-3"><div><div class="text-[10px] font-extrabold uppercase text-mut">${c.subject}</div><div class="text-sm font-bold mt-0.5">${c.name}</div></div><span class="px-2.5 py-1 rounded-xl text-[11px] font-extrabold shrink-0 ${badgeCls[st]}">${st}</span></button>`;
@@ -2397,11 +2228,6 @@
         if (tab === 'syllabus') renderSyllabus();
       };
 
-      window.selectInitialExam = function (ex) {
-        document.getElementById('welcome-modal').classList.add('hidden');
-        window.switchExam(ex, true);
-      };
-
       window.switchExam = async function (exam, silent = false) {
         if (!EXAM_CFG[exam]) return;
         stopQWatch(); clearInterval(sprint.timer); clearInterval(cbtInt);
@@ -2427,7 +2253,10 @@
         window.initCbt();
         window.resetCbtTimer();
 
-        await autoLoadExamBank();
+        // Trigger isolated repo auto-load for the active exam
+        autoLoadExamBank(exam);
+        populateChapterDropdown();
+        applyPracticeFilters();
         window.switchTab(currentTab);
         if (!silent) showToast(`Switched to ${cfg.short}`, 'success');
       };
@@ -2439,13 +2268,7 @@
         migrateLegacySanskar();
         applyTheme(loadLS('mockify_theme', 'dark'));
         updatePomoUI();
-        const savedExam = loadLS('mockify_active_exam', null);
-        if (!savedExam) {
-          window.switchExam('jee', true);
-          document.getElementById('welcome-modal').classList.remove('hidden');
-        } else {
-          window.switchExam(savedExam, true);
-        }
+        window.switchExam(loadLS('mockify_active_exam', 'jee'), true);
       });
     })();
   </script>
