@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mockify.prep — JEE Main &amp; NEET UG Command Center</title>
+  <title>Mockify.prep — JEE Main &amp; NEET UG Platform</title>
 
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,28 +25,29 @@
     };
   </script>
 
-  <!-- KaTeX v0.16.9 for Math & Chemistry Rendering -->
+  <!-- KaTeX v0.16.9 for Crisp Math & Chemistry Rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
-  <!-- Theme System: Midnight Velvet & Rose-Gold (Default) + Warm Editorial Light -->
+  <!-- Design Tokens: Midnight Velvet & Rose-Gold (Dark Default) + Warm Editorial Alabaster (Light) -->
   <style>
     :root {
       --bg-base: #0A0612;
-      --bg-surface: rgba(19, 13, 33, 0.86);
-      --bg-elevated: rgba(29, 20, 49, 0.85);
-      --bg-input: rgba(12, 8, 22, 0.92);
+      --bg-surface: rgba(19, 13, 32, 0.88);
+      --bg-elevated: rgba(31, 21, 52, 0.85);
+      --bg-input: rgba(12, 8, 22, 0.94);
       --border-subtle: rgba(242, 167, 141, 0.14);
-      --border-strong: rgba(242, 167, 141, 0.32);
+      --border-strong: rgba(242, 167, 141, 0.34);
       --text-primary: #FAF7FF;
-      --text-secondary: #B4A9C7;
-      --text-muted: #7C7093;
+      --text-secondary: #B7ABC9;
+      --text-muted: #7F7397;
 
       --rosegold: #F2A78D;
       --rosegold-soft: rgba(242, 167, 141, 0.14);
-      --rosegold-border: rgba(242, 167, 141, 0.36);
+      --rosegold-border: rgba(242, 167, 141, 0.38);
 
+      /* JEE Dark Accent: Electric Violet */
       --accent: #A78BFA;
       --accent-hover: #8B5CF6;
       --accent-soft: rgba(167, 139, 250, 0.16);
@@ -58,23 +59,25 @@
       --shadow-card: 0 14px 40px rgba(4, 2, 10, 0.55);
     }
 
+    /* NEET Dark Accent: Aurora Mint */
     html[data-theme="dark"][data-exam="neet"] {
       --accent: #2DD4BF;
       --accent-hover: #14B8A6;
       --accent-soft: rgba(45, 212, 191, 0.16);
       --accent-border: rgba(45, 212, 191, 0.42);
-      --accent-ink: #051F1D;
+      --accent-ink: #04201E;
       --glow-1: rgba(45, 212, 191, 0.16);
     }
 
+    /* Warm Editorial Alabaster Light Mode (JEE Indigo) */
     html[data-theme="light"] {
-      --bg-base: #F8F7F4;
+      --bg-base: #FAF8F5;
       --bg-surface: #FFFFFF;
-      --bg-elevated: #F3F0EA;
-      --bg-input: #FAF9F6;
-      --border-subtle: #E6E1D9;
-      --border-strong: #D3CBC0;
-      --text-primary: #111827;
+      --bg-elevated: #F3EFE8;
+      --bg-input: #FBF9F6;
+      --border-subtle: #E6E0D6;
+      --border-strong: #D1C8BA;
+      --text-primary: #141824;
       --text-secondary: #4B5563;
       --text-muted: #6B7280;
 
@@ -93,6 +96,7 @@
       --shadow-card: 0 6px 24px rgba(17, 24, 39, 0.05);
     }
 
+    /* Light Mode NEET Emerald */
     html[data-theme="light"][data-exam="neet"] {
       --accent: #059669;
       --accent-hover: #047857;
@@ -157,6 +161,20 @@
       background: linear-gradient(135deg, var(--accent-soft), var(--rosegold-soft));
       border: 1px solid var(--border-strong);
     }
+    .diagram-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 1px 8px;
+      margin: 0 2px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: var(--rosegold-soft);
+      color: var(--rosegold);
+      border: 1px solid var(--rosegold-border);
+      vertical-align: middle;
+    }
 
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -168,7 +186,7 @@
 </head>
 <body class="flex flex-col pb-20 lg:pb-0">
 
-  <!-- Toast Notification Stack -->
+  <!-- Toast Notifications -->
   <div id="toast-container" class="fixed bottom-20 lg:bottom-5 right-4 z-50 flex flex-col gap-2 max-w-sm w-[calc(100%-2rem)] sm:w-80 pointer-events-none"></div>
 
   <!-- ===================================================================== -->
@@ -177,7 +195,7 @@
   <header class="sticky top-0 z-40 surface-card border-x-0 border-t-0 rounded-none">
     <div class="max-w-7xl mx-auto px-3 sm:px-6">
       <div class="h-16 flex items-center justify-between gap-2">
-        <!-- Brand -->
+        <!-- Brand Logo -->
         <button onclick="switchTab('dashboard')" class="flex items-center gap-2.5 text-left shrink-0">
           <div class="w-9 h-9 rounded-xl brand-mark font-black text-base flex items-center justify-center">M</div>
           <div>
@@ -199,7 +217,7 @@
           <button onclick="switchTab('syllabus')" data-tab="syllabus" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-bold transition">Syllabus</button>
         </nav>
 
-        <!-- Right Controls: JEE/NEET Switcher + Pomodoro + Theme -->
+        <!-- Right Controls: JEE/NEET Switcher + Header Pomodoro + Theme -->
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <div class="flex items-center p-0.5 rounded-xl surface-elevated">
             <button id="pill-jee" onclick="switchExam('jee')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-extrabold transition">JEE</button>
@@ -207,33 +225,15 @@
           </div>
 
           <!-- Compact Pomodoro Focus Timer -->
-          <div class="relative">
-            <button onclick="togglePomoPopover()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl surface-elevated hover:border-[var(--rosegold-border)] transition text-xs font-mono font-bold" title="Pomodoro Focus Timer">
-              <span id="pomo-dot" class="w-2 h-2 rounded-full bg-[var(--rosegold)]"></span>
-              <span id="pomo-nav-time">25:00</span>
-            </button>
-            <div id="pomo-popover" class="hidden absolute right-0 mt-2 w-64 p-4 rounded-2xl surface-card z-50 space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-extrabold uppercase tracking-wider text-rg">Pomodoro Timer</span>
-                <button onclick="togglePomoPopover(false)" class="text-sec text-lg leading-none">&times;</button>
-              </div>
-              <div class="grid grid-cols-2 gap-2">
-                <button onclick="setPomoPreset(25, 'Focus')" class="py-1.5 rounded-lg surface-elevated text-[11px] font-bold">25m Focus</button>
-                <button onclick="setPomoPreset(5, 'Break')" class="py-1.5 rounded-lg surface-elevated text-[11px] font-bold">05m Break</button>
-              </div>
-              <div class="text-center py-1">
-                <div id="pomo-pop-mode" class="text-[11px] font-bold text-sec">Focus Session</div>
-                <div id="pomo-pop-display" class="font-mono text-3xl font-extrabold mt-0.5">25:00</div>
-              </div>
-              <div class="flex gap-2">
-                <button onclick="togglePomoRun()" id="pomo-run-btn" class="flex-1 py-2 rounded-xl bg-acc text-xs font-extrabold transition">Start</button>
-                <button onclick="resetPomo()" class="px-3 py-2 rounded-xl surface-elevated text-xs font-bold">Reset</button>
-              </div>
-            </div>
+          <div class="flex items-center gap-1 px-2 py-1 rounded-xl surface-elevated text-xs font-mono font-bold">
+            <span id="pomo-dot" class="w-2 h-2 rounded-full bg-[var(--rosegold)] shrink-0"></span>
+            <span id="pomo-nav-time" class="px-0.5">25:00</span>
+            <button onclick="togglePomoRun()" id="pomo-play-btn" class="px-1.5 py-0.5 rounded-md bg-acc-soft text-[10px] font-sans font-extrabold" title="Start / Pause Pomodoro">▶</button>
+            <button onclick="resetPomo()" class="px-1.5 py-0.5 rounded-md surface-input text-[10px] font-sans font-bold text-sec" title="Reset Pomodoro">↺</button>
           </div>
 
           <!-- Theme Toggle -->
-          <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl surface-elevated flex items-center justify-center text-sm hover:border-[var(--rosegold-border)] transition" title="Toggle Midnight Velvet / Warm Light">
+          <button onclick="toggleTheme()" class="w-9 h-9 rounded-xl surface-elevated flex items-center justify-center text-sm hover:border-[var(--rosegold-border)] transition" title="Toggle Midnight Velvet / Warm Editorial Light">
             <span id="theme-icon">☀️</span>
           </button>
         </div>
@@ -254,7 +254,7 @@
     </div>
   </nav>
 
-  <!-- Chunked Loader Banner -->
+  <!-- Chunked Auto-Loader Progress Banner -->
   <div id="loader-banner" class="hidden max-w-7xl w-full mx-auto px-4 sm:px-6 pt-4">
     <div class="surface-card rounded-2xl p-3.5 flex items-center gap-3">
       <span class="w-4 h-4 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin shrink-0"></span>
@@ -282,16 +282,16 @@
       <div class="surface-card hero-gradient rounded-3xl p-5 sm:p-7 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         <div class="space-y-3 flex-1">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-3 py-1 rounded-full bg-rg-soft text-[11px] font-extrabold uppercase tracking-wider">Command Center</span>
+            <span class="px-3 py-1 rounded-full bg-rg-soft text-[11px] font-extrabold uppercase tracking-wider">Command Dashboard</span>
             <span class="px-3 py-1 rounded-full bg-acc-soft text-[11px] font-extrabold">🔥 <span id="dash-streak">0</span> Day Streak</span>
-            <span id="dash-bank-pill" class="px-3 py-1 rounded-full surface-elevated text-[11px] font-bold text-sec">Initializing...</span>
+            <button onclick="openDiagnosticsModal()" id="dash-bank-pill" class="px-3 py-1 rounded-full surface-elevated hover:border-[var(--accent)] text-[11px] font-bold text-sec transition cursor-pointer" title="Inspect per-file dataset loader">Initializing...</button>
           </div>
           <div>
             <div class="flex flex-wrap items-center gap-2.5">
               <h1 id="dash-exam-title" class="text-2xl sm:text-3xl font-extrabold tracking-tight">JEE Main 2027</h1>
               <button onclick="openCountdownModal()" class="px-2.5 py-1 rounded-lg surface-elevated hover:border-[var(--rosegold-border)] text-[11px] font-bold text-sec transition">✏️ Edit Date</button>
             </div>
-            <p class="text-xs sm:text-sm text-sec mt-1">100% isolated JEE &amp; NEET prep workspace. Track speed, accuracy, formulas, and full syllabus mastery.</p>
+            <p class="text-xs sm:text-sm text-sec mt-1">Free, strictly isolated JEE Main &amp; NEET UG command center with live speed analytics, NTA mock sprints &amp; formula sheets.</p>
           </div>
           <button onclick="openCountdownModal()" class="flex items-baseline gap-2 pt-1 text-left group">
             <span id="dash-days-left" class="font-mono text-4xl sm:text-5xl font-extrabold text-rg group-hover:underline">0</span>
@@ -299,7 +299,7 @@
           </button>
         </div>
 
-        <!-- Daily Goal SVG Ring -->
+        <!-- Daily Goal SVG Progress Ring -->
         <div class="surface-card rounded-2xl p-4 sm:p-5 flex items-center gap-4 w-full lg:w-auto shrink-0">
           <div class="relative w-20 h-20 shrink-0">
             <svg class="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
@@ -321,10 +321,15 @@
         </div>
       </div>
 
-      <!-- 5 KPI Cards -->
+      <!-- 5 Live KPI Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <button onclick="openDiagnosticsModal()" class="surface-card surface-card-hover rounded-2xl p-4 text-left">
+          <div class="text-[11px] font-bold uppercase text-mut">Questions Loaded</div>
+          <div id="kpi-loaded" class="font-mono text-2xl font-extrabold text-acc mt-1">0</div>
+          <div class="text-[11px] text-sec mt-0.5">Tap for file info</div>
+        </button>
         <div class="surface-card rounded-2xl p-4">
-          <div class="text-[11px] font-bold uppercase text-mut">Questions Solved</div>
+          <div class="text-[11px] font-bold uppercase text-mut">Attempted</div>
           <div id="kpi-solved" class="font-mono text-2xl font-extrabold mt-1">0</div>
           <div class="text-[11px] text-sec mt-0.5">Active exam mode</div>
         </div>
@@ -337,11 +342,6 @@
           <div class="text-[11px] font-bold uppercase text-mut">Avg Time / Q</div>
           <div id="kpi-time" class="font-mono text-2xl font-extrabold text-rg mt-1">0s</div>
           <div id="kpi-bench" class="text-[11px] text-sec mt-0.5">Goal &le; 90s</div>
-        </div>
-        <div class="surface-card rounded-2xl p-4">
-          <div class="text-[11px] font-bold uppercase text-mut">Bookmarked</div>
-          <div id="kpi-bookmarks" class="font-mono text-2xl font-extrabold text-acc mt-1">0</div>
-          <div class="text-[11px] text-sec mt-0.5">Saved for review</div>
         </div>
         <div class="surface-card rounded-2xl p-4 col-span-2 sm:col-span-1">
           <div class="text-[11px] font-bold uppercase text-mut">Formulas Read</div>
@@ -356,8 +356,8 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <button onclick="switchTab('practice')" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
             <span class="w-9 h-9 rounded-xl bg-acc-soft flex items-center justify-center text-base">📝</span>
-            <div class="text-sm font-extrabold">Continue Practice</div>
-            <div class="text-[11px] text-sec">Solve PYQs with live stopwatch &amp; solutions.</div>
+            <div class="text-sm font-extrabold">Continue PYQ Practice</div>
+            <div class="text-[11px] text-sec">Browse MCQs &amp; Numericals with live stopwatch.</div>
           </button>
           <button onclick="quickStartTenQSprint()" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
             <span class="w-9 h-9 rounded-xl bg-rg-soft flex items-center justify-center text-base">⚡</span>
@@ -366,24 +366,24 @@
           </button>
           <button onclick="jumpToReviewMistakes()" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
             <span class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center justify-center text-base">🔖</span>
-            <div class="text-sm font-extrabold">Review Mistakes</div>
-            <div class="text-[11px] text-sec">Re-attempt wrong or bookmarked PYQs.</div>
+            <div class="text-sm font-extrabold">Review Wrong Answers</div>
+            <div class="text-[11px] text-sec">Fix mistakes &amp; revise bookmarked PYQs.</div>
           </button>
           <button onclick="switchTab('readnow')" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
             <span class="w-9 h-9 rounded-xl bg-acc-soft flex items-center justify-center text-base">📖</span>
-            <div class="text-sm font-extrabold">Open Formula Hub</div>
-            <div class="text-[11px] text-sec">Chapter-wise KaTeX formulas &amp; exam traps.</div>
+            <div class="text-sm font-extrabold">Formula Hub</div>
+            <div class="text-[11px] text-sec">Chapter-wise KaTeX sheets &amp; exam traps.</div>
           </button>
         </div>
       </div>
 
-      <!-- Daily Study Checklist + Smart Focus -->
+      <!-- Daily Study Checklist + Smart Focus & Recent Mocks -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div class="lg:col-span-7 surface-card rounded-2xl p-5 space-y-4">
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-sm font-extrabold uppercase tracking-wider text-rg">Daily Study Checklist</h3>
-              <p class="text-xs text-sec">Saved separately for JEE and NEET modes.</p>
+              <p class="text-xs text-sec">Isolated per exam mode (JEE vs NEET).</p>
             </div>
             <span id="todo-progress-pill" class="px-2.5 py-1 rounded-lg surface-elevated font-mono text-xs font-bold">0 / 0 Done</span>
           </div>
@@ -415,18 +415,24 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- TAB 2: PYQ PRACTICE                                                 -->
+    <!-- TAB 2: PYQ PRACTICE (MCQ + NUMERICAL SUPPORT)                       -->
     <!-- =================================================================== -->
     <section id="tab-practice" class="tab-section hidden space-y-4">
       <div class="surface-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
         <div class="flex flex-wrap items-center gap-2">
-          <span id="bank-status-badge" class="px-3 py-1.5 rounded-xl bg-acc-soft text-xs font-extrabold">Loading...</span>
+          <button onclick="openDiagnosticsModal()" id="bank-status-badge" class="px-3.5 py-1.5 rounded-xl bg-acc-soft hover:brightness-110 text-xs font-extrabold cursor-pointer transition flex items-center gap-1.5" title="Inspect per-file dataset diagnostics">
+            <span>Loading...</span>
+            <span class="text-[10px] opacity-80">ⓘ</span>
+          </button>
           <span class="px-3 py-1.5 rounded-xl bg-rg-soft text-xs font-bold">🔥 <span id="prac-streak-badge">0</span>d Streak</span>
         </div>
-        <label class="px-3.5 py-2 rounded-xl surface-elevated hover:border-[var(--rosegold-border)] cursor-pointer text-xs font-bold transition">
-          📂 Import .jsonl/.json
-          <input type="file" accept=".jsonl,.json,.txt" multiple class="hidden" onchange="handleLocalDatasetImport(event)" />
-        </label>
+        <div class="flex items-center gap-2">
+          <button onclick="forceReloadActiveBank()" class="px-3 py-2 rounded-xl surface-elevated hover:border-[var(--accent)] text-xs font-bold transition">↻ Retry</button>
+          <label class="px-3.5 py-2 rounded-xl surface-elevated hover:border-[var(--rosegold-border)] cursor-pointer text-xs font-bold transition">
+            📂 Local Import .jsonl/.json
+            <input type="file" accept=".jsonl,.json,.txt" multiple class="hidden" onchange="handleLocalDatasetImport(event)" />
+          </label>
+        </div>
       </div>
 
       <div class="surface-card rounded-2xl p-4 space-y-3">
@@ -434,17 +440,20 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
           <select id="prac-status-filter" onchange="applyPracticeFilters()" class="px-3 py-2.5 rounded-xl surface-input text-xs font-bold">
             <option value="all">All Questions</option>
-            <option value="unsolved">Unsolved Only</option>
-            <option value="wrong">Mistakes Only</option>
-            <option value="bookmarked">Bookmarked Only</option>
+            <option value="unsolved">Unsolved</option>
+            <option value="correct">Correct</option>
+            <option value="wrong">Incorrect</option>
+            <option value="bookmarked">Bookmarked</option>
+            <option value="mcq">MCQ Only</option>
+            <option value="numerical">Numerical Only</option>
           </select>
           <select id="prac-chapter-filter" onchange="applyPracticeFilters()" class="px-3 py-2.5 rounded-xl surface-input text-xs font-bold">
             <option value="All">All Chapters</option>
           </select>
-          <input id="prac-search-input" type="text" oninput="applyPracticeFilters()" placeholder="Search question, chapter, or ID..." class="lg:col-span-2 px-3.5 py-2.5 rounded-xl surface-input text-xs font-semibold" />
+          <input id="prac-search-input" type="text" oninput="applyPracticeFilters()" placeholder="Search question text, chapter, or ID..." class="lg:col-span-2 px-3.5 py-2.5 rounded-xl surface-input text-xs font-semibold" />
         </div>
         <div class="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-[var(--border-subtle)] text-xs font-bold">
-          <span id="prac-page-info" class="text-sec">Showing 0 of 0</span>
+          <span id="prac-page-info" class="text-sec">Showing Q 0–0 of 0</span>
           <div class="flex items-center gap-1.5">
             <button onclick="stepPracticePage(-1)" class="px-3 py-1.5 rounded-lg surface-elevated hover:border-[var(--accent)]">Prev 25</button>
             <select id="prac-page-select" onchange="jumpPracticePage(this.value)" class="px-2.5 py-1.5 rounded-lg surface-input font-mono font-bold"></select>
@@ -456,7 +465,7 @@
       <div id="practice-card" class="surface-card rounded-2xl p-5 sm:p-7"></div>
 
       <p class="hidden sm:block text-center text-[11px] font-semibold text-mut">
-        Shortcuts: <span class="font-mono">A–D</span> / <span class="font-mono">1–4</span> Select &bull; <span class="font-mono">Enter</span> Submit &bull; <span class="font-mono">N</span> / <span class="font-mono">P</span> Navigate
+        Shortcuts: <span class="font-mono">A–D</span> / <span class="font-mono">1–4</span> Select Option &bull; <span class="font-mono">Enter</span> Submit &bull; <span class="font-mono">N</span> / <span class="font-mono">P</span> Next / Prev
       </p>
     </section>
 
@@ -468,7 +477,7 @@
         <div class="space-y-1.5">
           <span class="px-2.5 py-1 rounded-lg bg-rg-soft text-[11px] font-extrabold uppercase tracking-wider">NTA-Style Mini Mock</span>
           <h2 class="text-2xl font-extrabold">Timed Mock Sprint</h2>
-          <p class="text-sm text-sec">Pulls random questions exclusively from your active exam bank with +4 / &minus;1 auto-scoring.</p>
+          <p class="text-sm text-sec">Draws random MCQs strictly from your active exam bank with a live countdown, NTA Question Palette, and +4 / &minus;1 scoring.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="space-y-1.5">
@@ -518,7 +527,7 @@
               <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500"></span> Answered</div>
               <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-purple-500"></span> Marked</div>
               <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-500"></span> Not Answered</div>
-              <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded surface-elevated"></span> Unvisited</div>
+              <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded surface-elevated"></span> Not Visited</div>
             </div>
           </div>
         </div>
@@ -528,7 +537,7 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- TAB 4: READ NOW — FORMULA & REVISION HUB                            -->
+    <!-- TAB 4: READ NOW — FORMULA & REVISION HUB (15 JEE + 15 NEET)         -->
     <!-- =================================================================== -->
     <section id="tab-readnow" class="tab-section hidden space-y-5">
       <div class="surface-card rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -613,8 +622,8 @@
           <div class="flex-1 overflow-auto relative bg-black/25">
             <div id="cbt-pdf-empty" class="h-full flex flex-col items-center justify-center p-6 text-center space-y-2">
               <div class="w-14 h-14 rounded-2xl bg-acc-soft flex items-center justify-center text-2xl font-black">PDF</div>
-              <p class="font-extrabold text-sm">Upload Any Local Question Paper PDF</p>
-              <p class="text-xs text-sec max-w-sm">View your paper on the left while marking A/B/C/D or Numerical answers on the interactive OMR sheet.</p>
+              <p class="font-extrabold text-sm">Upload Any Coaching or PYQ Paper PDF</p>
+              <p class="text-xs text-sec max-w-sm">View your question paper on the left while marking answers on the interactive OMR sheet.</p>
             </div>
             <div id="cbt-pdf-frame-wrap" class="hidden w-full h-full origin-top-left transition-transform duration-150">
               <iframe id="cbt-pdf-frame" class="w-full h-full border-0 bg-white" title="Question Paper PDF"></iframe>
@@ -661,7 +670,7 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- TAB 6: ANALYTICS & WEEKLY TRACKER                                   -->
+    <!-- TAB 6: ANALYTICS & WEEKLY                                           -->
     <!-- =================================================================== -->
     <section id="tab-analytics" class="tab-section hidden space-y-5">
       <div class="flex flex-wrap items-center justify-between gap-3">
@@ -702,7 +711,7 @@
       <div class="surface-card rounded-2xl p-5 space-y-4">
         <div>
           <h3 class="text-xs font-extrabold uppercase tracking-wider text-sec">Last 7 Days Performance</h3>
-          <p class="text-xs text-mut">Daily questions solved, average time per question, and accuracy percentage.</p>
+          <p class="text-xs text-mut">Daily questions solved, accuracy percentage, and average time per question.</p>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div class="surface-elevated rounded-2xl p-4 space-y-3">
@@ -710,12 +719,12 @@
             <div id="c7-q-bars" class="h-36 flex items-end justify-between gap-2 pt-3"></div>
           </div>
           <div class="surface-elevated rounded-2xl p-4 space-y-3">
-            <div class="flex justify-between text-xs font-extrabold"><span>Avg Time / Q</span><span id="c7-t-avg" class="font-mono text-rg">0s</span></div>
-            <div id="c7-t-bars" class="h-36 flex items-end justify-between gap-2 pt-3"></div>
-          </div>
-          <div class="surface-elevated rounded-2xl p-4 space-y-3">
             <div class="flex justify-between text-xs font-extrabold"><span>Daily Accuracy</span><span id="c7-a-avg" class="font-mono text-emerald-400">0%</span></div>
             <div id="c7-a-bars" class="h-36 flex items-end justify-between gap-2 pt-3"></div>
+          </div>
+          <div class="surface-elevated rounded-2xl p-4 space-y-3">
+            <div class="flex justify-between text-xs font-extrabold"><span>Avg Time / Q</span><span id="c7-t-avg" class="font-mono text-rg">0s</span></div>
+            <div id="c7-t-bars" class="h-36 flex items-end justify-between gap-2 pt-3"></div>
           </div>
         </div>
       </div>
@@ -727,7 +736,7 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- TAB 7: SYLLABUS TRACKER                                             -->
+    <!-- TAB 7: SYLLABUS TRACKER (58 JEE + 79 NEET CHAPTERS)                 -->
     <!-- =================================================================== -->
     <section id="tab-syllabus" class="tab-section hidden space-y-5">
       <div class="surface-card rounded-2xl p-5 space-y-4">
@@ -767,6 +776,31 @@
   <!-- ===================================================================== -->
   <!-- MODALS                                                                -->
   <!-- ===================================================================== -->
+
+  <!-- Per-File Dataset Diagnostics Modal -->
+  <div id="diagnostics-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="surface-card rounded-3xl max-w-xl w-full p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 id="diag-title" class="text-base font-extrabold">Dataset Loader Diagnostics</h3>
+          <p class="text-[11px] text-sec">Dual-URL fetch status (Local GitHub Pages + Raw GitHub fallback).</p>
+        </div>
+        <button onclick="closeDiagnosticsModal()" class="text-2xl text-sec leading-none">&times;</button>
+      </div>
+      <div id="diag-summary" class="grid grid-cols-3 gap-2 text-center"></div>
+      <div id="diag-file-list" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[var(--border-subtle)]">
+        <div class="flex gap-2">
+          <button onclick="forceReloadActiveBank()" class="px-4 py-2 rounded-xl bg-acc-soft text-xs font-extrabold">↻ Retry Load</button>
+          <label class="px-3.5 py-2 rounded-xl surface-elevated cursor-pointer text-xs font-bold">
+            📂 Local Import
+            <input type="file" accept=".jsonl,.json,.txt" multiple class="hidden" onchange="handleLocalDatasetImport(event); closeDiagnosticsModal();" />
+          </label>
+        </div>
+        <button onclick="closeDiagnosticsModal()" class="px-5 py-2 rounded-xl bg-acc text-xs font-extrabold">Done</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Edit Exam Countdown Modal -->
   <div id="countdown-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
@@ -879,55 +913,62 @@
       'use strict';
 
       // =====================================================================
-      // 1. STRICT EXAM CONFIG, IN-MEMORY ISOLATION & STORAGE MIGRATION
+      // 1. STRICT DUAL-EXAM CONFIG, ISOLATED BANKS & RAW GITHUB FALLBACK
       // =====================================================================
+      const RAW_GITHUB_BASE = 'https://raw.githubusercontent.com/sanskar-jee/Sanskar/main/';
+
       const EXAM_CFG = {
         jee: {
           id: 'jee', name: 'JEE Main', short: 'JEE Main (PCM)',
           defaultTitle: 'JEE Main 2027', defaultDate: '2027-01-22',
           subjects: ['Physics', 'Chemistry', 'Mathematics'],
-          forbidden: 'Biology', benchSec: 90,
+          primarySubject: 'Physics', benchSec: 90,
           cbtQs: 75, cbtMins: 180, cbtLabel: 'JEE Main (75 Qs)',
           cbtRanges: [
             { name: 'Physics', start: 1, end: 25 },
             { name: 'Chemistry', start: 26, end: 50 },
             { name: 'Mathematics', start: 51, end: 75 }
           ],
-          githubFiles: ['train.jsonl', 'train (1).jsonl', 'train (2).jsonl', 'test.jsonl', 'test (1).jsonl', 'test (2).jsonl']
+          // JEE mode loads ONLY these 6 files — never touches NEET
+          githubFiles: ['train.jsonl', 'train (1).jsonl', 'train (2).jsonl', 'test.jsonl', 'test (1).jsonl', 'test (2).jsonl'],
+          fallbackFile: null
         },
         neet: {
           id: 'neet', name: 'NEET UG', short: 'NEET UG (PCB)',
           defaultTitle: 'NEET UG 2027', defaultDate: '2027-05-02',
           subjects: ['Physics', 'Chemistry', 'Biology'],
-          forbidden: 'Mathematics', benchSec: 50,
+          primarySubject: 'Biology', benchSec: 50,
           cbtQs: 180, cbtMins: 200, cbtLabel: 'NEET UG (180 Qs)',
           cbtRanges: [
             { name: 'Physics', start: 1, end: 45 },
             { name: 'Chemistry', start: 46, end: 90 },
             { name: 'Biology', start: 91, end: 180 }
           ],
+          // NEET mode loads ONLY neet_complete_dataset.jsonl (falls back to neet.jsonl ONLY if first 404s)
           githubFiles: ['neet_complete_dataset.jsonl'],
           fallbackFile: 'neet.jsonl'
         }
       };
 
-      // Strictly isolated in-memory banks & loader status per exam mode
+      // Strictly isolated in-memory banks & diagnostics
       const banks = { jee: [], neet: [] };
       const bankMeta = {
-        jee: { loadedFromRepo: false, loading: false, statusText: 'Initializing JEE...' },
-        neet: { loadedFromRepo: false, loading: false, statusText: 'Initializing NEET...' }
+        jee: { loadedFromRepo: false, loading: false, statusText: 'Initializing JEE...', fileStats: [] },
+        neet: { loadedFromRepo: false, loading: false, statusText: 'Initializing NEET...', fileStats: [] }
       };
 
       let currentExam = 'jee';
       let currentTab = 'dashboard';
+      let loadToken = 0; // Monotonically increasing race-condition guard
 
       function lsKey(s, ex = currentExam) { return `mockify_${ex}_${s}`; }
       function loadLS(k, fb) { try { const r = localStorage.getItem(k); return r !== null ? JSON.parse(r) : fb; } catch { return fb; } }
       function saveLS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 
+      // Silent one-time migration from legacy sanskar_* storage keys
       function migrateLegacySanskar() {
-        if (loadLS('mockify_migrated_v3', false)) return;
-        const suf = ['attempts', 'mistakes', 'bookmarks', 'solved_ids', 'mock_history', 'daily_q_goal', 'syllabus', 'todos', 'countdown'];
+        if (loadLS('mockify_migrated_v5', false)) return;
+        const suf = ['attempts', 'mistakes', 'bookmarks', 'solved_ids', 'correct_ids', 'mock_history', 'daily_q_goal', 'syllabus', 'todos', 'countdown'];
         ['jee', 'neet'].forEach(ex => {
           suf.forEach(s => {
             try {
@@ -938,93 +979,98 @@
             } catch {}
           });
         });
-        saveLS('mockify_migrated_v3', true);
+        saveLS('mockify_migrated_v5', true);
       }
 
       function getDateKey(d = new Date()) {
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       }
+      function escapeHtml(str) {
+        return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      function formatRichText(str) {
+        // Replace raw [IMAGE] tokens cleanly with styled inline [Diagram] pill
+        return escapeHtml(str).replace(/\[IMAGE\]/gi, '<span class="diagram-pill">📐 Diagram</span>');
+      }
 
       // =====================================================================
-      // 2. BUILT-IN FALLBACK SAMPLE PYQS (12 JEE + 12 NEET)
+      // 2. BUILT-IN SAMPLE PYQS (OFFLINE FALLBACK ONLY IF ALL FETCHES FAIL)
       // =====================================================================
       const FALLBACK_PYQS = {
         jee: [
-          { id: 'JEE-PH-01', subject: 'Physics', chapter: 'Laws of Motion', year: 'JEE Main', question: 'A block of mass $m = 2\\text{ kg}$ rests on a rough horizontal surface with $\\mu_s = 0.4$. What is the minimum horizontal force required to just start moving it? ($g = 10\\text{ m/s}^2$)', options: ['$4\\text{ N}$', '$8\\text{ N}$', '$10\\text{ N}$', '$20\\text{ N}$'], correctOption: 1, explanation: 'Limiting friction $f_{\\max} = \\mu_s mg = 0.4 \\times 2 \\times 10 = 8\\text{ N}$.' },
-          { id: 'JEE-PH-02', subject: 'Physics', chapter: 'Rotational Motion', year: 'JEE Main', question: 'A solid sphere rolls without slipping. The ratio of its rotational kinetic energy to total kinetic energy is:', options: ['$\\frac{2}{5}$', '$\\frac{2}{7}$', '$\\frac{5}{7}$', '$\\frac{1}{3}$'], correctOption: 1, explanation: '$I = \\frac{2}{5}MR^2 \\Rightarrow K_{\\text{rot}}/K_{\\text{tot}} = \\frac{2/5}{1 + 2/5} = \\frac{2}{7}$.' },
-          { id: 'JEE-PH-03', subject: 'Physics', chapter: 'Electrostatics', year: 'JEE Main', question: 'Two point charges $+4q$ and $+q$ are separated by distance $L$. At what distance from $+4q$ on the line joining them is the electric field zero?', options: ['$\\frac{L}{3}$', '$\\frac{2L}{3}$', '$\\frac{L}{2}$', '$\\frac{3L}{4}$'], correctOption: 1, explanation: '$\\frac{4q}{x^2} = \\frac{q}{(L-x)^2} \\Rightarrow x = \\frac{2L}{3}$.' },
-          { id: 'JEE-PH-04', subject: 'Physics', chapter: 'Modern Physics', year: 'JEE Main', question: 'The work function of a metal is $2.2\\text{ eV}$. If photons of energy $5.0\\text{ eV}$ strike it, $K_{\\max}$ of emitted photoelectrons is:', options: ['$2.2\\text{ eV}$', '$2.8\\text{ eV}$', '$5.0\\text{ eV}$', '$7.2\\text{ eV}$'], correctOption: 1, explanation: '$K_{\\max} = h\\nu - \\phi = 5.0 - 2.2 = 2.8\\text{ eV}$.' },
-          { id: 'JEE-CH-01', subject: 'Chemistry', chapter: 'Chemical Bonding', year: 'JEE Main', question: 'The hybridization and molecular geometry of $\\text{XeF}_4$ are respectively:', options: ['$sp^3$, Tetrahedral', '$sp^3d$, See-saw', '$sp^3d^2$, Square planar', '$sp^3d^2$, Octahedral'], correctOption: 2, explanation: '$\\text{XeF}_4$ has 4 bond pairs and 2 lone pairs ($sp^3d^2$), giving a square planar shape.' },
-          { id: 'JEE-CH-02', subject: 'Chemistry', chapter: 'Thermodynamics', year: 'JEE Main', question: 'For a reaction at $300\\text{ K}$, $\\Delta H = -40\\text{ kJ/mol}$ and $\\Delta S = -100\\text{ J K}^{-1}\\text{mol}^{-1}$. $\\Delta G$ is:', options: ['$-10\\text{ kJ/mol}$', '$-70\\text{ kJ/mol}$', '$+10\\text{ kJ/mol}$', '$-30\\text{ kJ/mol}$'], correctOption: 0, explanation: '$\\Delta G = \\Delta H - T\\Delta S = -40 - 300(-0.1) = -10\\text{ kJ/mol}$.' },
-          { id: 'JEE-CH-03', subject: 'Chemistry', chapter: 'Coordination Compounds', year: 'JEE Main', question: 'The spin-only magnetic moment of $[\\text{Fe(CN)}_6]^{4-}$ is:', options: ['$0\\text{ BM}$', '$1.73\\text{ BM}$', '$4.90\\text{ BM}$', '$5.92\\text{ BM}$'], correctOption: 0, explanation: 'Strong-field $\\text{CN}^-$ pairs all $d^6$ electrons in $t_{2g}^6$, so $n = 0 \\Rightarrow \\mu = 0\\text{ BM}$.' },
-          { id: 'JEE-CH-04', subject: 'Chemistry', chapter: 'Chemical Kinetics', year: 'JEE Main', question: 'For a first-order reaction with $t_{1/2} = 10\\text{ min}$, time for $75\\%$ completion is:', options: ['$15\\text{ min}$', '$20\\text{ min}$', '$30\\text{ min}$', '$40\\text{ min}$'], correctOption: 1, explanation: '$75\\%$ completion = 2 half-lives = $20\\text{ min}$.' },
-          { id: 'JEE-MA-01', subject: 'Mathematics', chapter: 'Definite Integration', year: 'JEE Main', question: 'The value of $\\int_0^{\\pi/2} \\frac{\\sin x}{\\sin x + \\cos x}\\,dx$ is:', options: ['$\\frac{\\pi}{4}$', '$\\frac{\\pi}{2}$', '$\\pi$', '$1$'], correctOption: 0, explanation: 'By King’s property, $2I = \\int_0^{\\pi/2} 1\\,dx = \\frac{\\pi}{2} \\Rightarrow I = \\frac{\\pi}{4}$.' },
-          { id: 'JEE-MA-02', subject: 'Mathematics', chapter: 'Matrices & Determinants', year: 'JEE Main', question: 'If $A$ is a $3 \\times 3$ matrix with $|A| = 4$, then $|2A|$ equals:', options: ['$8$', '$16$', '$32$', '$64$'], correctOption: 2, explanation: '$|kA| = k^n|A| = 2^3 \\times 4 = 32$.' },
-          { id: 'JEE-MA-03', subject: 'Mathematics', chapter: 'Probability', year: 'JEE Main', question: 'Two fair dice are thrown simultaneously. Probability of getting a sum of $9$ is:', options: ['$\\frac{1}{12}$', '$\\frac{1}{9}$', '$\\frac{1}{6}$', '$\\frac{5}{36}$'], correctOption: 1, explanation: 'Favorable pairs: $(3,6),(4,5),(5,4),(6,3) = 4/36 = 1/9$.' },
-          { id: 'JEE-MA-04', subject: 'Mathematics', chapter: 'Limits', year: 'JEE Main', question: 'The value of $\\lim_{x \\to 0} \\frac{1 - \\cos 2x}{x^2}$ is:', options: ['$0$', '$1$', '$2$', '$4$'], correctOption: 2, explanation: '$1 - \\cos 2x = 2\\sin^2 x \\Rightarrow \\lim_{x\\to 0} 2(\\sin x / x)^2 = 2$.' }
+          { id: 'jee-fb-1', origId: 'JEE-PH-01', qType: 'mcq', subject: 'Physics', chapter: 'Laws of Motion', year: 'JEE Main', question: 'A block of mass $m = 2\\text{ kg}$ rests on a rough horizontal surface with $\\mu_s = 0.4$. Minimum horizontal force to start moving it is ($g = 10\\text{ m/s}^2$):', options: ['$4\\text{ N}$', '$8\\text{ N}$', '$10\\text{ N}$', '$20\\text{ N}$'], correctOption: 1, answerText: 'B', explanation: 'Limiting friction $f_{\\max} = \\mu_s mg = 0.4 \\times 2 \\times 10 = 8\\text{ N}$.' },
+          { id: 'jee-fb-2', origId: 'JEE-PH-02', qType: 'numerical', subject: 'Physics', chapter: 'Current Electricity', year: 'JEE Main', question: 'A uniform wire of resistance $12\\,\\Omega$ is bent into a closed circle. Find the effective resistance (in $\\Omega$) between two diametrically opposite points.', options: [], correctOption: -1, answerText: '3', explanation: 'Two $6\\,\\Omega$ semicircles in parallel give $R_{\\text{eq}} = 6/2 = 3\\,\\Omega$.' },
+          { id: 'jee-fb-3', origId: 'JEE-CH-01', qType: 'mcq', subject: 'Chemistry', chapter: 'Chemical Bonding', year: 'JEE Main', question: 'The hybridization and molecular geometry of $\\text{XeF}_4$ are respectively:', options: ['$sp^3$, Tetrahedral', '$sp^3d$, See-saw', '$sp^3d^2$, Square planar', '$sp^3d^2$, Octahedral'], correctOption: 2, answerText: 'C', explanation: '$\\text{XeF}_4$ has 4 bond pairs and 2 lone pairs ($sp^3d^2$), giving a square planar geometry.' },
+          { id: 'jee-fb-4', origId: 'JEE-MA-01', qType: 'mcq', subject: 'Mathematics', chapter: 'Definite Integration', year: 'JEE Main', question: 'The value of $\\int_0^{\\pi/2} \\frac{\\sin x}{\\sin x + \\cos x}\\,dx$ is:', options: ['$\\frac{\\pi}{4}$', '$\\frac{\\pi}{2}$', '$\\pi$', '$1$'], correctOption: 0, answerText: 'A', explanation: 'Using King’s property, $2I = \\int_0^{\\pi/2} 1\\,dx = \\frac{\\pi}{2} \\Rightarrow I = \\frac{\\pi}{4}$.' }
         ],
         neet: [
-          { id: 'NEET-PH-01', subject: 'Physics', chapter: 'Units & Measurements', year: 'NEET PYQ', question: 'The dimensional formula of Planck’s constant $h$ is identical to that of:', options: ['Linear momentum', 'Angular momentum', 'Torque', 'Force'], correctOption: 1, explanation: 'Both $h = E/\\nu$ and angular momentum $L = mvr$ have dimensions $[ML^2T^{-1}]$.' },
-          { id: 'NEET-PH-02', subject: 'Physics', chapter: 'Work, Energy & Power', year: 'NEET PYQ', question: 'If linear momentum of a body increases by $50\\%$, its kinetic energy increases by:', options: ['$50\\%$', '$100\\%$', '$125\\%$', '$150\\%$'], correctOption: 2, explanation: '$K \\propto p^2 \\Rightarrow K\' = (1.5)^2 K = 2.25K$ (an increase of $125\\%$).' },
-          { id: 'NEET-PH-03', subject: 'Physics', chapter: 'Current Electricity', year: 'NEET PYQ', question: 'A wire of resistance $R$ is stretched to double its length at constant volume. Its new resistance is:', options: ['$R$', '$2R$', '$4R$', '$8R$'], correctOption: 2, explanation: 'At constant volume, $R \\propto l^2$, so doubling $l$ yields $R\' = 4R$.' },
-          { id: 'NEET-PH-04', subject: 'Physics', chapter: 'Ray Optics', year: 'NEET PYQ', question: 'A convex lens ($f = 20\\text{ cm}$) is in contact with a concave lens ($f = -40\\text{ cm}$). Power of combination is:', options: ['$+2.5\\text{ D}$', '$-2.5\\text{ D}$', '$+7.5\\text{ D}$', '$+5.0\\text{ D}$'], correctOption: 0, explanation: '$P = \\frac{100}{20} - \\frac{100}{40} = 5 - 2.5 = +2.5\\text{ D}$.' },
-          { id: 'NEET-CH-01', subject: 'Chemistry', chapter: 'Structure of Atom', year: 'NEET PYQ', question: 'Maximum number of electrons in a subshell with azimuthal quantum number $l = 3$ is:', options: ['$6$', '$10$', '$14$', '$18$'], correctOption: 2, explanation: 'Max electrons $= 2(2l+1) = 14$ ($f$-subshell).' },
-          { id: 'NEET-CH-02', subject: 'Chemistry', chapter: 'Chemical Bonding', year: 'NEET PYQ', question: 'Which of the following species has a bond order of $2.5$?', options: ['$\\text{O}_2$', '$\\text{O}_2^+$', '$\\text{O}_2^-$', '$\\text{O}_2^{2-}$'], correctOption: 1, explanation: '$\\text{O}_2^+$ has 15 electrons: $\\text{BO} = (10 - 5)/2 = 2.5$.' },
-          { id: 'NEET-CH-03', subject: 'Chemistry', chapter: 'Solutions', year: 'NEET PYQ', question: 'The van’t Hoff factor $i$ for a dilute aqueous solution of $\\text{K}_2\\text{SO}_4$ (100% dissociated) is:', options: ['$1$', '$2$', '$3$', '$4$'], correctOption: 2, explanation: '$\\text{K}_2\\text{SO}_4 \\rightarrow 2\\text{K}^+ + \\text{SO}_4^{2-}$ gives 3 ions ($i = 3$).' },
-          { id: 'NEET-CH-04', subject: 'Chemistry', chapter: 'Organic Chemistry', year: 'NEET PYQ', question: 'Which of the following undergoes the Cannizzaro reaction?', options: ['Acetaldehyde', 'Acetone', 'Formaldehyde', 'Propanal'], correctOption: 2, explanation: 'Formaldehyde ($\\text{HCHO}$) has no $\\alpha$-H, so it undergoes Cannizzaro disproportionation.' },
-          { id: 'NEET-BI-01', subject: 'Biology', chapter: 'Biological Classification', year: 'NEET PYQ', question: 'Which organisms are known as the chief "producers" in the oceans?', options: ['Dinoflagellates', 'Diatoms', 'Cyanobacteria', 'Euglenoids'], correctOption: 1, explanation: 'NCERT Class 11 Ch. 2: Diatoms (Chrysophytes) are the chief producers in the oceans.' },
-          { id: 'NEET-BI-02', subject: 'Biology', chapter: 'Cell: The Unit of Life', year: 'NEET PYQ', question: 'Which organelle is the primary site for synthesis of glycoproteins and glycolipids?', options: ['Lysosome', 'Golgi apparatus', 'Peroxisome', 'Vacuole'], correctOption: 1, explanation: 'NCERT Class 11 Ch. 8: Golgi apparatus forms glycoproteins and glycolipids.' },
-          { id: 'NEET-BI-03', subject: 'Biology', chapter: 'Cell Cycle & Division', year: 'NEET PYQ', question: 'Crossing over between non-sister chromatids occurs during which substage of Prophase I?', options: ['Leptotene', 'Zygotene', 'Pachytene', 'Diplotene'], correctOption: 2, explanation: 'Crossing over mediated by recombinase occurs during Pachytene.' },
-          { id: 'NEET-BI-04', subject: 'Biology', chapter: 'Molecular Basis of Inheritance', year: 'NEET PYQ', question: 'Which of the following is NOT a stop (nonsense) codon?', options: ['UAA', 'UAG', 'UGA', 'AUG'], correctOption: 3, explanation: 'AUG is the start codon coding for Methionine; UAA, UAG, UGA are stop codons.' }
+          { id: 'neet-fb-1', origId: 'NEET-PH-01', qType: 'mcq', subject: 'Physics', chapter: 'Units & Measurements', year: 'NEET PYQ', question: 'The dimensional formula of Planck’s constant $h$ is identical to that of:', options: ['Linear momentum', 'Angular momentum', 'Torque', 'Force'], correctOption: 1, answerText: 'B', explanation: 'Both $h = E/\\nu$ and angular momentum $L = mvr$ have dimensions $[ML^2T^{-1}]$.' },
+          { id: 'neet-fb-2', origId: 'NEET-CH-01', qType: 'mcq', subject: 'Chemistry', chapter: 'Chemical Bonding', year: 'NEET PYQ', question: 'Which of the following species has a bond order of $2.5$?', options: ['$\\text{O}_2$', '$\\text{O}_2^+$', '$\\text{O}_2^-$', '$\\text{O}_2^{2-}$'], correctOption: 1, answerText: 'B', explanation: '$\\text{O}_2^+$ has 15 electrons: $\\text{BO} = (10 - 5)/2 = 2.5$.' },
+          { id: 'neet-fb-3', origId: 'NEET-BI-01', qType: 'mcq', subject: 'Biology', chapter: 'Biological Classification', year: 'NEET PYQ', question: 'Which organisms are known as the chief "producers" in the oceans?', options: ['Dinoflagellates', 'Diatoms', 'Cyanobacteria', 'Euglenoids'], correctOption: 1, answerText: 'B', explanation: 'NCERT Class 11 Ch. 2: Diatoms (Chrysophytes) are the chief producers in the oceans.' },
+          { id: 'neet-fb-4', origId: 'NEET-BI-02', qType: 'mcq', subject: 'Biology', chapter: 'Molecular Basis of Inheritance', year: 'NEET PYQ', question: 'Which of the following is NOT a stop (nonsense) codon?', options: ['UAA', 'UAG', 'UGA', 'AUG'], correctOption: 3, answerText: 'D', explanation: 'AUG is the start codon coding for Methionine; UAA, UAG, UGA are stop codons.' }
         ]
       };
 
       // =====================================================================
-      // 3. READ NOW FORMULA HUB DATA (JEE & NEET)
+      // 3. READ NOW FORMULA HUB DATA (15 JEE + 15 NEET CHAPTERS)
       // =====================================================================
       const READ_NOW_DATA = {
         jee: [
-          { id: 'jf1', subject: 'Physics', chapter: 'Kinematics', title: '1D & Projectile Motion', points: ['$v = u + at$, $s = ut + \\frac{1}{2}at^2$, $v^2 - u^2 = 2as$.', 'Projectile: $T = \\frac{2u\\sin\\theta}{g}$, $H = \\frac{u^2\\sin^2\\theta}{2g}$, $R = \\frac{u^2\\sin 2\\theta}{g}$.', 'Trajectory: $y = x\\tan\\theta\\left(1 - \\frac{x}{R}\\right)$.'], trap: 'Trap: Range $R$ is identical for $\\theta$ and $90^\\circ - \\theta$, while $H_1/H_2 = \\tan^2\\theta$.' },
-          { id: 'jf2', subject: 'Physics', chapter: 'Rotational Motion', title: 'Moment of Inertia & Rolling', points: ['MI: Solid Sphere $\\frac{2}{5}MR^2$, Disc $\\frac{1}{2}MR^2$, Ring $MR^2$.', 'Parallel Axis: $I = I_{\\text{cm}} + Md^2$; Perpendicular Axis: $I_z = I_x + I_y$.', 'Rolling on incline: $a = \\frac{g\\sin\\theta}{1 + k^2/R^2}$.'], trap: 'Trap: Friction in pure rolling is static, not $\\mu N$, unless on the verge of slipping.' },
-          { id: 'jf3', subject: 'Physics', chapter: 'Electrostatics', title: 'Gauss Law, Dipole & Capacitors', points: ['Gauss Law: $\\oint \\vec{E}\\cdot d\\vec{A} = \\frac{q_{\\text{in}}}{\\varepsilon_0}$.', 'Dipole: Axial $E = \\frac{2kp}{r^3}$; Equatorial $E = \\frac{kp}{r^3}$.', 'Capacitor energy: $U = \\frac{1}{2}CV^2 = \\frac{Q^2}{2C}$.'], trap: 'Trap: Inserting dielectric with battery disconnected keeps $Q$ constant ($U \\downarrow$ by $K$).' },
-          { id: 'jf4', subject: 'Chemistry', chapter: 'Thermodynamics', title: 'Enthalpy, Entropy & Gibbs', points: ['$\\Delta U = q + w$; $\\Delta H = \\Delta U + \\Delta n_g RT$.', 'Gibbs: $\\Delta G = \\Delta H - T\\Delta S$; $\\Delta G^\\circ = -2.303RT\\log K$.', 'Isothermal rev work: $w = -2.303nRT\\log(V_2/V_1)$.'], trap: 'Trap: $\\Delta H$ is in kJ while $\\Delta S$ is in J/K — divide $\\Delta S$ by 1000!' },
-          { id: 'jf5', subject: 'Chemistry', chapter: 'Coordination Compounds', title: 'CFT & Magnetic Moment', points: ['Spin-only magnetic moment: $\\mu = \\sqrt{n(n+2)}\\text{ BM}$.', 'Strong ligands: $\\text{CO} > \\text{CN}^- > \\text{en} > \\text{NH}_3$.', 'CFSE relation: $\\Delta_t = \\frac{4}{9}\\Delta_o$.'], trap: 'Trap: $[\\text{Ni(CN)}_4]^{2-}$ is square planar ($dsp^2$), $[\\text{NiCl}_4]^{2-}$ is tetrahedral ($sp^3$).' },
-          { id: 'jf6', subject: 'Mathematics', chapter: 'Matrices & Determinants', title: 'Adjoint & Inverse Properties', points: ['$|kA| = k^n|A|$, $|AB| = |A||B|$, $|\\text{adj } A| = |A|^{n-1}$.', '$A(\\text{adj } A) = |A|I_n$; $A^{-1} = \\frac{\\text{adj } A}{|A|}$.', '$\\text{adj}(\\text{adj } A) = |A|^{n-2}A$.'], trap: 'Trap: Reversal law applies: $(AB)^{-1} = B^{-1}A^{-1}$.' },
-          { id: 'jf7', subject: 'Mathematics', chapter: 'Calculus', title: 'Standard Limits & Definite Integrals', points: ['$\\lim_{x\\to 0}\\frac{\\sin x}{x} = 1$, $\\lim_{x\\to 0}(1+x)^{1/x} = e$.', 'King’s Property: $\\int_a^b f(x)\\,dx = \\int_a^b f(a+b-x)\\,dx$.', 'Leibniz Rule: $\\frac{d}{dx}\\int_{g(x)}^{h(x)} f(t)\\,dt = f(h(x))h\'(x) - f(g(x))g\'(x)$.'], trap: 'Trap: For $1^\\infty$ form, $\\lim f(x)^{g(x)} = e^{\\lim (f(x)-1)g(x)}$.' },
-          { id: 'jf8', subject: 'Mathematics', chapter: 'Vectors & 3D', title: 'Products & Shortest Distance', points: ['$\\vec{a}\\cdot\\vec{b} = ab\\cos\\theta$; $|\\vec{a}\\times\\vec{b}| = ab\\sin\\theta$.', 'Skew lines SD: $d = \\frac{|(\\vec{a}_2-\\vec{a}_1)\\cdot(\\vec{b}_1\\times\\vec{b}_2)|}{|\\vec{b}_1\\times\\vec{b}_2|}$.', 'Point to plane: $\\frac{|ax_1+by_1+cz_1+d|}{\\sqrt{a^2+b^2+c^2}}$.'], trap: 'Trap: If $\\vec{b}_1 \\parallel \\vec{b}_2$, use parallel-line formula instead of skew formula.' }
+          { id: 'jf01', subject: 'Physics', chapter: 'Kinematics', title: '1D & Projectile Motion', points: ['$v = u + at$, $s = ut + \\frac{1}{2}at^2$, $v^2 - u^2 = 2as$.', 'Projectile: $T = \\frac{2u\\sin\\theta}{g}$, $H = \\frac{u^2\\sin^2\\theta}{2g}$, $R = \\frac{u^2\\sin 2\\theta}{g}$.', 'Trajectory: $y = x\\tan\\theta(1 - x/R)$.'], trap: 'Trap: Range $R$ is identical for $\\theta$ and $90^\\circ - \\theta$, while $H_1/H_2 = \\tan^2\\theta$.' },
+          { id: 'jf02', subject: 'Physics', chapter: 'Laws of Motion', title: 'Friction, Pulleys & Banking', points: ['Limiting friction: $f_{\\max} = \\mu_s N$; Kinetic: $f_k = \\mu_k N$.', 'Banked road (smooth): $v = \\sqrt{Rg\\tan\\theta}$.', 'Conical pendulum: $T = 2\\pi\\sqrt{\\frac{l\\cos\\theta}{g}}$.'], trap: 'Trap: Static friction is self-adjusting and equals applied force up to $\\mu_s N$.' },
+          { id: 'jf03', subject: 'Physics', chapter: 'Rotational Motion', title: 'Moment of Inertia & Rolling', points: ['MI: Solid Sphere $\\frac{2}{5}MR^2$, Disc $\\frac{1}{2}MR^2$, Ring $MR^2$, Rod (center) $\\frac{1}{12}ML^2$.', 'Parallel Axis: $I = I_{\\text{cm}} + Md^2$; Perpendicular Axis: $I_z = I_x + I_y$.', 'Rolling on incline: $a = \\frac{g\\sin\\theta}{1 + k^2/R^2}$.'], trap: 'Trap: Friction in pure rolling is static, not $\\mu N$, unless on the verge of slipping.' },
+          { id: 'jf04', subject: 'Physics', chapter: 'Electrostatics', title: 'Gauss Law, Dipole & Capacitors', points: ['Gauss Law: $\\oint \\vec{E}\\cdot d\\vec{A} = \\frac{q_{\\text{in}}}{\\varepsilon_0}$.', 'Dipole: Axial $E = \\frac{2kp}{r^3}$; Equatorial $E = \\frac{kp}{r^3}$.', 'Capacitor energy: $U = \\frac{1}{2}CV^2 = \\frac{Q^2}{2C}$.'], trap: 'Trap: Inserting dielectric with battery disconnected keeps $Q$ constant ($U \\downarrow$ by $K$).' },
+          { id: 'jf05', subject: 'Physics', chapter: 'Modern Physics', title: 'Photoelectric, Bohr & Nuclear', points: ['$K_{\\max} = h\\nu - \\phi$; $hc \\approx 12400\\text{ eV}\\cdot\\text{\\AA}$.', 'Bohr: $r_n = 0.529\\frac{n^2}{Z}\\,\\text{\\AA}$, $E_n = -13.6\\frac{Z^2}{n^2}\\text{ eV}$.', 'Radioactivity: $N = N_0 e^{-\\lambda t}$, $t_{1/2} = \\frac{\\ln 2}{\\lambda}$.'], trap: 'Trap: Stopping potential depends only on frequency, never on intensity.' },
+          { id: 'jf06', subject: 'Chemistry', chapter: 'Chemical Bonding', title: 'VSEPR, MOT & Dipole Moment', points: ['Steric Number $= \\frac{1}{2}(V + M - C + A)$.', 'Bond Order $= \\frac{N_b - N_a}{2}$; $\\text{O}_2^+(2.5) > \\text{O}_2(2) > \\text{O}_2^-(1.5)$.', 'Fajan’s Rule: Small cation + large anion $\\Rightarrow$ higher covalent character.'], trap: 'Trap: $\\text{B}_2$ and $\\text{O}_2$ are paramagnetic; $\\text{C}_2$ and $\\text{N}_2$ are diamagnetic.' },
+          { id: 'jf07', subject: 'Chemistry', chapter: 'Thermodynamics', title: 'Enthalpy, Entropy & Gibbs', points: ['$\\Delta U = q + w$; $\\Delta H = \\Delta U + \\Delta n_g RT$.', 'Gibbs: $\\Delta G = \\Delta H - T\\Delta S$; $\\Delta G^\\circ = -2.303RT\\log K$.', 'Isothermal rev work: $w = -2.303nRT\\log(V_2/V_1)$.'], trap: 'Trap: $\\Delta H$ is in kJ while $\\Delta S$ is in J/K — always divide $\\Delta S$ by 1000!' },
+          { id: 'jf08', subject: 'Chemistry', chapter: 'Electrochemistry', title: 'Nernst, Conductance & Faraday', points: ['Nernst ($298\\text{ K}$): $E = E^\\circ - \\frac{0.0591}{n}\\log Q$.', '$\\Delta G^\\circ = -nFE^\\circ$; Kohlrausch: $\\Lambda_m^\\circ = \\nu_+\\lambda_+^\\circ + \\nu_-\\lambda_-^\\circ$.', 'Faraday: $w = \\frac{E \\cdot I \\cdot t}{96500}$.'], trap: 'Trap: $E^\\circ$ is intensive — do not multiply by stoichiometric coefficients.' },
+          { id: 'jf09', subject: 'Chemistry', chapter: 'Chemical Kinetics', title: 'Order, Half-Life & Arrhenius', points: ['Zero order: $t_{1/2} = \\frac{[A]_0}{2k}$; First order: $k = \\frac{2.303}{t}\\log\\frac{a}{a-x}$.', 'First order $t_{1/2} = \\frac{0.693}{k}$ (independent of initial conc.).', 'Arrhenius: $\\log\\frac{k_2}{k_1} = \\frac{E_a}{2.303R}\\left(\\frac{1}{T_1} - \\frac{1}{T_2}\\right)$.'], trap: 'Trap: For $n^{\\text{th}}$ order, $t_{1/2} \\propto [A]_0^{1-n}$.' },
+          { id: 'jf10', subject: 'Chemistry', chapter: 'Coordination Compounds', title: 'CFT, Isomerism & Magnetism', points: ['Spin-only magnetic moment: $\\mu = \\sqrt{n(n+2)}\\text{ BM}$.', 'Strong ligands: $\\text{CO} > \\text{CN}^- > \\text{en} > \\text{NH}_3$.', 'CFSE relation: $\\Delta_t = \\frac{4}{9}\\Delta_o$.'], trap: 'Trap: $[\\text{Ni(CN)}_4]^{2-}$ is square planar ($dsp^2$), $[\\text{NiCl}_4]^{2-}$ is tetrahedral ($sp^3$).' },
+          { id: 'jf11', subject: 'Mathematics', chapter: 'Quadratic Equations', title: 'Roots, Discriminant & Location', points: ['$\\alpha + \\beta = -b/a$, $\\alpha\\beta = c/a$, $|\\alpha - \\beta| = \\frac{\\sqrt{D}}{|a|}$.', 'Common root: $(c_1a_2 - c_2a_1)^2 = (b_1c_2 - b_2c_1)(a_1b_2 - a_2b_1)$.', 'Vertex of $ax^2+bx+c$: $(-b/2a, -D/4a)$.'], trap: 'Trap: Always check if $a = 0$ turns a quadratic into a linear equation.' },
+          { id: 'jf12', subject: 'Mathematics', chapter: 'Matrices & Determinants', title: 'Adjoint & Inverse Properties', points: ['$|kA| = k^n|A|$, $|AB| = |A||B|$, $|\\text{adj } A| = |A|^{n-1}$.', '$A(\\text{adj } A) = |A|I_n$; $A^{-1} = \\frac{\\text{adj } A}{|A|}$.', '$\\text{adj}(\\text{adj } A) = |A|^{n-2}A$.'], trap: 'Trap: Reversal law applies: $(AB)^{-1} = B^{-1}A^{-1}$ and $(AB)^T = B^TA^T$.' },
+          { id: 'jf13', subject: 'Mathematics', chapter: 'Definite Integration', title: 'King’s Property & Leibniz Rule', points: ['King’s Property: $\\int_a^b f(x)\\,dx = \\int_a^b f(a+b-x)\\,dx$.', 'Leibniz Rule: $\\frac{d}{dx}\\int_{g(x)}^{h(x)} f(t)\\,dt = f(h)h\' - f(g)g\'$.', 'Wallis formula for $\\int_0^{\\pi/2} \\sin^m x \\cos^n x\\,dx$.'], trap: 'Trap: Check odd/even symmetry on $[-a, a]$ before integrating.' },
+          { id: 'jf14', subject: 'Mathematics', chapter: 'Vectors & 3D', title: 'Products, Lines & Planes', points: ['$\\vec{a}\\cdot\\vec{b} = ab\\cos\\theta$; $|\\vec{a}\\times\\vec{b}| = ab\\sin\\theta$.', 'Skew lines SD: $d = \\frac{|(\\vec{a}_2-\\vec{a}_1)\\cdot(\\vec{b}_1\\times\\vec{b}_2)|}{|\\vec{b}_1\\times\\vec{b}_2|}$.', 'Point to plane: $\\frac{|ax_1+by_1+cz_1+d|}{\\sqrt{a^2+b^2+c^2}}$.'], trap: 'Trap: If $\\vec{b}_1 \\parallel \\vec{b}_2$, use parallel-line distance formula instead of skew.' },
+          { id: 'jf15', subject: 'Mathematics', chapter: 'Probability', title: 'Bayes Theorem & Distributions', points: ['$P(A\\cup B) = P(A)+P(B)-P(A\\cap B)$.', 'Bayes: $P(E_i|A) = \\frac{P(E_i)P(A|E_i)}{\\sum P(E_j)P(A|E_j)}$.', 'Binomial: Mean $= np$, Variance $= npq$.'], trap: 'Trap: Independent events ($P(A\\cap B)=P(A)P(B)$) are NOT mutually exclusive.' }
         ],
         neet: [
-          { id: 'nf1', subject: 'Physics', chapter: 'Kinematics', title: '1D & Projectile Shortcuts', points: ['Free fall ratios in equal intervals: $1 : 3 : 5 : 7$.', '$T = \\frac{2u\\sin\\theta}{g}$, $H = \\frac{u^2\\sin^2\\theta}{2g}$, $R = \\frac{u^2\\sin 2\\theta}{g}$.', 'Relation: $R\\tan\\theta = 4H$.'], trap: 'Trap: Avg speed over equal distances is $\\frac{2v_1v_2}{v_1+v_2}$, not $(v_1+v_2)/2$.' },
-          { id: 'nf2', subject: 'Physics', chapter: 'Current Electricity', title: 'Resistance, Cells & Power', points: ['Stretched wire (const vol): $R \\propto l^2 \\propto 1/r^4$.', 'Terminal voltage (discharging): $V = E - Ir$.', 'Power: $P = VI = I^2R = V^2/R$.'], trap: 'Trap: In series, the lower-wattage bulb (higher $R$) glows brighter!' },
-          { id: 'nf3', subject: 'Physics', chapter: 'Modern Physics', title: 'Photoelectric, Bohr & Nuclear', points: ['$K_{\\max} = \\frac{hc}{\\lambda} - \\phi$, $hc \\approx 12400\\text{ eV}\\cdot\\text{\\AA}$.', 'de Broglie (electron): $\\lambda = \\frac{12.27}{\\sqrt{V}}\\,\\text{\\AA}$.', 'Radioactivity: $t_{1/2} = \\frac{0.693}{\\lambda}$, $R = R_0 A^{1/3}$.'], trap: 'Trap: Reverse bias widens the depletion layer in a p-n junction.' },
-          { id: 'nf4', subject: 'Chemistry', chapter: 'Chemical Bonding', title: 'VSEPR & Bond Order', points: ['Steric Number $= \\frac{1}{2}(V + M - C + A)$.', 'Bond Order $= \\frac{N_b - N_a}{2}$: $\\text{O}_2^+(2.5) > \\text{O}_2(2.0) > \\text{O}_2^-(1.5)$.', 'Fajan’s Rule: Small cation + large anion $\\Rightarrow$ covalent.'], trap: 'Trap: $\\text{B}_2$ and $\\text{O}_2$ are paramagnetic; $\\text{C}_2$ and $\\text{N}_2$ are diamagnetic.' },
-          { id: 'nf5', subject: 'Chemistry', chapter: 'Equilibrium', title: 'pH & Buffer Equations', points: ['$K_p = K_c(RT)^{\\Delta n_g}$; $K_w = 10^{-14}$ at $298\\text{ K}$.', 'Acidic buffer: $\\text{pH} = \\text{p}K_a + \\log\\frac{[\\text{Salt}]}{[\\text{Acid}]}$.', 'Weak acid: $\\text{pH} = \\frac{1}{2}(\\text{p}K_a - \\log C)$.'], trap: 'Trap: Common ion effect suppresses dissociation of weak electrolytes.' },
-          { id: 'nf6', subject: 'Biology', chapter: 'Cell: The Unit of Life', title: 'Organelles (NCERT High-Yield)', points: ['Endomembrane system: ER, Golgi, Lysosomes, Vacuoles.', 'Golgi apparatus: Site of glycoprotein & glycolipid formation.', 'Ribosomes: Prokaryotes $70\\text{S}$; Eukaryotes $80\\text{S}$.'], trap: 'Trap: Mitochondria & chloroplasts have circular dsDNA and $70\\text{S}$ ribosomes.' },
-          { id: 'nf7', subject: 'Biology', chapter: 'Photosynthesis', title: 'C3 & C4 Pathways', points: ['Non-cyclic: PS II & PS I, yields ATP + $\\text{NADPH} + \\text{O}_2$.', 'Calvin Cycle (C3): 1 glucose needs $6\\text{ CO}_2, 18\\text{ ATP}, 12\\text{ NADPH}$.', 'C4 (Kranz): Primary acceptor PEP (3C); first product OAA (4C).'], trap: 'Trap: Water splitting complex is on the lumen side of PS II.' },
-          { id: 'nf8', subject: 'Biology', chapter: 'Biotechnology', title: 'rDNA Tools & PCR', points: ['EcoRI cuts $5\'-\\text{GAATTC}-3\'$ between G and A.', 'Gel Electrophoresis: DNA moves to Anode (+); EtBr + UV = bright orange.', 'PCR: Denaturation ($94^\\circ\\text{C}$) $\\rightarrow$ Annealing $\\rightarrow$ Extension (Taq).'], trap: 'Trap: Chitinase (fungi), Cellulase (plant), Lysozyme (bacteria); chilled ethanol precipitates DNA.' }
+          { id: 'nf01', subject: 'Physics', chapter: 'Kinematics', title: '1D & Projectile Shortcuts', points: ['Free fall ratios in equal intervals: $1 : 3 : 5 : 7$.', '$T = \\frac{2u\\sin\\theta}{g}$, $H = \\frac{u^2\\sin^2\\theta}{2g}$, $R = \\frac{u^2\\sin 2\\theta}{g}$.', 'Relation: $R\\tan\\theta = 4H$.'], trap: 'Trap: Avg speed over equal distances is $\\frac{2v_1v_2}{v_1+v_2}$, not $(v_1+v_2)/2$.' },
+          { id: 'nf02', subject: 'Physics', chapter: 'Work, Energy & Power', title: 'Work-Energy & Collisions', points: ['$W_{\\text{all}} = \\Delta K$; $K = \\frac{p^2}{2m}$.', 'Elastic 1D head-on collision of equal masses: velocities interchange.', 'Vertical circle min speed: bottom $\\sqrt{5gR}$, top $\\sqrt{gR}$.'], trap: 'Trap: Momentum is conserved in both elastic and inelastic collisions.' },
+          { id: 'nf03', subject: 'Physics', chapter: 'Current Electricity', title: 'Resistance, Cells & Power', points: ['Stretched wire (const vol): $R \\propto l^2 \\propto 1/r^4$.', 'Terminal voltage (discharging): $V = E - Ir$.', 'Power: $P = VI = I^2R = V^2/R$.'], trap: 'Trap: In series, the lower-wattage bulb (higher $R$) glows brighter!' },
+          { id: 'nf04', subject: 'Physics', chapter: 'Ray Optics', title: 'Mirrors, Lenses & Prisms', points: ['Lens Maker: $\\frac{1}{f} = (\\mu - 1)(\\frac{1}{R_1} - \\frac{1}{R_2})$.', 'Combined power: $P = P_1 + P_2 - dP_1P_2$.', 'Prism min deviation: $\\mu = \\frac{\\sin((A+\\delta_m)/2)}{\\sin(A/2)}$.'], trap: 'Trap: Real images are inverted ($m < 0$); virtual images are erect ($m > 0$).' },
+          { id: 'nf05', subject: 'Physics', chapter: 'Modern Physics', title: 'Photoelectric, Bohr & Nuclear', points: ['$K_{\\max} = \\frac{hc}{\\lambda} - \\phi$, $hc \\approx 12400\\text{ eV}\\cdot\\text{\\AA}$.', 'de Broglie (electron): $\\lambda = \\frac{12.27}{\\sqrt{V}}\\,\\text{\\AA}$.', 'Radioactivity: $t_{1/2} = \\frac{0.693}{\\lambda}$, $R = R_0 A^{1/3}$.'], trap: 'Trap: Reverse bias widens the depletion layer in a p-n junction.' },
+          { id: 'nf06', subject: 'Chemistry', chapter: 'Structure of Atom', title: 'Quantum Numbers & Bohr Model', points: ['Max electrons in shell $= 2n^2$; in subshell $= 2(2l+1)$.', 'Radial nodes $= n - l - 1$; Angular nodes $= l$; Total $= n - 1$.', 'Heisenberg: $\\Delta x \\cdot \\Delta p \\ge \\frac{h}{4\\pi}$.'], trap: 'Trap: For $H$-like species, orbital energy depends only on $n$, not $l$.' },
+          { id: 'nf07', subject: 'Chemistry', chapter: 'Chemical Bonding', title: 'VSEPR & Bond Order', points: ['Steric Number $= \\frac{1}{2}(V + M - C + A)$.', 'Bond Order $= \\frac{N_b - N_a}{2}$: $\\text{O}_2^+(2.5) > \\text{O}_2(2.0) > \\text{O}_2^-(1.5)$.', 'Hydrogen bonding: F, O, N directly bonded to H.'], trap: 'Trap: $o$-nitrophenol has intramolecular H-bonding (steam volatile).' },
+          { id: 'nf08', subject: 'Chemistry', chapter: 'Equilibrium', title: 'pH, Buffers & Solubility', points: ['$K_p = K_c(RT)^{\\Delta n_g}$; $K_w = 10^{-14}$ at $298\\text{ K}$.', 'Acidic buffer: $\\text{pH} = \\text{p}K_a + \\log\\frac{[\\text{Salt}]}{[\\text{Acid}]}$.', '$K_{sp}$: $AB \\rightarrow S^2$; $AB_2 \\rightarrow 4S^3$; $A_2B_3 \\rightarrow 108S^5$.'], trap: 'Trap: Common ion effect suppresses dissociation of weak electrolytes.' },
+          { id: 'nf09', subject: 'Chemistry', chapter: 'Solutions', title: 'Colligative Properties & van’t Hoff', points: ['Raoult’s Law: $\\frac{P^\\circ - P}{P^\\circ} = i\\chi_B$.', '$\\Delta T_b = i K_b m$; $\\Delta T_f = i K_f m$; $\\Pi = iCRT$.', 'Dissociation: $\\alpha = \\frac{i - 1}{n - 1}$.'], trap: 'Trap: Molarity depends on temperature; molality and mole fraction do not.' },
+          { id: 'nf10', subject: 'Chemistry', chapter: 'Organic Chemistry', title: 'Named Reactions Checklist', points: ['Aldol: aldehydes/ketones with $\\alpha$-H; Cannizzaro: no $\\alpha$-H.', 'Gabriel Phthalimide: exclusively $1^\\circ$ aliphatic amines.', 'Reimer-Tiemann: Phenol + $\\text{CHCl}_3$/NaOH $\\rightarrow$ Salicylaldehyde.'], trap: 'Trap: Carbylamine test is given ONLY by primary ($1^\\circ$) amines.' },
+          { id: 'nf11', subject: 'Biology', chapter: 'Biological Classification', title: 'Five Kingdoms (NCERT Core)', points: ['Diatoms (Chrysophytes): chief producers in oceans; indestructible silica walls.', 'Dinoflagellates: Gonyaulax causes red tides.', 'Mycoplasma: smallest living cells, lack cell wall, survive without $O_2$.'], trap: 'Trap: Viroids (T.O. Diener) have free low-MW RNA without a protein coat.' },
+          { id: 'nf12', subject: 'Biology', chapter: 'Cell: The Unit of Life', title: 'Organelles (NCERT High-Yield)', points: ['Endomembrane system: ER, Golgi, Lysosomes, Vacuoles.', 'Golgi apparatus: Site of glycoprotein & glycolipid formation.', 'Ribosomes: Prokaryotes $70\\text{S}$; Eukaryotes $80\\text{S}$.'], trap: 'Trap: Mitochondria & chloroplasts have circular dsDNA and $70\\text{S}$ ribosomes.' },
+          { id: 'nf13', subject: 'Biology', chapter: 'Photosynthesis', title: 'C3 & C4 Pathways', points: ['Non-cyclic: PS II & PS I, yields ATP + $\\text{NADPH} + \\text{O}_2$.', 'Calvin Cycle (C3): 1 glucose needs $6\\text{ CO}_2, 18\\text{ ATP}, 12\\text{ NADPH}$.', 'C4 (Kranz): Primary acceptor PEP (3C); first product OAA (4C).'], trap: 'Trap: Water splitting complex is on the lumen side of PS II.' },
+          { id: 'nf14', subject: 'Biology', chapter: 'Molecular Basis of Inheritance', title: 'Replication, Transcription & Code', points: ['DNA Pol III polymerizes strictly in $5\' \\to 3\'$ direction.', 'Start codon: AUG (Methionine); Stop codons: UAA, UAG, UGA.', 'Lac operon: Inducible; Lactose/Allolactose acts as inducer.'], trap: 'Trap: In eukaryotes, RNA Pol I (rRNA), Pol II (hnRNA), Pol III (tRNA, 5srRNA).' },
+          { id: 'nf15', subject: 'Biology', chapter: 'Biotechnology', title: 'rDNA Tools & PCR', points: ['EcoRI cuts $5\'-\\text{GAATTC}-3\'$ between G and A.', 'Gel Electrophoresis: DNA moves to Anode (+); EtBr + UV = bright orange.', 'PCR: Denaturation ($94^\\circ\\text{C}$) $\\rightarrow$ Annealing $\\rightarrow$ Extension (Taq).'], trap: 'Trap: Chitinase (fungi), Cellulase (plant), Lysozyme (bacteria); chilled ethanol precipitates DNA.' }
         ]
       };
 
       // =====================================================================
-      // 4. SYLLABUS DATA (JEE PCM & NEET PCB)
+      // 4. COMPLETE SYLLABUS DATA (58 JEE MAIN + 79 NEET UG CHAPTERS)
       // =====================================================================
       const SYLLABUS_DATA = {
         jee: [
-          ...['Units & Measurements','Kinematics','Laws of Motion','Work, Energy & Power','Rotational Motion','Gravitation','Thermodynamics & KTG','Oscillations & Waves','Electrostatics','Current Electricity','Magnetism','EMI & AC','Ray & Wave Optics','Modern Physics','Semiconductors'].map((n,i)=>({id:`jp_${i}`,subject:'Physics',name:n})),
-          ...['Mole Concept','Atomic Structure','Thermodynamics','Equilibrium','Solutions','Electrochemistry','Chemical Kinetics','Chemical Bonding','Coordination Compounds','p, d & f Block','GOC & Hydrocarbons','Haloalkanes & Alcohols','Aldehydes, Ketones & Amines','Biomolecules'].map((n,i)=>({id:`jc_${i}`,subject:'Chemistry',name:n})),
-          ...['Sets & Functions','Complex Numbers & Quadratic','Matrices & Determinants','P&C & Binomial','Sequence & Series','Limits & Continuity','Differentiation & AOD','Indefinite & Definite Integration','Differential Equations','Straight Lines & Circles','Conic Sections','Vectors & 3D','Probability & Statistics'].map((n,i)=>({id:`jm_${i}`,subject:'Mathematics',name:n}))
+          ...['Units & Measurements','Kinematics','Laws of Motion','Work, Energy & Power','Rotational Motion','Gravitation','Properties of Solids & Liquids','Thermodynamics','Kinetic Theory of Gases','Oscillations & Waves','Electrostatics','Current Electricity','Moving Charges & Magnetism','Magnetism & Matter','Electromagnetic Induction','Alternating Current','Electromagnetic Waves','Ray & Wave Optics','Dual Nature, Atoms & Nuclei','Electronic Devices & Semiconductors'].map((n,i)=>({id:`jp_${i}`,subject:'Physics',name:n})),
+          ...['Some Basic Concepts of Chemistry','Atomic Structure','Chemical Bonding & Molecular Structure','Chemical Thermodynamics','Solutions','Equilibrium','Redox Reactions & Electrochemistry','Chemical Kinetics','Classification of Elements','p-Block Elements','d and f Block Elements','Coordination Compounds','Purification & Characterization','General Organic Chemistry (GOC)','Hydrocarbons','Organic Compounds with Halogens','Alcohols, Phenols & Ethers','Aldehydes, Ketones & Carboxylic Acids','Organic Compounds with Nitrogen','Biomolecules'].map((n,i)=>({id:`jc_${i}`,subject:'Chemistry',name:n})),
+          ...['Sets, Relations & Functions','Complex Numbers & Quadratic Equations','Matrices & Determinants','Permutations & Combinations','Binomial Theorem','Sequence & Series','Limits, Continuity & Differentiability','Applications of Derivatives','Indefinite Integration','Definite Integration & Area','Differential Equations','Straight Lines','Circles','Conic Sections (Parabola, Ellipse, Hyperbola)','Three Dimensional Geometry','Vector Algebra','Statistics & Probability','Trigonometry'].map((n,i)=>({id:`jm_${i}`,subject:'Mathematics',name:n}))
         ],
         neet: [
-          ...['Units & Measurements','Kinematics','Laws of Motion','Work, Energy & Power','Rotational Motion','Gravitation','Properties of Matter','Thermodynamics & KTG','Oscillations & Waves','Electrostatics','Current Electricity','Magnetism & EMI','Alternating Current','Ray & Wave Optics','Modern Physics & Semiconductors'].map((n,i)=>({id:`np_${i}`,subject:'Physics',name:n})),
-          ...['Basic Concepts','Structure of Atom','Periodicity & Bonding','Thermodynamics','Equilibrium','Solutions','Electrochemistry','Chemical Kinetics','p, d & f Block','Coordination Compounds','GOC & Hydrocarbons','Haloalkanes & Alcohols','Carbonyls & Amines','Biomolecules'].map((n,i)=>({id:`nc_${i}`,subject:'Chemistry',name:n})),
-          ...['Living World & Classification','Plant & Animal Kingdom','Morphology & Anatomy','Cell: Unit of Life','Biomolecules (Bio)','Cell Cycle & Division','Photosynthesis & Respiration','Human Physiology (Digestion-Neural)','Reproduction in Plants & Humans','Genetics & Inheritance','Molecular Basis & Evolution','Human Health & Microbes','Biotechnology','Ecology & Biodiversity'].map((n,i)=>({id:`nb_${i}`,subject:'Biology',name:n}))
+          ...['Units & Measurements','Motion in a Straight Line','Motion in a Plane','Laws of Motion','Work, Energy & Power','System of Particles & Rotational Motion','Gravitation','Mechanical Properties of Solids & Fluids','Thermal Properties of Matter','Thermodynamics','Kinetic Theory','Oscillations & Waves','Electric Charges & Fields','Electrostatic Potential & Capacitance','Current Electricity','Moving Charges & Magnetism','Magnetism, EMI & AC','Electromagnetic Waves','Ray & Wave Optics','Dual Nature, Atoms, Nuclei & Semiconductors'].map((n,i)=>({id:`np_${i}`,subject:'Physics',name:n})),
+          ...['Some Basic Concepts of Chemistry','Structure of Atom','Classification of Elements & Periodicity','Chemical Bonding','Thermodynamics','Equilibrium','Redox Reactions','Solutions','Electrochemistry','Chemical Kinetics','p-Block Elements','d and f Block Elements','Coordination Compounds','Organic Chemistry: Basic Principles','Hydrocarbons','Haloalkanes & Haloarenes','Alcohols, Phenols & Ethers','Aldehydes, Ketones & Carboxylic Acids','Amines','Biomolecules','Principles of Practical Chemistry'].map((n,i)=>({id:`nc_${i}`,subject:'Chemistry',name:n})),
+          ...['The Living World','Biological Classification','Plant Kingdom','Animal Kingdom','Morphology of Flowering Plants','Anatomy of Flowering Plants','Structural Organisation in Animals','Cell: The Unit of Life','Biomolecules','Cell Cycle & Cell Division','Photosynthesis in Higher Plants','Respiration in Plants','Plant Growth & Development','Breathing & Exchange of Gases','Body Fluids & Circulation','Excretory Products & Elimination','Locomotion & Movement','Neural Control & Coordination','Chemical Coordination & Integration','Sexual Reproduction in Flowering Plants','Human Reproduction','Reproductive Health','Principles of Inheritance & Variation','Molecular Basis of Inheritance','Evolution','Human Health & Disease','Microbes in Human Welfare','Biotechnology: Principles & Processes','Biotechnology & its Applications','Organisms & Populations','Ecosystem','Biodiversity & Conservation','Transport in Plants (Extra)','Mineral Nutrition (Extra)','Digestion & Absorption (Extra)','Strategies for Food Production (Extra)','Environmental Issues (Extra)','Experimental Biology & NCERT Diagrams'].map((n,i)=>({id:`nb_${i}`,subject:'Biology',name:n}))
         ]
       };
 
       // =====================================================================
       // 5. EXAM-ISOLATED USER STATE
       // =====================================================================
-      let attemptLog = [], mistakesSet = new Set(), bookmarksSet = new Set(), solvedSet = new Set();
+      let attemptLog = [], mistakesSet = new Set(), correctSet = new Set(), bookmarksSet = new Set(), solvedSet = new Set();
       let readNowSet = new Set(), customFormulas = [], syllabusState = {}, mockHistory = [], todoList = [];
       let dailyGoal = 30, examCountdown = { title: '', date: '' };
 
@@ -1038,6 +1084,7 @@
         const cfg = EXAM_CFG[currentExam];
         attemptLog = loadLS(lsKey('attempts'), []);
         mistakesSet = new Set(loadLS(lsKey('mistakes'), []));
+        correctSet = new Set(loadLS(lsKey('correct_ids'), []));
         bookmarksSet = new Set(loadLS(lsKey('bookmarks'), []));
         solvedSet = new Set(loadLS(lsKey('solved_ids'), []));
         readNowSet = new Set(loadLS(lsKey('readnow_done'), []));
@@ -1053,7 +1100,7 @@
       function activeBank() { return banks[currentExam]; }
 
       // =====================================================================
-      // 6. UTILITIES: TOAST, THEME, KATEX, POMODORO
+      // 6. UTILITIES: TOAST, THEME, KATEX, HEADER POMODORO
       // =====================================================================
       function showToast(msg, type = 'info') {
         const wrap = document.getElementById('toast-container');
@@ -1095,60 +1142,59 @@
         applyTheme((document.documentElement.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark');
       };
 
-      // Pomodoro Timer
-      let pomoSecs = 25 * 60, pomoInit = 25 * 60, pomoRun = false, pomoInt = null, pomoMode = 'Focus';
+      // Compact Header Pomodoro Focus Timer
+      let pomoSecs = 25 * 60, pomoRun = false, pomoInt = null;
       function updatePomoUI() {
         const m = String(Math.floor(pomoSecs / 60)).padStart(2, '0');
         const s = String(pomoSecs % 60).padStart(2, '0');
         document.getElementById('pomo-nav-time').textContent = `${m}:${s}`;
-        document.getElementById('pomo-pop-display').textContent = `${m}:${s}`;
-        document.getElementById('pomo-pop-mode').textContent = `${pomoMode} Session`;
-        document.getElementById('pomo-run-btn').textContent = pomoRun ? 'Pause' : 'Start';
-        document.getElementById('pomo-dot').className = `w-2 h-2 rounded-full ${pomoRun ? 'bg-emerald-400 animate-pulse' : 'bg-[var(--rosegold)]'}`;
+        document.getElementById('pomo-play-btn').textContent = pomoRun ? '⏸' : '▶';
+        document.getElementById('pomo-dot').className = `w-2 h-2 rounded-full shrink-0 ${pomoRun ? 'bg-emerald-400 animate-pulse' : 'bg-[var(--rosegold)]'}`;
       }
-      window.togglePomoPopover = function (f) {
-        const p = document.getElementById('pomo-popover');
-        if (typeof f === 'boolean') p.classList.toggle('hidden', !f); else p.classList.toggle('hidden');
-      };
-      window.setPomoPreset = function (mins, name) {
-        clearInterval(pomoInt); pomoRun = false; pomoInit = mins * 60; pomoSecs = mins * 60; pomoMode = name; updatePomoUI();
-      };
       window.togglePomoRun = function () {
         if (pomoRun) { clearInterval(pomoInt); pomoRun = false; }
         else {
           pomoRun = true;
           pomoInt = setInterval(() => {
             if (pomoSecs > 0) { pomoSecs--; updatePomoUI(); }
-            else { clearInterval(pomoInt); pomoRun = false; showToast(`${pomoMode} session complete!`, 'success'); updatePomoUI(); }
+            else { clearInterval(pomoInt); pomoRun = false; showToast('25-min Pomodoro Focus Session Complete!', 'success'); updatePomoUI(); }
           }, 1000);
         }
         updatePomoUI();
       };
-      window.resetPomo = function () { clearInterval(pomoInt); pomoRun = false; pomoSecs = pomoInit; updatePomoUI(); };
+      window.resetPomo = function () { clearInterval(pomoInt); pomoRun = false; pomoSecs = 25 * 60; updatePomoUI(); };
 
       // =====================================================================
-      // 7. ROBUST CHUNKED PARSER & RACE-CONDITION-SAFE GITHUB AUTO-LOADER
+      // 7. BULLETPROOF DUAL-URL AUTO-LOADER & LOSSLESS UNIVERSAL PARSER
       // =====================================================================
-      function detectSubject(raw, id, qText, exam) {
+      function stripThinkBlocks(txt) {
+        return String(txt || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      }
+
+      function detectSubject(raw, origId, qText, exam) {
+        const cfg = EXAM_CFG[exam];
         const s = String(raw || '').toLowerCase();
-        if (s.includes('phys')) return 'Physics';
-        if (s.includes('chem')) return 'Chemistry';
-        if (s.includes('bio') || s.includes('botany') || s.includes('zoology')) return 'Biology';
-        if (s.includes('math')) return 'Mathematics';
-        const uid = String(id || '').toUpperCase();
-        if (uid.includes('PH')) return 'Physics';
-        if (uid.includes('CH')) return 'Chemistry';
-        if (uid.includes('BI')) return 'Biology';
-        if (uid.includes('MA')) return 'Mathematics';
+        if (s.includes('phys') || s === 'phy') return 'Physics';
+        if (s.includes('chem') || s === 'che') return 'Chemistry';
+        if (s.includes('bio') || s.includes('botany') || s.includes('zoology')) return exam === 'neet' ? 'Biology' : cfg.primarySubject;
+        if (s.includes('math')) return exam === 'jee' ? 'Mathematics' : cfg.primarySubject;
+
+        const uid = String(origId || '').toUpperCase();
+        if (/(^|[-_])(PH|PHY)([-_0-9]|$)/.test(uid)) return 'Physics';
+        if (/(^|[-_])(CH|CHE|CHEM)([-_0-9]|$)/.test(uid)) return 'Chemistry';
+        if (/(^|[-_])(MA|MT|MATH)([-_0-9]|$)/.test(uid)) return exam === 'jee' ? 'Mathematics' : cfg.primarySubject;
+        if (/(^|[-_])(BI|BIO|BO|ZO)([-_0-9]|$)/.test(uid)) return exam === 'neet' ? 'Biology' : cfg.primarySubject;
+
         const t = String(qText || '').toLowerCase();
-        if (/(chromosome|nephron|enzyme|codon|mitochondria|photosynthesis|embryo|dna|rna|hormone)/.test(t)) return 'Biology';
-        if (/(integral|matrix|determinant|parabola|ellipse|binomial|polynomial)/.test(t)) return 'Mathematics';
-        if (/(mole|enthalpy|orbital|benzene|iupac|carbocation|acid|reaction)/.test(t)) return 'Chemistry';
-        return exam === 'neet' ? 'Biology' : 'Physics';
+        if (exam === 'neet' && /(chromosome|nephron|enzyme|codon|mitochondria|photosynthesis|embryo|dna|rna|hormone|xylem|phloem|kingdom|species|cell wall|gamete)/.test(t)) return 'Biology';
+        if (exam === 'jee' && /(integral|matrix|determinant|parabola|ellipse|hyperbola|binomial|polynomial|derivative|trigonometr|vector|complex number|probability|limit|differential equation)/.test(t)) return 'Mathematics';
+        if (/(mole|enthalpy|orbital|benzene|iupac|carbocation|acid|reaction|reactant|compound|oxide|polymer|isomer|hybridization|titration|alkane|alkene|phenol|molarity|molality|buffer)/.test(t)) return 'Chemistry';
+        if (/(velocity|acceleration|force|torque|electric field|magnetic|capacitor|resistor|lens|mirror|photon|wavelength|pendulum|friction|momentum|entropy|inductor|diode)/.test(t)) return 'Physics';
+        return cfg.primarySubject;
       }
 
       function cleanChapterAndYear(rawCh, rawTags, exam) {
-        const ign = new Set(['neet','neet ug','neet pyq','jee','jee main','jee pyq','physics','chemistry','biology','botany','zoology','mathematics','math','maths','pyq','general','']);
+        const ign = new Set(['neet','neet ug','neet pyq','jee','jee main','jee adv','jee advanced','jee pyq','physics','chemistry','biology','botany','zoology','mathematics','math','maths','pyq','general','']);
         const toks = [];
         const push = (v) => {
           if (!v) return;
@@ -1164,167 +1210,357 @@
         push(rawCh); push(rawTags);
         let year = '', chaps = [];
         for (const t of toks) {
-          if (/(NEET|AIPMT|JEE|AIIMS)[^,'"]*?(19|20)\d{2}/i.test(t)) { if (!year) year = t; continue; }
+          if (/(NEET|AIPMT|JEE|AIIMS|IIT)[^,'"]*?(19|20)\d{2}/i.test(t)) { if (!year) year = t; continue; }
           if (/^(19|20)\d{2}$/.test(t)) { if (!year) year = `${EXAM_CFG[exam].name} ${t}`; continue; }
           if (!ign.has(t.toLowerCase())) chaps.push(t);
         }
         return { chapter: chaps[0] || `${EXAM_CFG[exam].name} PYQ`, year };
       }
 
-      function cleanOpt(raw) {
-        let s = String(raw || '').trim().replace(/^\(?[A-D1-4]\)?[\.\:\)]\s+/, '').trim();
+      function cleanOptText(raw) {
+        if (raw && typeof raw === 'object') {
+          raw = raw.text ?? raw.content ?? raw.value ?? raw.option ?? raw.label ?? JSON.stringify(raw);
+        }
+        let s = String(raw ?? '').trim().replace(/^\(?[A-Da-d1-4]\)?[\.\:\)]\s+/, '').trim();
         const cnt = (s.match(/(?<!\\)\$/g) || []).length;
         if (cnt % 2 === 1) s = s.startsWith('$') ? s + '$' : '$' + s;
         return s;
       }
 
-      function extractOptionsFromText(rawText) {
+      // Extract structured options from arrays, objects, or flat keys
+      function extractStructuredOptions(obj) {
+        if (!obj || typeof obj !== 'object') return null;
+
+        for (const key of ['options', 'choices', 'answers', 'Options', 'Choices', 'opts', 'answer_choices']) {
+          const val = obj[key];
+          if (Array.isArray(val) && val.length >= 2) {
+            const cleaned = val.slice(0, 4).map(cleanOptText).filter(Boolean);
+            if (cleaned.length >= 2) return cleaned;
+          }
+          if (val && typeof val === 'object' && !Array.isArray(val)) {
+            const byLetter = [val.A ?? val.a, val.B ?? val.b, val.C ?? val.c, val.D ?? val.d].filter(v => v !== undefined && v !== null && String(v).trim() !== '');
+            if (byLetter.length >= 2) return byLetter.map(cleanOptText);
+            const byOne = [val['1'] ?? val[1], val['2'] ?? val[2], val['3'] ?? val[3], val['4'] ?? val[4]].filter(v => v !== undefined && v !== null && String(v).trim() !== '');
+            if (byOne.length >= 2) return byOne.map(cleanOptText);
+            const byZero = [val['0'] ?? val[0], val['1'] ?? val[1], val['2'] ?? val[2], val['3'] ?? val[3]].filter(v => v !== undefined && v !== null && String(v).trim() !== '');
+            if (byZero.length >= 2) return byZero.map(cleanOptText);
+          }
+        }
+
+        const flatSets = [
+          ['option_a', 'option_b', 'option_c', 'option_d'],
+          ['optionA', 'optionB', 'optionC', 'optionD'],
+          ['opa', 'opb', 'opc', 'opd'],
+          ['opt1', 'opt2', 'opt3', 'opt4'],
+          ['option1', 'option2', 'option3', 'option4'],
+          ['option_1', 'option_2', 'option_3', 'option_4'],
+          ['A', 'B', 'C', 'D'],
+          ['a', 'b', 'c', 'd']
+        ];
+        for (const keys of flatSets) {
+          const vals = keys.map(k => obj[k]).filter(v => v !== undefined && v !== null && String(v).trim() !== '');
+          if (vals.length >= 2) return vals.map(cleanOptText);
+        }
+        return null;
+      }
+
+      // Extract inline options safely WITHOUT ever splitting on decimal numbers like 1.40 or 2.81
+      function extractInlineOptions(rawText) {
         const text = String(rawText || '').replace(/^\s*\[(?:NEET|JEE)[^\]]*\]\s*/i, '').trim();
         const lines = text.split(/\r?\n/);
-        const exp = ['A','B','C','D'];
-        let found = [], firstIdx = -1;
-        for (let i = 0; i < lines.length; i++) {
-          const l = lines[i].trim();
-          if (!l) continue;
-          const next = exp[found.length];
-          if (!next) break;
-          let m = l.match(new RegExp(`^(?:\\(?(${next})\\)|(${next})[\\.\\:\\)])\\s*(.*)$`));
-          if (!m) m = l.match(new RegExp(`^(${next})(?:\\s+|(?=\\$))(.+)$`));
-          if (m) {
-            if (firstIdx === -1) firstIdx = i;
-            found.push((m[3] !== undefined ? m[3] : m[2] || '').trim());
-          } else if (found.length > 0 && found.length < 4) found[found.length - 1] += ' ' + l;
+
+        const seqSets = [
+          { labels: ['A','B','C','D'], rx: (L) => new RegExp(`^(?:\\(${L}\\)|${L}[\\.\\:\\)])\\s+(.+)$`) },
+          { labels: ['a','b','c','d'], rx: (L) => new RegExp(`^(?:\\(${L}\\)|${L}[\\.\\:\\)])\\s+(.+)$`) },
+          { labels: ['1','2','3','4'], rx: (L) => new RegExp(`^(?:\\(${L}\\)|${L}\\))\\s+(.+)$`) }
+        ];
+
+        for (const set of seqSets) {
+          let found = [], firstIdx = -1;
+          for (let i = 0; i < lines.length; i++) {
+            const l = lines[i].trim();
+            if (!l) continue;
+            const next = set.labels[found.length];
+            if (!next) break;
+            const m = l.match(set.rx(next));
+            if (m) {
+              if (firstIdx === -1) firstIdx = i;
+              found.push(m[1].trim());
+            } else if (found.length > 0 && found.length < 4) {
+              found[found.length - 1] += ' ' + l;
+            }
+          }
+          if (found.length === 4 && firstIdx > 0) {
+            return { qText: lines.slice(0, firstIdx).join('\n').trim(), options: found.map(cleanOptText) };
+          }
         }
-        if (found.length === 4 && firstIdx > 0) return { qText: lines.slice(0, firstIdx).join('\n').trim(), options: found.map(cleanOpt) };
+
         const norm = text.replace(/\$([BCD])(?=\s|\$)/g, '$ $1');
-        const im = norm.match(/^([\s\S]+)(?:[\r\n]+|\s+)(?:\(A\)|A[\.\)])\s*([\s\S]+?)\s+(?:\(B\)|B[\.\)])\s*([\s\S]+?)\s+(?:\(C\)|C[\.\)])\s*([\s\S]+?)\s+(?:\(D\)|D[\.\)])\s*([\s\S]+)$/);
-        if (im) return { qText: im[1].trim(), options: [im[2], im[3], im[4], im[5]].map(cleanOpt) };
-        return { qText: text, options: null };
+        const inlinePatterns = [
+          /^([\s\S]+?)(?:[\r\n]+|\s+)(?:\(A\)|A[\.\)])\s+([\s\S]+?)\s+(?:\(B\)|B[\.\)])\s+([\s\S]+?)\s+(?:\(C\)|C[\.\)])\s+([\s\S]+?)\s+(?:\(D\)|D[\.\)])\s+([\s\S]+)$/,
+          /^([\s\S]+?)(?:[\r\n]+|\s+)(?:\(a\)|a[\.\)])\s+([\s\S]+?)\s+(?:\(b\)|b[\.\)])\s+([\s\S]+?)\s+(?:\(c\)|c[\.\)])\s+([\s\S]+?)\s+(?:\(d\)|d[\.\)])\s+([\s\S]+)$/,
+          /^([\s\S]+?)(?:[\r\n]+|\s+)\(1\)\s*([\s\S]+?)\s+\(2\)\s*([\s\S]+?)\s+\(3\)\s*([\s\S]+?)\s+\(4\)\s*([\s\S]+)$/
+        ];
+        for (const rx of inlinePatterns) {
+          const m = norm.match(rx);
+          if (m && m[1].trim().length > 8) {
+            return { qText: m[1].trim(), options: [m[2], m[3], m[4], m[5]].map(cleanOptText) };
+          }
+        }
+        return { qText: text, options: [] };
       }
 
-      function resolveAnsIdx(raw, asstText) {
-        const map = { A:0, B:1, C:2, D:3, '1':0, '2':1, '3':2, '4':3 };
-        const chk = (v) => {
+      // Resolve MCQ index (0..3) or exact numerical/string answer
+      function resolveAnswer(rawAns, expText, isMcq) {
+        const letterMap = { A: 0, B: 1, C: 2, D: 3 };
+        const numToIdx = { '1': 0, '2': 1, '3': 2, '4': 3 };
+
+        const parseMcqToken = (v) => {
           if (v === null || v === undefined || v === '') return -1;
-          if (typeof v === 'number' && v >= 0 && v <= 3) return v;
-          const s = String(v).trim().toUpperCase().replace(/[\(\)\.\*`]/g, '');
-          if (map[s] !== undefined) return map[s];
-          const m = s.match(/OPTION\s*([A-D1-4])/);
-          return (m && map[m[1]] !== undefined) ? map[m[1]] : -1;
+          if (typeof v === 'number') {
+            if (v >= 0 && v <= 3) return v;
+            if (v === 4) return 3;
+            return -1;
+          }
+          const s = String(v).trim().toUpperCase().replace(/[\(\)\[\]\.\*`]/g, '');
+          if (letterMap[s] !== undefined) return letterMap[s];
+          if (numToIdx[s] !== undefined) return numToIdx[s];
+          const m = s.match(/^(?:OPTION\s*)?([A-D1-4])$/);
+          if (m) return letterMap[m[1]] !== undefined ? letterMap[m[1]] : numToIdx[m[1]];
+          return -1;
         };
-        const d = chk(raw);
-        if (d >= 0) return d;
-        if (asstText) {
-          const clean = String(asstText).replace(/[\*`\$]/g, '');
-          const ms = [...clean.matchAll(/(?:correct\s*(?:answer|option)|final\s*answer|answer|ans)\s*(?:is|:|\-|=)\s*(?:option\s*)?[\(\[\s]*([A-D1-4])(?:[\)\]\s\.,;]|$)/gi)];
-          if (ms.length) { const idx = chk(ms[ms.length - 1][1]); if (idx >= 0) return idx; }
+
+        let answerText = (rawAns !== null && rawAns !== undefined && String(rawAns).trim() !== '') ? String(rawAns).trim() : '';
+
+        if (isMcq) {
+          let idx = parseMcqToken(rawAns);
+          if (idx < 0 && expText) {
+            const clean = String(expText).replace(/[\*`\$]/g, '');
+            const ms = [...clean.matchAll(/(?:correct\s*(?:answer|option)|final\s*answer|answer|ans)\s*(?:is|:|\-|=)\s*(?:option\s*)?[\(\[\s]*([A-D1-4])(?:[\)\]\s\.,;]|$)/gi)];
+            if (ms.length) idx = parseMcqToken(ms[ms.length - 1][1]);
+          }
+          const safeIdx = idx >= 0 ? idx : 0;
+          return { correctOption: safeIdx, answerText: answerText || ['A','B','C','D'][safeIdx] };
         }
-        return 0;
+
+        if (!answerText && expText) {
+          const clean = String(expText).replace(/[\*`]/g, '');
+          const ms = [...clean.matchAll(/(?:final\s*answer|correct\s*answer|answer|ans)\s*(?:is|:|=)\s*([^\n\r\.]{1,40})/gi)];
+          if (ms.length) answerText = ms[ms.length - 1][1].trim();
+        }
+        return { correctOption: -1, answerText: answerText || '' };
       }
 
-      function parseQuestionRow(row, idx, exam) {
+      // Lossless universal row parser — preserves 100% of MCQs AND Numerical/Integer questions
+      function parseQuestionRow(row, exam, fileIdx, lineIdx) {
         if (!row || typeof row !== 'object') return null;
-        const getOpts = (o) => {
-          if (!o) return null;
-          if (Array.isArray(o.options) && o.options.length >= 2) return o.options.slice(0, 4).map(cleanOpt);
-          if (Array.isArray(o.choices) && o.choices.length >= 2) return o.choices.slice(0, 4).map(cleanOpt);
-          if (o.options && typeof o.options === 'object') return [o.options.A ?? o.options.a, o.options.B ?? o.options.b, o.options.C ?? o.options.c, o.options.D ?? o.options.d].map(cleanOpt);
-          if (o.option_a !== undefined || o.optionA !== undefined) return [o.option_a ?? o.optionA, o.option_b ?? o.optionB, o.option_c ?? o.optionC, o.option_d ?? o.optionD].map(cleanOpt);
-          return null;
-        };
+
+        let rawQ = '', rawExp = '', rawAns = null, rawSubj = '', rawCh = '', rawTags = null, rawYear = '', origId = '', opts = null;
+
         if (Array.isArray(row.messages)) {
-          const u = row.messages.find(m => m.role === 'user')?.content || '';
-          const a = row.messages.find(m => m.role === 'assistant')?.content || '';
+          const u = row.messages.find(m => m && m.role === 'user')?.content || '';
+          const a = row.messages.find(m => m && m.role === 'assistant')?.content || '';
           const meta = row.metadata || {};
-          if (!u.trim()) return null;
-          let opts = getOpts(row) || getOpts(meta);
-          let qText = u.replace(/^\s*\[(?:NEET|JEE)[^\]]*\]\s*/i, '').trim();
-          if (!opts) { const e = extractOptionsFromText(u); qText = e.qText; opts = e.options; }
-          if (!opts || opts.length < 4) return null;
-          const { chapter, year } = cleanChapterAndYear(meta.chapter || meta.topic, meta.tags, exam);
-          return {
-            id: String(row.id || meta.id || `${exam.toUpperCase()}-D-${idx + 1}`),
-            subject: detectSubject(meta.subject || meta.chapter, row.id || meta.id, qText, exam),
-            chapter, year, question: qText, options: opts,
-            correctOption: resolveAnsIdx(row.answer ?? meta.correct_answer ?? meta.answer ?? meta.gold, a),
-            explanation: a.trim()
-          };
+          rawQ = String(u || '').trim();
+          rawExp = stripThinkBlocks(a);
+          rawAns = row.correct_answer ?? row.answer ?? row.ans ?? row.correct ?? row.cop ?? row.target ?? row.gold ?? row.label ?? row.solution_option ?? meta.correct_answer ?? meta.answer ?? meta.gold ?? meta.label;
+          rawSubj = row.subject ?? meta.subject ?? meta.topic ?? '';
+          rawCh = row.chapter ?? meta.chapter ?? meta.topic ?? '';
+          rawTags = row.tags ?? meta.tags;
+          rawYear = row.year ?? meta.year ?? '';
+          origId = String(row.question_id ?? row.id ?? meta.id ?? '').trim();
+          opts = extractStructuredOptions(row) || extractStructuredOptions(meta);
+        } else {
+          rawQ = String(
+            row.question ?? row.problem ?? row.prompt ?? row.text ?? row.query ?? row.stem ??
+            row.Question ?? row.Problem ?? row.input ?? row.content ?? row.q ?? row.question_text ?? ''
+          ).trim();
+          rawExp = stripThinkBlocks(
+            row.explanation ?? row.solution ?? row.rationale ?? row.hint ??
+            row.Solution ?? row.Explanation ?? row.output ?? row.response ?? row.reasoning ?? ''
+          );
+          rawAns = row.correct_answer ?? row.answer ?? row.ans ?? row.correct ?? row.cop ??
+                   row.target ?? row.gold ?? row.label ?? row.solution_option ?? row.correct_option ??
+                   (row.metadata && (row.metadata.correct_answer ?? row.metadata.answer));
+          rawSubj = row.subject ?? row.Subject ?? (row.metadata && row.metadata.subject) ?? row.category ?? row.section ?? '';
+          rawCh = row.chapter ?? row.Chapter ?? row.topic ?? (row.metadata && (row.metadata.chapter ?? row.metadata.topic)) ?? '';
+          rawTags = row.tags ?? (row.metadata && row.metadata.tags);
+          rawYear = row.year ?? (row.metadata && row.metadata.year) ?? '';
+          origId = String(row.question_id ?? row.id ?? row.qid ?? (row.metadata && row.metadata.id) ?? '').trim();
+          opts = extractStructuredOptions(row) || (row.metadata ? extractStructuredOptions(row.metadata) : null);
         }
-        const rawQ = String(row.question || row.problem || row.prompt || row.text || row.question_text || '').trim();
+
         if (!rawQ) return null;
-        let opts = getOpts(row);
+
         let qText = rawQ.replace(/^\s*\[(?:NEET|JEE)[^\]]*\]\s*/i, '').trim();
-        if (!opts) { const e = extractOptionsFromText(rawQ); qText = e.qText; opts = e.options; }
-        if (!opts || opts.length < 2) return null;
-        const { chapter, year } = cleanChapterAndYear(row.chapter || row.topic, row.tags, exam);
-        const exp = String(row.solution || row.explanation || '').trim();
+        if (!opts || opts.length < 2) {
+          const ext = extractInlineOptions(rawQ);
+          if (ext.options && ext.options.length >= 2) {
+            qText = ext.qText;
+            opts = ext.options;
+          } else {
+            opts = [];
+          }
+        }
+
+        const isMcq = opts.length >= 2;
+        const { correctOption, answerText } = resolveAnswer(rawAns, rawExp, isMcq);
+        const { chapter, year } = cleanChapterAndYear(rawCh, rawTags, exam);
+        const subject = detectSubject(rawSubj || rawCh, origId, qText, exam);
+
         return {
-          id: String(row.question_id || row.id || `${exam.toUpperCase()}-${idx + 1}`),
-          subject: detectSubject(row.subject, row.question_id || row.id, qText, exam),
-          chapter, year: row.year ? String(row.year) : year,
-          question: qText, options: opts,
-          correctOption: resolveAnsIdx(row.answer ?? row.correct_answer ?? row.correct_option ?? row.gold ?? row.correct, exp),
-          explanation: exp
+          id: `${exam}-${fileIdx}-${lineIdx}`,
+          origId: origId || `${exam.toUpperCase()}-${fileIdx + 1}-${lineIdx + 1}`,
+          qType: isMcq ? 'mcq' : 'numerical',
+          subject,
+          chapter,
+          year: (rawYear && String(rawYear).toUpperCase() !== 'PYQ') ? String(rawYear) : year,
+          question: qText,
+          options: opts,
+          correctOption,
+          answerText,
+          explanation: rawExp
         };
       }
 
-      async function parseTextChunked(text, targetExam, outArr, seenSet, onProgress) {
-        const cfg = EXAM_CFG[targetExam];
-        const trimmed = text.trim();
-        if (!trimmed) return;
+      // Safe JSON parse helper that gracefully tolerates minor trailing commas
+      function safeParseJson(str) {
+        try { return JSON.parse(str); } catch {
+          try { return JSON.parse(str.replace(/,\s*([}\]])/g, '$1')); } catch { return null; }
+        }
+      }
 
-        const processItem = (obj) => {
-          const p = parseQuestionRow(obj, outArr.length, targetExam);
-          if (!p || p.subject === cfg.forbidden || !cfg.subjects.includes(p.subject)) return;
-          const k = p.id + '|' + p.question.slice(0, 60).toLowerCase();
-          if (!seenSet.has(k)) { seenSet.add(k); outArr.push(p); }
+      // Chunked lossless parser — yields every 600 lines for smooth iPad performance
+      async function parseTextChunked(text, targetExam, fileIdx, outArr, seenSet, onProgress) {
+        const cleanText = String(text || '').replace(/^\uFEFF/, '').trim();
+        if (!cleanText) return { linesScanned: 0, added: 0 };
+
+        let added = 0;
+        const pushRow = (obj, lineIdx) => {
+          const p = parseQuestionRow(obj, targetExam, fileIdx, lineIdx);
+          if (!p) return;
+          // Deduplicate ONLY by normalized questionText (first 160 chars) + options hash
+          const normQ = p.question.toLowerCase().replace(/\s+/g, ' ').trim().slice(0, 160);
+          const optHash = p.options.map(o => o.toLowerCase().replace(/\s+/g, '')).join('|').slice(0, 80);
+          const dedupKey = `${normQ}##${optHash}`;
+          if (!seenSet.has(dedupKey)) {
+            seenSet.add(dedupKey);
+            outArr.push(p);
+            added++;
+          }
         };
 
-        if (trimmed.startsWith('[')) {
-          try {
-            const arr = JSON.parse(trimmed);
+        // Case 1: JSON Array [...]
+        if (cleanText.startsWith('[')) {
+          const arr = safeParseJson(cleanText);
+          if (Array.isArray(arr)) {
             for (let i = 0; i < arr.length; i++) {
-              processItem(arr[i]);
-              if (i > 0 && i % 800 === 0) {
+              pushRow(arr[i], i);
+              if (i > 0 && i % 600 === 0) {
                 if (onProgress) onProgress(Math.round((i / arr.length) * 100), outArr.length);
                 await new Promise(r => setTimeout(r, 0));
               }
             }
-          } catch {}
-        } else {
-          const lines = trimmed.split(/\r?\n/);
-          for (let i = 0; i < lines.length; i++) {
-            const ln = lines[i].trim();
-            if (!ln) continue;
-            try { processItem(JSON.parse(ln)); } catch {}
-            if (i > 0 && i % 800 === 0) {
-              if (onProgress) onProgress(Math.round((i / lines.length) * 100), outArr.length);
-              await new Promise(r => setTimeout(r, 0));
+            return { linesScanned: arr.length, added };
+          }
+        }
+
+        // Case 2: Single JSON wrapper object { data / questions / items / records: [...] }
+        const lines = cleanText.split(/\r?\n/);
+        if (cleanText.startsWith('{') && cleanText.endsWith('}') && (lines.length === 1 || !lines[0].trim().endsWith('}'))) {
+          const whole = safeParseJson(cleanText);
+          if (whole && typeof whole === 'object') {
+            const wrapped = whole.data || whole.questions || whole.items || whole.records;
+            if (Array.isArray(wrapped)) {
+              for (let i = 0; i < wrapped.length; i++) {
+                pushRow(wrapped[i], i);
+                if (i > 0 && i % 600 === 0) {
+                  if (onProgress) onProgress(Math.round((i / wrapped.length) * 100), outArr.length);
+                  await new Promise(r => setTimeout(r, 0));
+                }
+              }
+              return { linesScanned: wrapped.length, added };
+            }
+            pushRow(whole, 0);
+            return { linesScanned: 1, added };
+          }
+        }
+
+        // Case 3: Standard JSONL (with multi-line JSON object recovery)
+        let buffer = '';
+        for (let i = 0; i < lines.length; i++) {
+          const ln = lines[i].trim();
+          if (!ln) continue;
+          const candidate = buffer ? (buffer + '\n' + ln) : ln;
+          const parsed = safeParseJson(candidate);
+          if (parsed && typeof parsed === 'object') {
+            pushRow(parsed, i);
+            buffer = '';
+          } else {
+            // Buffer multi-line JSON object up to 30 lines before resetting
+            buffer = (buffer.split('\n').length < 30) ? candidate : '';
+          }
+          if (i > 0 && i % 600 === 0) {
+            if (onProgress) onProgress(Math.round((i / lines.length) * 100), outArr.length);
+            await new Promise(r => setTimeout(r, 0));
+          }
+        }
+        return { linesScanned: lines.length, added };
+      }
+
+      // Dual-URL Fetcher: Local GitHub Pages first, then automatic Raw GitHub fallback
+      async function fetchWithDualFallback(filename) {
+        const encoded = encodeURIComponent(filename);
+        const localUrl = `./${encoded}`;
+        const rawUrl = `${RAW_GITHUB_BASE}${encoded}`;
+
+        try {
+          const r1 = await fetch(localUrl, { cache: 'no-store' });
+          if (r1.ok) {
+            const txt = await r1.text();
+            // Guard against HTML 404 pages served with 200 OK
+            if (txt && !txt.trim().toLowerCase().startsWith('<!doctype html')) {
+              return { ok: true, status: r1.status, source: 'Local', text: txt };
             }
           }
+        } catch {}
+
+        try {
+          const r2 = await fetch(rawUrl, { cache: 'no-store' });
+          if (r2.ok) {
+            const txt = await r2.text();
+            if (txt && !txt.trim().toLowerCase().startsWith('<!doctype html')) {
+              return { ok: true, status: r2.status, source: 'GitHub Raw', text: txt };
+            }
+          }
+          return { ok: false, status: r2.status, source: 'GitHub Raw', text: '' };
+        } catch {
+          return { ok: false, status: 'Network Err', source: 'Offline', text: '' };
         }
       }
 
       function syncBankStatusUI() {
         const txt = bankMeta[currentExam].statusText;
-        document.getElementById('bank-status-badge').textContent = txt;
-        document.getElementById('dash-bank-pill').textContent = txt;
+        const badge = document.getElementById('bank-status-badge');
+        if (badge) badge.innerHTML = `<span>${txt}</span><span class="text-[10px] opacity-80">ⓘ</span>`;
+        const dashPill = document.getElementById('dash-bank-pill');
+        if (dashPill) dashPill.textContent = `${txt} ⓘ`;
+        const kpiL = document.getElementById('kpi-loaded');
+        if (kpiL) kpiL.textContent = activeBank().length.toLocaleString();
       }
 
-      // Race-condition-safe GitHub Pages auto-loader
-      async function autoLoadExamBank(targetExam) {
+      async function autoLoadExamBank(targetExam, force = false) {
         const cfg = EXAM_CFG[targetExam];
-        // If already loaded from repo or currently loading, just sync UI if active
-        if (bankMeta[targetExam].loadedFromRepo || bankMeta[targetExam].loading) {
+        if (!force && (bankMeta[targetExam].loadedFromRepo || bankMeta[targetExam].loading)) {
           if (targetExam === currentExam) syncBankStatusUI();
           return;
         }
 
-        // Seed fallback immediately so UI is never blank while fetching
-        if (banks[targetExam].length === 0) {
-          banks[targetExam] = [...FALLBACK_PYQS[targetExam]];
-        }
+        const myToken = ++loadToken;
+        if (banks[targetExam].length === 0) banks[targetExam] = [...FALLBACK_PYQS[targetExam]];
+
         bankMeta[targetExam].loading = true;
+        bankMeta[targetExam].fileStats = [];
         bankMeta[targetExam].statusText = `Loading ${cfg.name} files...`;
         if (targetExam === currentExam) syncBankStatusUI();
 
@@ -1334,52 +1570,58 @@
         const lPct = document.getElementById('loader-pct');
         const lBar = document.getElementById('loader-bar');
 
-        const fetchFile = async (filename) => {
-          const res = await fetch(`./${encodeURI(filename)}`);
-          if (!res.ok) return null;
-          return res.text();
-        };
+        const filesToTry = [...cfg.githubFiles];
+        let anyLoadedFromPrimary = false;
 
-        const files = [...cfg.githubFiles];
-        let filesFound = 0;
+        for (let i = 0; i < filesToTry.length; i++) {
+          const fname = filesToTry[i];
+          if (targetExam === currentExam && myToken === loadToken) {
+            bankMeta[targetExam].statusText = `Fetching ${fname} (${i + 1}/${filesToTry.length})...`;
+            syncBankStatusUI();
+          }
 
-        for (let i = 0; i < files.length; i++) {
-          const statusMsg = `Loading ${cfg.name} files (${i + 1}/${files.length})...`;
-          bankMeta[targetExam].statusText = statusMsg;
-          if (targetExam === currentExam) syncBankStatusUI();
+          const res = await fetchWithDualFallback(fname);
+          if (myToken !== loadToken) {
+            // User switched exams mid-fetch — abort safely without cross-contamination
+            bankMeta[targetExam].loading = false;
+            return;
+          }
 
-          try {
-            const txt = await fetchFile(files[i]);
-            if (txt) {
-              filesFound++;
-              await parseTextChunked(txt, targetExam, loaded, seen, (pct, count) => {
-                if (targetExam === currentExam) {
-                  banner.classList.remove('hidden');
-                  lText.textContent = `Parsing ${files[i]} (${count.toLocaleString()} Qs)...`;
-                  lPct.textContent = `${pct}%`;
-                  lBar.style.width = `${pct}%`;
-                }
-              });
+          if (!res.ok) {
+            bankMeta[targetExam].fileStats.push({ name: fname, source: res.source, status: `HTTP ${res.status}`, lines: 0, count: 0 });
+            continue;
+          }
+
+          const { linesScanned, added } = await parseTextChunked(res.text, targetExam, i, loaded, seen, (pct, totalSoFar) => {
+            if (targetExam === currentExam && myToken === loadToken) {
+              banner.classList.remove('hidden');
+              lText.textContent = `Parsing ${fname} (${totalSoFar.toLocaleString()} ${cfg.name} Qs)...`;
+              lPct.textContent = `${pct}%`;
+              lBar.style.width = `${pct}%`;
             }
-          } catch {}
+          });
+
+          if (myToken !== loadToken) { bankMeta[targetExam].loading = false; return; }
+          bankMeta[targetExam].fileStats.push({ name: fname, source: res.source, status: `HTTP ${res.status}`, lines: linesScanned, count: added });
+          if (added > 0) anyLoadedFromPrimary = true;
         }
 
-        // NEET-only fallback filename if neet_complete_dataset.jsonl 404s
-        if (targetExam === 'neet' && filesFound === 0 && cfg.fallbackFile) {
-          try {
-            const txt = await fetchFile(cfg.fallbackFile);
-            if (txt) {
-              filesFound++;
-              await parseTextChunked(txt, 'neet', loaded, seen, (pct, count) => {
-                if (currentExam === 'neet') {
-                  banner.classList.remove('hidden');
-                  lText.textContent = `Parsing ${cfg.fallbackFile} (${count.toLocaleString()} Qs)...`;
-                  lPct.textContent = `${pct}%`;
-                  lBar.style.width = `${pct}%`;
-                }
-              });
-            }
-          } catch {}
+        // NEET fallback to neet.jsonl ONLY if neet_complete_dataset.jsonl 404'd / yielded 0
+        if (!anyLoadedFromPrimary && cfg.fallbackFile && myToken === loadToken) {
+          const res = await fetchWithDualFallback(cfg.fallbackFile);
+          if (res.ok && myToken === loadToken) {
+            const { linesScanned, added } = await parseTextChunked(res.text, targetExam, 99, loaded, seen, (pct, totalSoFar) => {
+              if (targetExam === currentExam && myToken === loadToken) {
+                banner.classList.remove('hidden');
+                lText.textContent = `Parsing ${cfg.fallbackFile} (${totalSoFar.toLocaleString()} Qs)...`;
+                lPct.textContent = `${pct}%`;
+                lBar.style.width = `${pct}%`;
+              }
+            });
+            bankMeta[targetExam].fileStats.push({ name: cfg.fallbackFile, source: res.source, status: `HTTP ${res.status}`, lines: linesScanned, count: added });
+          } else if (myToken === loadToken) {
+            bankMeta[targetExam].fileStats.push({ name: cfg.fallbackFile, source: res.source, status: `HTTP ${res.status}`, lines: 0, count: 0 });
+          }
         }
 
         if (targetExam === currentExam) banner.classList.add('hidden');
@@ -1394,8 +1636,7 @@
           bankMeta[targetExam].statusText = `${banks[targetExam].length} Built-in ${cfg.name} PYQs`;
         }
 
-        // Only update the UI if the user is still on targetExam
-        if (targetExam === currentExam) {
+        if (targetExam === currentExam && myToken === loadToken) {
           syncBankStatusUI();
           populateChapterDropdown();
           applyPracticeFilters();
@@ -1403,20 +1644,53 @@
         }
       }
 
+      window.openDiagnosticsModal = function () {
+        const cfg = EXAM_CFG[currentExam];
+        const list = activeBank();
+        const mcqCnt = list.filter(q => q.qType === 'mcq').length;
+        const numCnt = list.length - mcqCnt;
+        document.getElementById('diag-title').textContent = `${cfg.name} Dataset Diagnostics`;
+        document.getElementById('diag-summary').innerHTML = `
+          <div class="p-3 rounded-xl surface-elevated"><div class="text-[10px] font-bold text-mut uppercase">Total Loaded</div><div class="font-mono text-lg font-extrabold text-acc">${list.length.toLocaleString()}</div></div>
+          <div class="p-3 rounded-xl surface-elevated"><div class="text-[10px] font-bold text-mut uppercase">MCQs</div><div class="font-mono text-lg font-extrabold text-emerald-400">${mcqCnt.toLocaleString()}</div></div>
+          <div class="p-3 rounded-xl surface-elevated"><div class="text-[10px] font-bold text-mut uppercase">Numerical</div><div class="font-mono text-lg font-extrabold text-rg">${numCnt.toLocaleString()}</div></div>`;
+        const stats = bankMeta[currentExam].fileStats;
+        document.getElementById('diag-file-list').innerHTML = stats.length
+          ? stats.map(f => `
+              <div class="p-3 rounded-xl surface-elevated flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="min-w-0">
+                  <div class="font-mono font-bold truncate">${escapeHtml(f.name)}</div>
+                  <div class="text-[10px] text-mut">Source: ${escapeHtml(f.source)} &bull; Lines: ${(f.lines || 0).toLocaleString()}</div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold ${f.status === 'HTTP 200' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'}">${escapeHtml(f.status)}</span>
+                  <span class="font-mono font-extrabold text-acc">${(f.count || 0).toLocaleString()} Qs</span>
+                </div>
+              </div>`).join('')
+          : `<div class="text-xs text-sec text-center py-4">No remote fetch records yet.</div>`;
+        document.getElementById('diagnostics-modal').classList.remove('hidden');
+      };
+      window.closeDiagnosticsModal = function () { document.getElementById('diagnostics-modal').classList.add('hidden'); };
+      window.forceReloadActiveBank = function () {
+        window.closeDiagnosticsModal();
+        autoLoadExamBank(currentExam, true);
+        showToast(`Retrying ${EXAM_CFG[currentExam].name} dataset auto-load...`, 'info');
+      };
+
       window.handleLocalDatasetImport = async function (e) {
         const files = [...(e.target.files || [])];
         if (!files.length) return;
-        const targetExam = currentExam;
-        const cfg = EXAM_CFG[targetExam];
-        const loaded = [], seen = new Set();
+        const targetExam = currentExam, cfg = EXAM_CFG[targetExam];
+        const loaded = [], seen = new Set(), stats = [];
         const banner = document.getElementById('loader-banner');
         const lText = document.getElementById('loader-text');
         const lPct = document.getElementById('loader-pct');
         const lBar = document.getElementById('loader-bar');
 
-        for (const f of files) {
+        for (let i = 0; i < files.length; i++) {
+          const f = files[i];
           const txt = await f.text();
-          await parseTextChunked(txt, targetExam, loaded, seen, (pct, count) => {
+          const { linesScanned, added } = await parseTextChunked(txt, targetExam, i, loaded, seen, (pct, count) => {
             if (targetExam === currentExam) {
               banner.classList.remove('hidden');
               lText.textContent = `Importing ${f.name} (${count.toLocaleString()} Qs)...`;
@@ -1424,12 +1698,14 @@
               lBar.style.width = `${pct}%`;
             }
           });
+          stats.push({ name: f.name, source: 'Local File', status: 'HTTP 200', lines: linesScanned, count: added });
         }
         banner.classList.add('hidden');
 
         if (loaded.length > 0) {
           banks[targetExam] = loaded;
           bankMeta[targetExam].loadedFromRepo = true;
+          bankMeta[targetExam].fileStats = stats;
           bankMeta[targetExam].statusText = `${loaded.length.toLocaleString()} ${cfg.name} PYQs (Imported)`;
           if (targetExam === currentExam) {
             syncBankStatusUI();
@@ -1439,7 +1715,7 @@
             showToast(`Imported ${loaded.length.toLocaleString()} ${cfg.name} questions!`, 'success');
           }
         } else {
-          showToast(`No valid ${cfg.name} MCQs found in selected file(s).`, 'error');
+          showToast('No valid questions found in selected file(s).', 'error');
         }
         e.target.value = '';
       };
@@ -1490,11 +1766,11 @@
         const allF = getAllFormulasForExam();
         const readF = allF.filter(f => readNowSet.has(f.id)).length;
 
+        document.getElementById('kpi-loaded').textContent = activeBank().length.toLocaleString();
         document.getElementById('kpi-solved').textContent = tot;
         document.getElementById('kpi-acc').textContent = `${acc}%`;
         document.getElementById('kpi-time').textContent = `${avgT}s`;
         document.getElementById('kpi-bench').textContent = `Goal ≤ ${cfg.benchSec}s`;
-        document.getElementById('kpi-bookmarks').textContent = bookmarksSet.size;
         document.getElementById('kpi-formulas').textContent = `${readF}/${allF.length}`;
 
         renderTodoList();
@@ -1517,7 +1793,7 @@
         const rm = document.getElementById('dash-recent-mocks');
         rm.innerHTML = !mockHistory.length
           ? `<div class="text-xs text-mut py-3 text-center">No Mock Sprints or PDF CBT tests completed yet.</div>`
-          : mockHistory.slice(0, 3).map(m => `<div class="p-2.5 rounded-xl surface-elevated flex items-center justify-between text-xs"><div><div class="font-bold">${m.title}</div><div class="text-[10px] text-mut">${m.date}</div></div><div class="font-mono font-extrabold text-acc">${m.score}/${m.maxScore} <span class="text-emerald-400">(${m.accuracy}%)</span></div></div>`).join('');
+          : mockHistory.slice(0, 3).map(m => `<div class="p-2.5 rounded-xl surface-elevated flex items-center justify-between text-xs"><div><div class="font-bold">${escapeHtml(m.title)}</div><div class="text-[10px] text-mut">${escapeHtml(m.date)}</div></div><div class="font-mono font-extrabold text-acc">${m.score}/${m.maxScore} <span class="text-emerald-400">(${m.accuracy}%)</span></div></div>`).join('');
       }
 
       window.updateDailyGoal = function (v) {
@@ -1548,7 +1824,7 @@
         document.getElementById('todo-progress-pill').textContent = `${done} / ${todoList.length} Done`;
         const box = document.getElementById('todo-list');
         if (!todoList.length) { box.innerHTML = `<div class="text-xs text-mut text-center py-4">No study tasks yet. Add one above!</div>`; return; }
-        box.innerHTML = todoList.map(t => `<div class="p-3 rounded-xl surface-elevated flex items-center justify-between gap-2.5"><label class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0"><input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodoTask('${t.id}')" class="w-4 h-4 accent-[var(--accent)] rounded shrink-0" /><span class="text-xs font-semibold truncate ${t.done ? 'line-through text-mut' : ''}">${t.text}</span></label><button onclick="deleteTodoTask('${t.id}')" class="text-xs font-bold text-mut hover:text-rose-400 px-1.5">&times;</button></div>`).join('');
+        box.innerHTML = todoList.map(t => `<div class="p-3 rounded-xl surface-elevated flex items-center justify-between gap-2.5"><label class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0"><input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodoTask('${t.id}')" class="w-4 h-4 accent-[var(--accent)] rounded shrink-0" /><span class="text-xs font-semibold truncate ${t.done ? 'line-through text-mut' : ''}">${escapeHtml(t.text)}</span></label><button onclick="deleteTodoTask('${t.id}')" class="text-xs font-bold text-mut hover:text-rose-400 px-1.5">&times;</button></div>`).join('');
       }
       window.addTodoTask = function (e) {
         e.preventDefault();
@@ -1578,9 +1854,10 @@
       window.practiceWeakSubject = function (subj) { window.switchTab('practice'); window.selectPracSubj(subj); };
 
       // =====================================================================
-      // 9. TAB 2: PYQ PRACTICE + STOPWATCH + 25-Q PAGINATION
+      // 9. TAB 2: PYQ PRACTICE (MCQ + NUMERICAL/SELF-CHECK)
       // =====================================================================
-      let pracSubj = 'All', pracFiltered = [], pracIdx = 0, pracSel = null, pracSub = false, pracSol = false;
+      let pracSubj = 'All', pracFiltered = [], pracIdx = 0;
+      let pracSel = null, pracNumVal = '', pracSub = false, pracWasCorrect = false, pracSol = false;
       let qSecs = 0, qWatchInt = null;
 
       function startQWatch() {
@@ -1611,7 +1888,7 @@
         const chaps = [...new Set(activeBank().filter(q => pracSubj === 'All' || q.subject === pracSubj).map(q => q.chapter || 'General'))].sort();
         document.getElementById('prac-chapter-filter').innerHTML =
           `<option value="All">All Chapters (${chaps.length})</option>` +
-          chaps.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('');
+          chaps.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${escapeHtml(c)}</option>`).join('');
       }
 
       window.applyPracticeFilters = function () {
@@ -1622,12 +1899,15 @@
           if (pracSubj !== 'All' && q.subject !== pracSubj) return false;
           if (ch !== 'All' && (q.chapter || 'General') !== ch) return false;
           if (st === 'unsolved' && solvedSet.has(q.id)) return false;
+          if (st === 'correct' && !correctSet.has(q.id)) return false;
           if (st === 'wrong' && !mistakesSet.has(q.id)) return false;
           if (st === 'bookmarked' && !bookmarksSet.has(q.id)) return false;
-          if (qs && !q.question.toLowerCase().includes(qs) && !q.id.toLowerCase().includes(qs) && !(q.chapter || '').toLowerCase().includes(qs)) return false;
+          if (st === 'mcq' && q.qType !== 'mcq') return false;
+          if (st === 'numerical' && q.qType !== 'numerical') return false;
+          if (qs && !q.question.toLowerCase().includes(qs) && !q.origId.toLowerCase().includes(qs) && !(q.chapter || '').toLowerCase().includes(qs)) return false;
           return true;
         });
-        pracIdx = 0; pracSel = null; pracSub = false; pracSol = false;
+        pracIdx = 0; pracSel = null; pracNumVal = ''; pracSub = false; pracWasCorrect = false; pracSol = false;
         renderPracticeCard(true);
       };
 
@@ -1651,25 +1931,62 @@
       };
       window.jumpPracticePage = function (p) {
         pracIdx = Math.min(Math.max(0, pracFiltered.length - 1), (Math.max(1, parseInt(p, 10) || 1) - 1) * 25);
-        pracSel = null; pracSub = false; pracSol = false; renderPracticeCard(true);
+        pracSel = null; pracNumVal = ''; pracSub = false; pracWasCorrect = false; pracSol = false;
+        renderPracticeCard(true);
       };
 
-      window.pickPracOpt = function (i) { if (!pracSub) { pracSel = i; renderPracticeCard(false); } };
-      window.submitPracAnswer = function () {
-        if (pracSub || !pracFiltered.length) return;
-        if (pracSel === null) return showToast('Select an option (A–D) first.', 'info');
+      function recordPracticeAttempt(q, isCorrect) {
         stopQWatch();
-        const q = pracFiltered[pracIdx];
-        const isCorrect = pracSel === q.correctOption;
-        pracSub = true; pracSol = true;
+        pracSub = true; pracWasCorrect = isCorrect; pracSol = true;
         const now = new Date();
-        attemptLog.unshift({ id: q.id, timestamp: now.getTime(), dateKey: getDateKey(now), subject: q.subject, chapter: q.chapter || 'General', isCorrect, timeSec: Math.max(1, qSecs) });
-        if (attemptLog.length > 2500) attemptLog.length = 2500;
+        attemptLog.unshift({
+          id: q.id, timestamp: now.getTime(), dateKey: getDateKey(now),
+          subject: q.subject, chapter: q.chapter || 'General',
+          isCorrect, timeSec: Math.max(1, qSecs)
+        });
+        if (attemptLog.length > 3000) attemptLog.length = 3000;
         saveLS(lsKey('attempts'), attemptLog);
         solvedSet.add(q.id); saveLS(lsKey('solved_ids'), [...solvedSet]);
-        if (!isCorrect) { mistakesSet.add(q.id); saveLS(lsKey('mistakes'), [...mistakesSet]); }
-        else if (mistakesSet.has(q.id)) { mistakesSet.delete(q.id); saveLS(lsKey('mistakes'), [...mistakesSet]); }
+        if (isCorrect) {
+          correctSet.add(q.id); saveLS(lsKey('correct_ids'), [...correctSet]);
+          if (mistakesSet.has(q.id)) { mistakesSet.delete(q.id); saveLS(lsKey('mistakes'), [...mistakesSet]); }
+        } else {
+          mistakesSet.add(q.id); saveLS(lsKey('mistakes'), [...mistakesSet]);
+          if (correctSet.has(q.id)) { correctSet.delete(q.id); saveLS(lsKey('correct_ids'), [...correctSet]); }
+        }
         renderPracticeCard(false);
+      }
+
+      window.pickPracOpt = function (i) { if (!pracSub) { pracSel = i; renderPracticeCard(false); } };
+      window.onPracNumInput = function (v) { pracNumVal = v; };
+      window.submitPracAnswer = function () {
+        if (pracSub || !pracFiltered.length) return;
+        const q = pracFiltered[pracIdx];
+        if (q.qType === 'mcq' && q.options.length >= 2) {
+          if (pracSel === null) return showToast('Select an option (A–D) first.', 'info');
+          recordPracticeAttempt(q, pracSel === q.correctOption);
+        } else {
+          const inp = document.getElementById('prac-num-input');
+          const val = (inp ? inp.value : pracNumVal).trim();
+          pracNumVal = val;
+          if (!val) return showToast('Enter an answer or use Self-Mark buttons below.', 'info');
+          const gold = String(q.answerText || '').trim();
+          if (!gold) {
+            pracSol = true;
+            renderPracticeCard(false);
+            return showToast('Solution opened! Use Self-Mark buttons to record your score.', 'info');
+          }
+          const uNum = parseFloat(val.replace(/,/g, ''));
+          const gNum = parseFloat(gold.replace(/,/g, ''));
+          let ok = false;
+          if (!isNaN(uNum) && !isNaN(gNum)) ok = Math.abs(uNum - gNum) <= Math.max(0.01, 0.02 * Math.abs(gNum));
+          else ok = val.toLowerCase().replace(/\s+/g, '') === gold.toLowerCase().replace(/\s+/g, '');
+          recordPracticeAttempt(q, ok);
+        }
+      };
+      window.selfMarkNumerical = function (isCorrect) {
+        if (pracSub || !pracFiltered.length) return;
+        recordPracticeAttempt(pracFiltered[pracIdx], isCorrect);
       };
       window.togglePracBookmark = function (id) {
         if (bookmarksSet.has(id)) { bookmarksSet.delete(id); showToast('Removed bookmark.', 'info'); }
@@ -1681,7 +1998,8 @@
       window.navPractice = function (d) {
         if (!pracFiltered.length) return;
         pracIdx = (pracIdx + d + pracFiltered.length) % pracFiltered.length;
-        pracSel = null; pracSub = false; pracSol = false; renderPracticeCard(true);
+        pracSel = null; pracNumVal = ''; pracSub = false; pracWasCorrect = false; pracSol = false;
+        renderPracticeCard(true);
       };
 
       function renderPracticeCard(restart = true) {
@@ -1693,41 +2011,63 @@
           return;
         }
         const q = pracFiltered[pracIdx], letters = ['A','B','C','D'];
-        const isBm = bookmarksSet.has(q.id), isOk = pracSub && pracSel === q.correctOption;
+        const isBm = bookmarksSet.has(q.id);
+        const isMcq = q.qType === 'mcq' && q.options.length >= 2;
+        const ansLabel = isMcq ? `Option ${letters[q.correctOption] || 'A'}` : (q.answerText || 'See Solution');
+
+        const answerAreaHtml = isMcq
+          ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ${q.options.map((opt, i) => {
+                let cls = 'surface-elevated hover:border-[var(--accent)]';
+                if (!pracSub && pracSel === i) cls = 'bg-acc-soft ring-2 ring-[var(--accent)]';
+                else if (pracSub) {
+                  if (i === q.correctOption) cls = 'bg-emerald-500/15 border border-emerald-500 text-emerald-300';
+                  else if (i === pracSel) cls = 'bg-rose-500/15 border border-rose-500 text-rose-300';
+                  else cls = 'surface-elevated opacity-50';
+                }
+                return `<button onclick="pickPracOpt(${i})" class="w-full text-left p-4 rounded-xl transition flex items-start gap-3 ${cls}"><span class="w-7 h-7 rounded-lg surface-input font-mono font-extrabold text-xs flex items-center justify-center shrink-0">${letters[i]}</span><span class="text-sm sm:text-base font-medium leading-relaxed break-words">${formatRichText(opt)}</span></button>`;
+              }).join('')}
+            </div>`
+          : `<div class="p-4 rounded-2xl surface-elevated space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-rg">Numerical / Self-Check Question</span>
+                <span class="text-[11px] text-sec">Enter numeric value &amp; check, or view solution and self-mark.</span>
+              </div>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <input id="prac-num-input" type="text" value="${escapeHtml(pracNumVal)}" ${pracSub ? 'disabled' : ''} oninput="onPracNumInput(this.value)" onkeydown="if(event.key==='Enter') submitPracAnswer()" placeholder="Type numeric or short answer..." class="flex-1 px-4 py-2.5 rounded-xl surface-input font-mono text-sm font-bold" />
+                ${!pracSub ? `<button onclick="submitPracAnswer()" class="px-5 py-2.5 rounded-xl bg-acc text-xs font-extrabold shrink-0">Check Answer</button>` : ''}
+              </div>
+              ${!pracSub ? `<div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                <span class="text-mut font-semibold">Self-Mark:</span>
+                <button onclick="selfMarkNumerical(true)" class="px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold hover:bg-emerald-500/25">✓ +4 Correct</button>
+                <button onclick="selfMarkNumerical(false)" class="px-3 py-1.5 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/30 font-bold hover:bg-rose-500/25">✕ -1 Wrong</button>
+              </div>` : ''}
+            </div>`;
+
         card.innerHTML = `
           <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-[var(--border-subtle)]">
             <div class="flex flex-wrap items-center gap-1.5">
               <span class="px-2.5 py-1 rounded-lg bg-acc-soft text-xs font-extrabold">${q.subject}</span>
-              <span class="px-2.5 py-1 rounded-lg surface-elevated text-xs font-bold">${q.chapter}</span>
-              ${q.year ? `<span class="px-2.5 py-1 rounded-lg bg-rg-soft text-xs font-bold">${q.year}</span>` : ''}
-              <span class="px-2 py-1 rounded-lg surface-elevated font-mono text-[11px] text-mut">${q.id}</span>
+              <span class="px-2.5 py-1 rounded-lg surface-elevated text-xs font-bold">${escapeHtml(q.chapter)}</span>
+              <span class="px-2 py-1 rounded-lg ${isMcq ? 'surface-elevated text-sec' : 'bg-rg-soft'} text-[11px] font-extrabold">${isMcq ? 'MCQ' : 'Numerical'}</span>
+              ${q.year ? `<span class="px-2.5 py-1 rounded-lg bg-rg-soft text-xs font-bold">${escapeHtml(q.year)}</span>` : ''}
+              <span class="px-2 py-1 rounded-lg surface-elevated font-mono text-[11px] text-mut">${escapeHtml(q.origId)}</span>
             </div>
             <div class="flex items-center gap-2">
               <span id="prac-stopwatch" class="px-2.5 py-1 rounded-lg font-mono text-xs font-extrabold bg-emerald-500/15 text-emerald-400">⏱ 00:00</span>
               <span class="text-xs font-mono font-bold text-mut">${pracIdx + 1}/${pracFiltered.length}</span>
-              <button onclick="togglePracBookmark('${q.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${isBm ? 'bg-rg-soft' : 'surface-elevated'}">${isBm ? '★ Saved' : '☆ Save'}</button>
+              <button onclick="togglePracBookmark('${q.id.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${isBm ? 'bg-rg-soft' : 'surface-elevated'}">${isBm ? '★ Saved' : '☆ Save'}</button>
             </div>
           </div>
-          <div class="py-5 text-base sm:text-lg font-semibold leading-relaxed whitespace-pre-line">${q.question}</div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            ${q.options.map((opt, i) => {
-              let cls = 'surface-elevated hover:border-[var(--accent)]';
-              if (!pracSub && pracSel === i) cls = 'bg-acc-soft ring-2 ring-[var(--accent)]';
-              else if (pracSub) {
-                if (i === q.correctOption) cls = 'bg-emerald-500/15 border border-emerald-500 text-emerald-300';
-                else if (i === pracSel) cls = 'bg-rose-500/15 border border-rose-500 text-rose-300';
-                else cls = 'surface-elevated opacity-50';
-              }
-              return `<button onclick="pickPracOpt(${i})" class="w-full text-left p-4 rounded-xl transition flex items-start gap-3 ${cls}"><span class="w-7 h-7 rounded-lg surface-input font-mono font-extrabold text-xs flex items-center justify-center shrink-0">${letters[i]}</span><span class="text-sm sm:text-base font-medium leading-relaxed">${opt}</span></button>`;
-            }).join('')}
-          </div>
-          ${pracSub ? `<div class="mt-4 p-4 rounded-xl border text-xs sm:text-sm font-bold flex flex-wrap items-center justify-between gap-2 ${isOk ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'bg-rose-500/15 border-rose-500/40 text-rose-400'}"><span>${isOk ? '✓ Correct! (+4 Marks)' : `✕ Incorrect (-1 Mark) — Correct: Option ${letters[q.correctOption]}`}</span><span class="font-mono px-2.5 py-1 rounded-lg surface-elevated">Time: ${qSecs}s</span></div>` : ''}
-          ${pracSol ? `<div class="mt-4 p-4 rounded-xl surface-elevated text-xs sm:text-sm space-y-1.5"><div class="font-extrabold text-rg">Solution (Option ${letters[q.correctOption]})</div><div class="text-sec leading-relaxed whitespace-pre-line">${q.explanation || 'Refer to standard NCERT concept.'}</div></div>` : ''}
+          <div class="py-5 text-base sm:text-lg font-semibold leading-relaxed whitespace-pre-line break-words">${formatRichText(q.question)}</div>
+          ${answerAreaHtml}
+          ${pracSub ? `<div class="mt-4 p-4 rounded-xl border text-xs sm:text-sm font-bold flex flex-wrap items-center justify-between gap-2 ${pracWasCorrect ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' : 'bg-rose-500/15 border-rose-500/40 text-rose-400'}"><span>${pracWasCorrect ? '✓ Correct! (+4 Marks)' : `✕ Incorrect (-1 Mark) — Answer: ${escapeHtml(ansLabel)}`}</span><span class="font-mono px-2.5 py-1 rounded-lg surface-elevated">Time: ${qSecs}s</span></div>` : ''}
+          ${pracSol ? `<div class="mt-4 p-4 rounded-xl surface-elevated text-xs sm:text-sm space-y-1.5"><div class="font-extrabold text-rg">Answer &amp; Solution (${escapeHtml(ansLabel)})</div><div class="text-sec leading-relaxed whitespace-pre-line break-words">${q.explanation ? formatRichText(q.explanation) : 'No detailed explanation provided in dataset.'}</div></div>` : ''}
           <div class="mt-6 pt-4 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-2">
             <button onclick="navPractice(-1)" class="px-4 py-2.5 rounded-xl surface-elevated text-xs sm:text-sm font-bold">← Previous</button>
             <div class="flex flex-wrap gap-2">
               <button onclick="togglePracSol()" class="px-4 py-2.5 rounded-xl bg-acc-soft text-xs sm:text-sm font-bold">${pracSol ? 'Hide Solution' : 'Show Solution'}</button>
-              ${!pracSub ? `<button onclick="submitPracAnswer()" class="px-5 py-2.5 rounded-xl bg-acc text-xs sm:text-sm font-extrabold">Submit Answer</button>` : ''}
+              ${(!pracSub && isMcq) ? `<button onclick="submitPracAnswer()" class="px-5 py-2.5 rounded-xl bg-acc text-xs sm:text-sm font-extrabold">Submit Answer</button>` : ''}
               <button onclick="navPractice(1)" class="px-5 py-2.5 rounded-xl surface-elevated hover:border-[var(--rosegold-border)] text-xs sm:text-sm font-extrabold">Next →</button>
             </div>
           </div>`;
@@ -1777,8 +2117,10 @@
 
       window.startMockSprint = function () {
         const subj = document.getElementById('sprint-subject').value;
-        const pool = activeBank().filter(q => subj === 'All' || q.subject === subj);
-        if (!pool.length) return showToast('No questions available.', 'error');
+        let pool = activeBank().filter(q => q.qType === 'mcq' && q.options.length >= 2 && (subj === 'All' || q.subject === subj));
+        if (!pool.length) pool = FALLBACK_PYQS[currentExam].filter(q => q.qType === 'mcq' && (subj === 'All' || q.subject === subj));
+        if (!pool.length) return showToast('No MCQ questions available for this subject.', 'error');
+
         const reqN = spCountMode === 'custom' ? Math.max(3, Math.min(100, parseInt(document.getElementById('sprint-custom-count').value, 10) || 15)) : spCountMode;
         const count = Math.min(reqN, pool.length);
         sprint.active = true; sprint.qs = [...pool].sort(() => Math.random() - 0.5).slice(0, count);
@@ -1809,10 +2151,10 @@
         document.getElementById('sprint-progress-lbl').textContent = `Question ${sprint.idx + 1} / ${sprint.qs.length}`;
         const card = document.getElementById('sprint-q-card');
         card.innerHTML = `
-          <div class="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]"><span class="px-2.5 py-1 rounded-lg bg-acc-soft text-xs font-extrabold">${q.subject} &bull; ${q.chapter}</span><span class="font-mono text-xs text-mut">${q.id}</span></div>
-          <div class="py-5 text-base font-semibold leading-relaxed whitespace-pre-line">${q.question}</div>
+          <div class="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]"><span class="px-2.5 py-1 rounded-lg bg-acc-soft text-xs font-extrabold">${q.subject} &bull; ${escapeHtml(q.chapter)}</span><span class="font-mono text-xs text-mut">${escapeHtml(q.origId)}</span></div>
+          <div class="py-5 text-base font-semibold leading-relaxed whitespace-pre-line">${formatRichText(q.question)}</div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            ${q.options.map((o, i) => `<button onclick="sprintPick(${i})" class="w-full text-left p-4 rounded-xl transition flex items-start gap-3 ${chosen === i ? 'bg-acc-soft ring-2 ring-[var(--accent)]' : 'surface-elevated hover:border-[var(--accent)]'}"><span class="w-7 h-7 rounded-lg surface-input font-mono font-extrabold text-xs flex items-center justify-center shrink-0">${letters[i]}</span><span class="text-sm font-medium">${o}</span></button>`).join('')}
+            ${q.options.map((o, i) => `<button onclick="sprintPick(${i})" class="w-full text-left p-4 rounded-xl transition flex items-start gap-3 ${chosen === i ? 'bg-acc-soft ring-2 ring-[var(--accent)]' : 'surface-elevated hover:border-[var(--accent)]'}"><span class="w-7 h-7 rounded-lg surface-input font-mono font-extrabold text-xs flex items-center justify-center shrink-0">${letters[i]}</span><span class="text-sm font-medium">${formatRichText(o)}</span></button>`).join('')}
           </div>
           <div class="mt-6 pt-4 border-t border-[var(--border-subtle)] flex flex-wrap justify-between gap-2">
             <button onclick="sprintClear()" class="px-4 py-2 rounded-xl surface-elevated text-xs font-bold">Clear</button>
@@ -1871,7 +2213,7 @@
                 const u = sprint.ans[i], ok = u === q.correctOption;
                 const badge = u === undefined ? 'surface-input text-mut' : ok ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400';
                 const lbl = u === undefined ? 'Skipped (0)' : ok ? 'Correct (+4)' : `Wrong (-1) • Yours: ${letters[u]}`;
-                return `<div class="p-4 rounded-2xl surface-elevated space-y-2"><div class="flex flex-wrap justify-between gap-2 text-xs font-bold"><span>Q${i+1} &bull; ${q.subject} (${q.chapter})</span><span class="px-2 py-0.5 rounded-lg ${badge}">${lbl}</span></div><div class="text-sm font-semibold">${q.question}</div><div class="text-xs text-emerald-400 font-bold">Correct: Option ${letters[q.correctOption]} — ${q.options[q.correctOption]}</div>${q.explanation ? `<div class="text-xs text-sec">${q.explanation}</div>` : ''}</div>`;
+                return `<div class="p-4 rounded-2xl surface-elevated space-y-2"><div class="flex flex-wrap justify-between gap-2 text-xs font-bold"><span>Q${i+1} &bull; ${q.subject} (${escapeHtml(q.chapter)})</span><span class="px-2 py-0.5 rounded-lg ${badge}">${lbl}</span></div><div class="text-sm font-semibold">${formatRichText(q.question)}</div><div class="text-xs text-emerald-400 font-bold">Correct: Option ${letters[q.correctOption]} — ${formatRichText(q.options[q.correctOption])}</div>${q.explanation ? `<div class="text-xs text-sec">${formatRichText(q.explanation)}</div>` : ''}</div>`;
               }).join('')}
             </div>
           </div>`;
@@ -1900,7 +2242,7 @@
         const items = getAllFormulasForExam().filter(it => rnSubj === 'All' || it.subject === rnSubj);
         const chaps = [...new Set(items.map(it => it.chapter))].sort();
         const sel = document.getElementById('readnow-chapter-select'), prev = sel.value;
-        sel.innerHTML = `<option value="All">All Chapters (${chaps.length})</option>` + chaps.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${c}</option>`).join('');
+        sel.innerHTML = `<option value="All">All Chapters (${chaps.length})</option>` + chaps.map(c => `<option value="${c.replace(/"/g, '&quot;')}">${escapeHtml(c)}</option>`).join('');
         if (chaps.includes(prev)) sel.value = prev;
       }
       window.toggleReadNowDone = function (id) {
@@ -1956,7 +2298,7 @@
         if (!filtered.length) { grid.innerHTML = `<div class="md:col-span-2 surface-card rounded-2xl p-10 text-center text-sec text-sm font-semibold">No formula cards match your filter.</div>`; return; }
         grid.innerHTML = filtered.map(it => {
           const isRead = readNowSet.has(it.id);
-          return `<article class="surface-card surface-card-hover rounded-2xl p-5 flex flex-col justify-between gap-4"><div class="space-y-3"><div class="flex items-center justify-between gap-2"><div class="flex flex-wrap items-center gap-1.5"><span class="px-2.5 py-0.5 rounded-lg bg-acc-soft text-[11px] font-extrabold">${it.subject}</span><span class="px-2.5 py-0.5 rounded-lg surface-elevated text-[11px] font-bold">${it.chapter}</span>${it.isCustom ? `<span class="px-2 py-0.5 rounded-lg bg-rg-soft text-[10px] font-extrabold">Custom</span>` : ''}</div><div class="flex items-center gap-1.5 shrink-0">${it.isCustom ? `<button onclick="deleteCustomFormula('${it.id}')" class="px-2 py-1 rounded-lg surface-elevated text-xs text-rose-400">&times;</button>` : ''}<button onclick="toggleReadNowDone('${it.id}')" class="px-3 py-1 rounded-xl text-xs font-extrabold transition ${isRead ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'surface-elevated text-sec'}">${isRead ? '✓ Read' : 'Mark Read'}</button></div></div><h3 class="text-base font-extrabold">${it.title}</h3><ul class="space-y-2 text-xs sm:text-sm text-sec list-disc pl-4 leading-relaxed">${it.points.map(p => `<li>${p}</li>`).join('')}</ul></div><div class="p-3 rounded-xl bg-rg-soft text-xs font-semibold leading-relaxed">${it.trap}</div></article>`;
+          return `<article class="surface-card surface-card-hover rounded-2xl p-5 flex flex-col justify-between gap-4"><div class="space-y-3"><div class="flex items-center justify-between gap-2"><div class="flex flex-wrap items-center gap-1.5"><span class="px-2.5 py-0.5 rounded-lg bg-acc-soft text-[11px] font-extrabold">${it.subject}</span><span class="px-2.5 py-0.5 rounded-lg surface-elevated text-[11px] font-bold">${escapeHtml(it.chapter)}</span>${it.isCustom ? `<span class="px-2 py-0.5 rounded-lg bg-rg-soft text-[10px] font-extrabold">Custom</span>` : ''}</div><div class="flex items-center gap-1.5 shrink-0">${it.isCustom ? `<button onclick="deleteCustomFormula('${it.id}')" class="px-2 py-1 rounded-lg surface-elevated text-xs text-rose-400">&times;</button>` : ''}<button onclick="toggleReadNowDone('${it.id}')" class="px-3 py-1 rounded-xl text-xs font-extrabold transition ${isRead ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'surface-elevated text-sec'}">${isRead ? '✓ Read' : 'Mark Read'}</button></div></div><h3 class="text-base font-extrabold">${escapeHtml(it.title)}</h3><ul class="space-y-2 text-xs sm:text-sm text-sec list-disc pl-4 leading-relaxed">${it.points.map(p => `<li>${p}</li>`).join('')}</ul></div><div class="p-3 rounded-xl bg-rg-soft text-xs font-semibold leading-relaxed">${it.trap}</div></article>`;
         }).join('');
         renderMath(grid);
       };
@@ -2144,20 +2486,20 @@
         const maxC = Math.max(1, ...days.map(d => d.cnt)), maxT = Math.max(bench, ...days.map(d => d.avgT));
         const last7 = attemptLog.filter(a => a.timestamp >= Date.now() - 7 * 86400000);
         document.getElementById('c7-q-sum').textContent = `${days.reduce((s, d) => s + d.cnt, 0)} Qs`;
-        document.getElementById('c7-t-avg').textContent = `${last7.length ? Math.round(last7.reduce((s, x) => s + x.timeSec, 0) / last7.length) : 0}s`;
         document.getElementById('c7-a-avg').textContent = `${last7.length ? Math.round((last7.filter(x => x.isCorrect).length / last7.length) * 100) : 0}%`;
+        document.getElementById('c7-t-avg').textContent = `${last7.length ? Math.round(last7.reduce((s, x) => s + x.timeSec, 0) / last7.length) : 0}s`;
 
         document.getElementById('c7-q-bars').innerHTML = days.map(d => `<div class="flex-1 flex flex-col items-center gap-1 h-full justify-end"><span class="text-[10px] font-mono text-sec">${d.cnt || ''}</span><div class="w-full max-w-[24px] rounded-t-lg bg-acc" style="height:${d.cnt ? Math.max(8, Math.round((d.cnt/maxC)*100)) : 4}%"></div><span class="text-[10px] text-mut font-bold">${d.lbl}</span></div>`).join('');
-        document.getElementById('c7-t-bars').innerHTML = days.map(d => `<div class="flex-1 flex flex-col items-center gap-1 h-full justify-end"><span class="text-[10px] font-mono text-sec">${d.avgT ? d.avgT+'s' : ''}</span><div class="w-full max-w-[24px] rounded-t-lg" style="background:var(--rosegold);height:${d.avgT ? Math.max(8, Math.round((d.avgT/maxT)*100)) : 4}%"></div><span class="text-[10px] text-mut font-bold">${d.lbl}</span></div>`).join('');
         document.getElementById('c7-a-bars').innerHTML = days.map(d => `<div class="flex-1 flex flex-col items-center gap-1 h-full justify-end"><span class="text-[10px] font-mono text-sec">${d.cnt ? d.acc+'%' : ''}</span><div class="w-full max-w-[24px] rounded-t-lg bg-emerald-500" style="height:${d.cnt ? Math.max(8, d.acc) : 4}%"></div><span class="text-[10px] text-mut font-bold">${d.lbl}</span></div>`).join('');
+        document.getElementById('c7-t-bars').innerHTML = days.map(d => `<div class="flex-1 flex flex-col items-center gap-1 h-full justify-end"><span class="text-[10px] font-mono text-sec">${d.avgT ? d.avgT+'s' : ''}</span><div class="w-full max-w-[24px] rounded-t-lg" style="background:var(--rosegold);height:${d.avgT ? Math.max(8, Math.round((d.avgT/maxT)*100)) : 4}%"></div><span class="text-[10px] text-mut font-bold">${d.lbl}</span></div>`).join('');
 
         document.getElementById('an-mock-history').innerHTML = !mockHistory.length
           ? `<div class="py-8 text-center text-xs text-mut font-semibold">No Mock Sprints or PDF CBT tests graded yet.</div>`
-          : mockHistory.map(m => `<div class="p-3 rounded-xl surface-elevated flex items-center justify-between text-xs"><div><div class="font-extrabold">${m.title}</div><div class="text-mut text-[11px]">${m.date}</div></div><div class="flex gap-1.5 font-mono font-bold"><span class="px-2 py-1 rounded-lg bg-acc-soft">${m.score}/${m.maxScore}</span><span class="px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-400">${m.accuracy}%</span></div></div>`).join('');
+          : mockHistory.map(m => `<div class="p-3 rounded-xl surface-elevated flex items-center justify-between text-xs"><div><div class="font-extrabold">${escapeHtml(m.title)}</div><div class="text-mut text-[11px]">${escapeHtml(m.date)}</div></div><div class="flex gap-1.5 font-mono font-bold"><span class="px-2 py-1 rounded-lg bg-acc-soft">${m.score}/${m.maxScore}</span><span class="px-2 py-1 rounded-lg bg-emerald-500/15 text-emerald-400">${m.accuracy}%</span></div></div>`).join('');
       }
 
       // =====================================================================
-      // 14. TAB 7: SYLLABUS TRACKER (4-STATE CYCLE)
+      // 14. TAB 7: SYLLABUS TRACKER (58 JEE + 79 NEET, 4-STATE CYCLING)
       // =====================================================================
       const SYL_STATES = ['Not Started', 'In Progress', 'Revised', 'Mastered'];
       let sylSubj = 'All';
@@ -2253,7 +2595,6 @@
         window.initCbt();
         window.resetCbtTimer();
 
-        // Trigger isolated repo auto-load for the active exam
         autoLoadExamBank(exam);
         populateChapterDropdown();
         applyPracticeFilters();
