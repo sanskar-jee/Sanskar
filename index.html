@@ -30,6 +30,9 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
+  <!-- PDF.js v3.11.174 for Smooth Multi-Page Canvas PDF Viewing & Answer Key PDF Parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
   <!-- Design Tokens: Midnight Velvet & Rose-Gold (Dark Default) + Warm Editorial Alabaster (Light) -->
   <style>
     :root {
@@ -276,141 +279,293 @@
   <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5 space-y-5">
 
     <!-- =================================================================== -->
-    <!-- TAB 1: COMMAND DASHBOARD                                            -->
+    <!-- TAB 5: SPLIT-SCREEN PDF CBT (PDF.JS + CUSTOM ORDER + 2-STEP GRADER) -->
     <!-- =================================================================== -->
-    <section id="tab-dashboard" class="tab-section space-y-5">
-      <div class="surface-card hero-gradient rounded-3xl p-5 sm:p-7 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-        <div class="space-y-3 flex-1">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="px-3 py-1 rounded-full bg-rg-soft text-[11px] font-extrabold uppercase tracking-wider">Command Dashboard</span>
-            <span class="px-3 py-1 rounded-full bg-acc-soft text-[11px] font-extrabold">🔥 <span id="dash-streak">0</span> Day Streak</span>
-            <button onclick="openDiagnosticsModal()" id="dash-bank-pill" class="px-3 py-1 rounded-full surface-elevated hover:border-[var(--accent)] text-[11px] font-bold text-sec transition cursor-pointer" title="Inspect per-file dataset loader">Initializing...</button>
-          </div>
+    <section id="tab-cbt" class="tab-section hidden space-y-4">
+      <!-- Top CBT Control Bar -->
+      <div class="surface-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <label class="px-4 py-2 rounded-xl bg-acc text-xs font-extrabold cursor-pointer transition">
+            📄 Upload Paper PDF
+            <input type="file" accept="application/pdf" class="hidden" onchange="handleCbtPdfUpload(event)" />
+          </label>
+          <button onclick="toggleCbtSetupPanel()" id="cbt-setup-toggle-btn" class="px-3.5 py-2 rounded-xl surface-elevated hover:border-[var(--accent)] text-xs font-extrabold transition">
+            ⚙️ Subject Order &amp; Pattern
+          </button>
+          <span id="cbt-layout-summary-pill" class="px-3 py-1.5 rounded-xl bg-acc-soft text-[11px] font-extrabold hidden sm:inline-flex">
+            75 Qs • Phy → Chem → Math
+          </span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span id="cbt-timer-display" class="px-3 py-2 rounded-xl bg-rg-soft font-mono text-sm font-extrabold">03:00:00</span>
+          <button onclick="toggleCbtTimer()" id="cbt-timer-btn" class="px-3.5 py-2 rounded-xl surface-elevated text-xs font-extrabold">Start</button>
+          <button onclick="resetCbtTimer()" class="px-3 py-2 rounded-xl surface-elevated text-xs font-bold">Reset</button>
+          <button onclick="submitCbtToSummary()" id="cbt-submit-btn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold">Submit Test</button>
+        </div>
+      </div>
+
+      <!-- A) Collapsible Customizable Test & Subject Order Setup Panel -->
+      <div id="cbt-setup-panel" class="surface-card rounded-2xl p-4 sm:p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[var(--border-subtle)]">
           <div>
-            <div class="flex flex-wrap items-center gap-2.5">
-              <h1 id="dash-exam-title" class="text-2xl sm:text-3xl font-extrabold tracking-tight">JEE Main 2027</h1>
-              <button onclick="openCountdownModal()" class="px-2.5 py-1 rounded-lg surface-elevated hover:border-[var(--rosegold-border)] text-[11px] font-bold text-sec transition">✏️ Edit Date</button>
-            </div>
-            <p class="text-xs sm:text-sm text-sec mt-1">Free, strictly isolated JEE Main &amp; NEET UG command center with live speed analytics, NTA mock sprints &amp; formula sheets.</p>
+            <h3 class="text-sm font-extrabold text-rg">Customize Paper Layout &amp; Subject Order</h3>
+            <p class="text-[11px] text-sec">Choose which subject comes 1st, 2nd, and 3rd in your PDF paper, plus question counts and numerical sections.</p>
           </div>
-          <button onclick="openCountdownModal()" class="flex items-baseline gap-2 pt-1 text-left group">
-            <span id="dash-days-left" class="font-mono text-4xl sm:text-5xl font-extrabold text-rg group-hover:underline">0</span>
-            <span class="text-xs sm:text-sm font-bold uppercase tracking-wider text-sec">Days Left until <span id="dash-target-date-lbl">Target Date</span></span>
-          </button>
+          <div id="cbt-preset-btns" class="flex flex-wrap items-center gap-1.5"></div>
         </div>
 
-        <!-- Daily Goal SVG Progress Ring -->
-        <div class="surface-card rounded-2xl p-4 sm:p-5 flex items-center gap-4 w-full lg:w-auto shrink-0">
-          <div class="relative w-20 h-20 shrink-0">
-            <svg class="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
-              <circle cx="40" cy="40" r="33" fill="none" stroke="var(--border-subtle)" stroke-width="7"></circle>
-              <circle id="dash-ring-circle" cx="40" cy="40" r="33" fill="none" stroke="var(--rosegold)" stroke-width="7" stroke-linecap="round" stroke-dasharray="207.35" stroke-dashoffset="207.35" class="transition-all duration-500"></circle>
-            </svg>
-            <div class="absolute inset-0 flex items-center justify-center">
-              <span id="dash-ring-pct" class="font-mono text-sm font-extrabold">0%</span>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <!-- Slot 1 -->
+          <div class="p-3.5 rounded-2xl surface-elevated space-y-2">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-mut">1st Subject (Starts at Q1)</div>
+            <div class="flex items-center gap-2">
+              <select id="cbt-ord-0" onchange="onCbtOrderChange(0, this.value)" class="flex-1 px-3 py-2 rounded-xl surface-input text-xs font-extrabold"></select>
+              <div class="flex items-center gap-1">
+                <input id="cbt-cnt-0" type="number" min="1" max="150" value="25" class="w-16 px-2 py-2 rounded-xl surface-input font-mono text-xs font-extrabold text-center" />
+                <span class="text-[10px] font-bold text-mut">Qs</span>
+              </div>
             </div>
           </div>
-          <div class="space-y-1.5">
-            <div class="text-xs font-extrabold uppercase tracking-wider text-rg">Daily Goal</div>
-            <div class="font-mono text-lg font-extrabold"><span id="dash-today-solved">0</span> / <span id="dash-goal-val">30</span> Qs</div>
-            <div class="flex items-center gap-1.5 text-[11px] font-bold text-sec">
-              <span>Target:</span>
-              <input id="dash-goal-input" type="number" min="5" max="300" onchange="updateDailyGoal(this.value)" class="w-14 px-2 py-0.5 rounded-lg surface-input font-mono font-bold text-center text-xs" />
+          <!-- Slot 2 -->
+          <div class="p-3.5 rounded-2xl surface-elevated space-y-2">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-mut">2nd Subject</div>
+            <div class="flex items-center gap-2">
+              <select id="cbt-ord-1" onchange="onCbtOrderChange(1, this.value)" class="flex-1 px-3 py-2 rounded-xl surface-input text-xs font-extrabold"></select>
+              <div class="flex items-center gap-1">
+                <input id="cbt-cnt-1" type="number" min="1" max="150" value="25" class="w-16 px-2 py-2 rounded-xl surface-input font-mono text-xs font-extrabold text-center" />
+                <span class="text-[10px] font-bold text-mut">Qs</span>
+              </div>
             </div>
+          </div>
+          <!-- Slot 3 -->
+          <div class="p-3.5 rounded-2xl surface-elevated space-y-2">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-mut">3rd Subject</div>
+            <div class="flex items-center gap-2">
+              <select id="cbt-ord-2" onchange="onCbtOrderChange(2, this.value)" class="flex-1 px-3 py-2 rounded-xl surface-input text-xs font-extrabold"></select>
+              <div class="flex items-center gap-1">
+                <input id="cbt-cnt-2" type="number" min="1" max="150" value="25" class="w-16 px-2 py-2 rounded-xl surface-input font-mono text-xs font-extrabold text-center" />
+                <span class="text-[10px] font-bold text-mut">Qs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+          <div class="flex flex-wrap items-center gap-3">
+            <label class="flex items-center gap-2 px-3 py-2 rounded-xl surface-elevated text-xs font-bold">
+              <span class="text-sec">Numerical Qs at end of each subject:</span>
+              <input id="cbt-num-per-sub" type="number" min="0" max="50" value="5" class="w-14 px-2 py-1 rounded-lg surface-input font-mono text-xs font-extrabold text-center" />
+            </label>
+            <label class="flex items-center gap-2 px-3 py-2 rounded-xl surface-elevated text-xs font-bold">
+              <span class="text-sec">Duration (Min):</span>
+              <input id="cbt-mins-input" type="number" min="5" max="300" value="180" onchange="resetCbtTimer()" class="w-16 px-2 py-1 rounded-lg surface-input font-mono text-xs font-extrabold text-center" />
+            </label>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="applyCbtLayout(false)" class="px-4 py-2 rounded-xl bg-acc text-xs font-extrabold">Apply Layout</button>
+            <button onclick="toggleCbtSetupPanel()" class="px-3.5 py-2 rounded-xl surface-elevated text-xs font-bold">Hide</button>
           </div>
         </div>
       </div>
 
-      <!-- 5 Live KPI Cards -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        <button onclick="openDiagnosticsModal()" class="surface-card surface-card-hover rounded-2xl p-4 text-left">
-          <div class="text-[11px] font-bold uppercase text-mut">Questions Loaded</div>
-          <div id="kpi-loaded" class="font-mono text-2xl font-extrabold text-acc mt-1">0</div>
-          <div class="text-[11px] text-sec mt-0.5">Tap for file info</div>
-        </button>
-        <div class="surface-card rounded-2xl p-4">
-          <div class="text-[11px] font-bold uppercase text-mut">Attempted</div>
-          <div id="kpi-solved" class="font-mono text-2xl font-extrabold mt-1">0</div>
-          <div class="text-[11px] text-sec mt-0.5">Active exam mode</div>
+      <!-- B & C) SPLIT-SCREEN ARENA: PDF.JS CANVAS VIEWER + INTERACTIVE OMR -->
+      <div id="cbt-arena" class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <!-- Left Pane: Multi-Page Scrollable PDF.js Canvas Viewer -->
+        <div id="cbt-pdf-pane" class="lg:col-span-7 surface-card rounded-2xl overflow-hidden flex flex-col h-[74vh]"
+             ondragover="event.preventDefault(); this.classList.add('ring-2','ring-[var(--accent)]')"
+             ondragleave="this.classList.remove('ring-2','ring-[var(--accent)]')"
+             ondrop="handleCbtPdfDrop(event)">
+          <!-- Sticky PDF Viewer Toolbar -->
+          <div class="px-3 py-2.5 border-b border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-2 shrink-0">
+            <span id="cbt-pdf-name" class="text-xs font-bold text-sec truncate max-w-[160px] sm:max-w-[220px]">No PDF uploaded</span>
+            <div class="flex flex-wrap items-center gap-1.5">
+              <!-- Page Jump & Prev/Next -->
+              <div id="cbt-page-nav" class="hidden flex items-center gap-1 mr-1">
+                <button onclick="scrollCbtPdfPage(-1)" class="w-7 h-7 rounded-lg surface-elevated text-xs font-black" title="Previous Page">↑</button>
+                <div class="flex items-center gap-1 px-2 py-1 rounded-lg surface-input text-[11px] font-mono font-bold">
+                  <input id="cbt-page-input" type="number" min="1" value="1" onchange="jumpCbtPdfPage(this.value)" class="w-9 bg-transparent text-center focus:outline-none" />
+                  <span class="text-mut">/ <span id="cbt-page-total">0</span></span>
+                </div>
+                <button onclick="scrollCbtPdfPage(1)" class="w-7 h-7 rounded-lg surface-elevated text-xs font-black" title="Next Page">↓</button>
+              </div>
+              <!-- Zoom Controls -->
+              <button onclick="zoomCbtPdf(-15)" class="w-7 h-7 rounded-lg surface-elevated text-xs font-black" title="Zoom Out">&minus;</button>
+              <span id="cbt-pdf-zoom-lbl" class="text-[11px] font-mono font-bold w-10 text-center">100%</span>
+              <button onclick="zoomCbtPdf(15)" class="w-7 h-7 rounded-lg surface-elevated text-xs font-black" title="Zoom In">+</button>
+              <button onclick="fitCbtPdfWidth()" class="px-2 py-1 rounded-lg surface-elevated text-[11px] font-bold">Fit</button>
+              <button onclick="toggleCbtFullPdf()" id="cbt-full-btn" class="px-2.5 py-1 rounded-lg bg-acc-soft text-[11px] font-bold">Full</button>
+            </div>
+          </div>
+
+          <!-- Real Touch-Scrollable Multi-Page Canvas Container (Never gets stuck on iPad!) -->
+          <div id="cbt-pdf-scroll" onscroll="onCbtPdfScroll()" class="flex-1 overflow-y-auto overflow-x-auto bg-black/30 p-3 sm:p-4" style="-webkit-overflow-scrolling: touch;">
+            <div id="cbt-pdf-empty" class="h-full flex flex-col items-center justify-center p-6 text-center space-y-3">
+              <div class="w-14 h-14 rounded-2xl bg-acc-soft flex items-center justify-center text-2xl font-black">PDF</div>
+              <p class="font-extrabold text-sm">Upload or Drag &amp; Drop Any Question Paper PDF</p>
+              <p class="text-xs text-sec max-w-sm">Powered by PDF.js multi-page canvas rendering—scroll smoothly up &amp; down through all pages on iPad, phone, and desktop.</p>
+              <label class="px-4 py-2 rounded-xl bg-acc text-xs font-extrabold cursor-pointer">
+                Choose Paper PDF
+                <input type="file" accept="application/pdf" class="hidden" onchange="handleCbtPdfUpload(event)" />
+              </label>
+            </div>
+            <div id="cbt-pdf-loading" class="hidden py-12 text-center space-y-2">
+              <div class="w-7 h-7 mx-auto rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin"></div>
+              <div id="cbt-pdf-loading-txt" class="text-xs font-bold text-sec">Rendering PDF pages...</div>
+            </div>
+            <div id="cbt-pdf-pages" class="hidden flex flex-col items-center gap-4 pb-8"></div>
+          </div>
         </div>
-        <div class="surface-card rounded-2xl p-4">
-          <div class="text-[11px] font-bold uppercase text-mut">Accuracy</div>
-          <div id="kpi-acc" class="font-mono text-2xl font-extrabold text-emerald-400 mt-1">0%</div>
-          <div class="text-[11px] text-sec mt-0.5">Target &ge; 80%</div>
-        </div>
-        <div class="surface-card rounded-2xl p-4">
-          <div class="text-[11px] font-bold uppercase text-mut">Avg Time / Q</div>
-          <div id="kpi-time" class="font-mono text-2xl font-extrabold text-rg mt-1">0s</div>
-          <div id="kpi-bench" class="text-[11px] text-sec mt-0.5">Goal &le; 90s</div>
-        </div>
-        <div class="surface-card rounded-2xl p-4 col-span-2 sm:col-span-1">
-          <div class="text-[11px] font-bold uppercase text-mut">Formulas Read</div>
-          <div id="kpi-formulas" class="font-mono text-2xl font-extrabold text-acc mt-1">0/0</div>
-          <div class="text-[11px] text-sec mt-0.5">Read Now Hub</div>
+
+        <!-- Right Pane: Fully Interactive OMR & Question Palette -->
+        <div id="cbt-omr-pane" class="lg:col-span-5 surface-card rounded-2xl p-4 flex flex-col h-[74vh] space-y-3">
+          <!-- Subject Section Tabs (Matching User's Chosen Subject Order) -->
+          <div id="cbt-subject-tabs" class="grid grid-cols-3 gap-1.5 shrink-0"></div>
+
+          <!-- Current Question Control Panel -->
+          <div class="surface-elevated rounded-2xl p-4 space-y-3 shrink-0">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span id="cbt-active-q-lbl" class="text-sm font-extrabold">Q 1</span>
+                <span id="cbt-active-sub-badge" class="px-2 py-0.5 rounded-lg bg-acc-soft text-[10px] font-extrabold">Physics</span>
+              </div>
+              <div class="flex gap-1 p-0.5 rounded-lg surface-input text-[11px] font-bold">
+                <button onclick="setCbtType('mcq')" id="cbt-t-mcq" class="px-2.5 py-1 rounded-md transition">MCQ</button>
+                <button onclick="setCbtType('num')" id="cbt-t-num" class="px-2.5 py-1 rounded-md transition">Numerical</button>
+              </div>
+            </div>
+
+            <!-- MCQ Options -->
+            <div id="cbt-mcq-box" class="grid grid-cols-4 gap-2">
+              <button onclick="selectCbtOpt('A')" data-opt="A" class="cbt-opt py-2.5 rounded-xl font-black text-sm transition">A</button>
+              <button onclick="selectCbtOpt('B')" data-opt="B" class="cbt-opt py-2.5 rounded-xl font-black text-sm transition">B</button>
+              <button onclick="selectCbtOpt('C')" data-opt="C" class="cbt-opt py-2.5 rounded-xl font-black text-sm transition">C</button>
+              <button onclick="selectCbtOpt('D')" data-opt="D" class="cbt-opt py-2.5 rounded-xl font-black text-sm transition">D</button>
+            </div>
+
+            <!-- Numerical Input -->
+            <div id="cbt-num-box" class="hidden">
+              <input id="cbt-num-val" type="text" inputmode="decimal" oninput="onCbtNumChange(this.value)" placeholder="Enter numerical answer (e.g. 42 or 3.14)..." class="w-full px-3.5 py-2.5 rounded-xl surface-input text-sm font-mono font-bold" />
+            </div>
+
+            <!-- Navigation & Action Buttons -->
+            <div class="grid grid-cols-4 gap-1.5">
+              <button onclick="cbtPrev()" class="py-2 rounded-xl surface-input text-xs font-bold">← Prev</button>
+              <button onclick="cbtClear()" class="py-2 rounded-xl surface-input text-xs font-bold">Clear</button>
+              <button onclick="cbtMark()" class="py-2 rounded-xl bg-purple-600/20 text-purple-400 border border-purple-500/40 text-xs font-bold">Review</button>
+              <button onclick="cbtNext()" class="py-2 rounded-xl bg-acc text-xs font-extrabold">Next →</button>
+            </div>
+          </div>
+
+          <!-- Palette Scope Toggle + Question Palette Grid -->
+          <div class="flex items-center justify-between text-[11px] font-bold text-sec px-0.5 shrink-0">
+            <span id="cbt-palette-lbl">Section Palette</span>
+            <button onclick="toggleCbtPaletteScope()" id="cbt-palette-scope-btn" class="text-acc hover:underline">Show All Qs</button>
+          </div>
+          <div class="flex-1 overflow-y-auto pr-1" style="-webkit-overflow-scrolling: touch;">
+            <div id="cbt-palette" class="grid grid-cols-5 gap-2"></div>
+          </div>
+
+          <!-- Palette Legend -->
+          <div class="grid grid-cols-2 gap-1.5 pt-2 border-t border-[var(--border-subtle)] text-[11px] font-semibold text-sec shrink-0">
+            <div><span class="inline-block w-2.5 h-2.5 rounded bg-emerald-500 mr-1"></span>Answered (<span id="cbt-cnt-ans">0</span>)</div>
+            <div><span class="inline-block w-2.5 h-2.5 rounded bg-purple-500 mr-1"></span>Marked (<span id="cbt-cnt-mark">0</span>)</div>
+            <div><span class="inline-block w-2.5 h-2.5 rounded bg-rose-500 mr-1"></span>Not Answered (<span id="cbt-cnt-skip">0</span>)</div>
+            <div><span class="inline-block w-2.5 h-2.5 rounded surface-elevated mr-1"></span>Not Visited (<span id="cbt-cnt-unv">0</span>)</div>
+          </div>
         </div>
       </div>
 
-      <!-- Quick Launch Grid -->
-      <div class="space-y-2.5">
-        <h2 class="text-xs font-extrabold uppercase tracking-wider text-sec">Quick Launch</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <button onclick="switchTab('practice')" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
-            <span class="w-9 h-9 rounded-xl bg-acc-soft flex items-center justify-center text-base">📝</span>
-            <div class="text-sm font-extrabold">Continue PYQ Practice</div>
-            <div class="text-[11px] text-sec">Browse MCQs &amp; Numericals with live stopwatch.</div>
-          </button>
-          <button onclick="quickStartTenQSprint()" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
-            <span class="w-9 h-9 rounded-xl bg-rg-soft flex items-center justify-center text-base">⚡</span>
-            <div class="text-sm font-extrabold">10-Q Speed Sprint</div>
-            <div class="text-[11px] text-sec">Instant timed mini-mock with +4 / &minus;1 scoring.</div>
-          </button>
-          <button onclick="jumpToReviewMistakes()" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
-            <span class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center justify-center text-base">🔖</span>
-            <div class="text-sm font-extrabold">Review Wrong Answers</div>
-            <div class="text-[11px] text-sec">Fix mistakes &amp; revise bookmarked PYQs.</div>
-          </button>
-          <button onclick="switchTab('readnow')" class="surface-card surface-card-hover rounded-2xl p-4 text-left space-y-2">
-            <span class="w-9 h-9 rounded-xl bg-acc-soft flex items-center justify-center text-base">📖</span>
-            <div class="text-sm font-extrabold">Formula Hub</div>
-            <div class="text-[11px] text-sec">Chapter-wise KaTeX sheets &amp; exam traps.</div>
-          </button>
-        </div>
-      </div>
-
-      <!-- Daily Study Checklist + Smart Focus & Recent Mocks -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <div class="lg:col-span-7 surface-card rounded-2xl p-5 space-y-4">
-          <div class="flex items-center justify-between">
+      <!-- D) POST-SUBMISSION 2-STEP WORKFLOW: ATTEMPT SUMMARY -> ANSWER KEY UPLOAD -> SCORECARD -->
+      <div id="cbt-post-submit" class="hidden space-y-5">
+        <!-- Step 1: Attempt Summary Card -->
+        <div class="surface-card rounded-3xl p-5 sm:p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 class="text-sm font-extrabold uppercase tracking-wider text-rg">Daily Study Checklist</h3>
-              <p class="text-xs text-sec">Isolated per exam mode (JEE vs NEET).</p>
+              <span class="px-2.5 py-1 rounded-lg bg-rg-soft text-[11px] font-extrabold uppercase tracking-wider">Step 1 • Test Submitted</span>
+              <h2 class="text-xl sm:text-2xl font-extrabold mt-1">Attempt Summary</h2>
             </div>
-            <span id="todo-progress-pill" class="px-2.5 py-1 rounded-lg surface-elevated font-mono text-xs font-bold">0 / 0 Done</span>
-          </div>
-          <form onsubmit="addTodoTask(event)" class="flex gap-2">
-            <input id="todo-input" type="text" placeholder="Add a study task..." class="flex-1 px-3.5 py-2.5 rounded-xl surface-input text-xs font-semibold" />
-            <button type="submit" class="px-4 py-2.5 rounded-xl bg-acc text-xs font-extrabold shrink-0">+ Add</button>
-          </form>
-          <div id="todo-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
-        </div>
-
-        <div class="lg:col-span-5 flex flex-col gap-4">
-          <div class="surface-card rounded-2xl p-5 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-extrabold uppercase tracking-wider text-acc">Smart Focus (Weakest Subject)</span>
-              <span class="text-xs">🎯</span>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="resumeCbtFromSummary()" class="px-4 py-2 rounded-xl surface-elevated text-xs font-bold">← Resume Test</button>
+              <button onclick="startNewCbtTest()" class="px-4 py-2 rounded-xl surface-elevated text-xs font-bold text-rose-400">New PDF Test</button>
             </div>
-            <div id="dash-smart-focus" class="space-y-2"></div>
           </div>
 
-          <div class="surface-card rounded-2xl p-5 space-y-3 flex-1">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-extrabold uppercase tracking-wider text-sec">Recent Mock Scores</span>
-              <button onclick="switchTab('analytics')" class="text-[11px] font-bold text-acc">View All &rarr;</button>
+          <div id="cbt-summary-kpis" class="grid grid-cols-2 sm:grid-cols-5 gap-3"></div>
+          <div id="cbt-summary-table" class="overflow-x-auto"></div>
+        </div>
+
+        <!-- Step 2: Upload Answer Key & Calculate Score Panel -->
+        <div class="surface-card rounded-3xl p-5 sm:p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="px-2.5 py-1 rounded-lg bg-acc-soft text-[11px] font-extrabold uppercase tracking-wider">Step 2 • Auto-Grader</span>
+              <h2 class="text-xl font-extrabold mt-1">Upload Answer Key &amp; Calculate Result</h2>
+              <p class="text-xs text-sec mt-0.5">Upload the official Answer Key PDF, paste/upload a text key, or edit any question directly in the key grid below.</p>
             </div>
-            <div id="dash-recent-mocks" class="space-y-2"></div>
+            <span id="cbt-key-count-pill" class="px-3 py-1.5 rounded-xl surface-elevated font-mono text-xs font-extrabold text-acc">0 / 75 Keys Loaded</span>
+          </div>
+
+          <!-- 3 Input Methods -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <!-- Method 1: Upload Answer Key PDF -->
+            <div class="p-4 rounded-2xl surface-elevated space-y-3">
+              <div class="text-xs font-extrabold uppercase tracking-wider text-rg">Method 1: Upload Answer Key PDF</div>
+              <p class="text-[11px] text-sec">Automatically scans all PDF pages for patterns like <span class="font-mono">1. A</span>, <span class="font-mono">1 (B)</span>, <span class="font-mono">Q1: 2</span>, or <span class="font-mono">21) 42.5</span> (converts 1–4 to A–D for MCQs).</p>
+              <div class="flex flex-wrap items-center gap-2">
+                <label class="px-4 py-2.5 rounded-xl bg-acc text-xs font-extrabold cursor-pointer">
+                  📄 Upload Answer Key PDF
+                  <input type="file" accept="application/pdf" class="hidden" onchange="handleCbtAnswerKeyPdf(event)" />
+                </label>
+                <span id="cbt-key-pdf-status" class="text-[11px] font-semibold text-sec"></span>
+              </div>
+            </div>
+
+            <!-- Method 2: Paste or Upload Text/CSV Key -->
+            <div class="p-4 rounded-2xl surface-elevated space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-acc">Method 2: Paste or Upload .txt/.csv Key</span>
+                <label class="px-2.5 py-1 rounded-lg surface-input text-[11px] font-bold cursor-pointer">
+                  📂 .txt/.csv
+                  <input type="file" accept=".txt,.csv" class="hidden" onchange="handleCbtAnswerKeyTextFile(event)" />
+                </label>
+              </div>
+              <div class="flex gap-2">
+                <textarea id="cbt-key-paste" rows="2" placeholder="Paste key: 1:A 2:B 3:C ... or A C B D..." class="flex-1 p-2.5 rounded-xl surface-input text-xs font-mono"></textarea>
+                <button onclick="applyPastedCbtKey()" class="px-4 rounded-xl bg-acc text-xs font-extrabold shrink-0">Parse</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Method 3: Editable Answer Key Grid -->
+          <div class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-sec">Method 3: Review / Edit Answer Key Grid</span>
+                <div id="cbt-key-sub-filters" class="flex flex-wrap gap-1"></div>
+              </div>
+              <button onclick="clearCbtKey()" class="text-xs font-bold text-rose-400 hover:underline">Clear All Keys</button>
+            </div>
+            <div id="cbt-key-grid" class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-2 max-h-64 overflow-y-auto p-1"></div>
+          </div>
+
+          <!-- Marking Scheme & Calculate Result CTA -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-[var(--border-subtle)]">
+            <div class="flex items-center gap-2">
+              <label class="text-xs font-bold text-sec">Marking Scheme:</label>
+              <select id="cbt-marking-scheme" class="px-3 py-2 rounded-xl surface-input text-xs font-bold">
+                <option value="standard">+4 Correct / -1 Wrong (All)</option>
+                <option value="jee_num_zero">+4 / -1 MCQ, 0 Neg on Numerical</option>
+                <option value="no_neg">+4 Correct / 0 Negative</option>
+              </select>
+            </div>
+            <button onclick="calculateCbtFinalResult()" class="px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-extrabold shadow-lg transition">
+              🧮 Calculate Final Result
+            </button>
           </div>
         </div>
+
+        <!-- Step 3: Final Scorecard (Revealed after Calculate Final Result) -->
+        <div id="cbt-final-scorecard" class="hidden surface-card rounded-3xl p-5 sm:p-6 space-y-5"></div>
       </div>
     </section>
 
@@ -879,32 +1034,6 @@
     </div>
   </div>
 
-  <!-- PDF CBT Answer Key Grader Modal -->
-  <div id="cbt-grade-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="surface-card rounded-3xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto space-y-5">
-      <div class="flex items-center justify-between">
-        <div>
-          <h3 class="text-lg font-extrabold">PDF CBT Answer Key Grader</h3>
-          <p class="text-xs text-sec">Paste key (e.g., <span class="font-mono">1:A, 2:C</span> or <span class="font-mono">A C B D...</span>) or fill grid below.</p>
-        </div>
-        <button onclick="closeCbtGradeModal()" class="text-2xl text-sec leading-none">&times;</button>
-      </div>
-      <div class="flex gap-2">
-        <textarea id="cbt-key-paste" rows="2" placeholder="Paste key: 1. A  2. B  3. C ..." class="flex-1 p-3 rounded-xl surface-input text-xs font-mono"></textarea>
-        <button onclick="applyPastedCbtKey()" class="px-4 rounded-xl bg-acc text-xs font-extrabold shrink-0">Apply</button>
-      </div>
-      <div id="cbt-key-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-52 overflow-y-auto p-1"></div>
-      <div id="cbt-grade-result" class="hidden p-4 rounded-2xl surface-elevated space-y-3"></div>
-      <div class="flex justify-between items-center pt-2 border-t border-[var(--border-subtle)]">
-        <button onclick="clearCbtKey()" class="text-xs font-bold text-rose-400">Clear Key</button>
-        <div class="flex gap-2">
-          <button onclick="closeCbtGradeModal()" class="px-4 py-2 rounded-xl surface-elevated text-xs font-bold">Close</button>
-          <button onclick="gradeCbtTest()" class="px-5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-extrabold">Calculate Score (+4/-1)</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- ===================================================================== -->
   <!-- APPLICATION ENGINE                                                    -->
   <!-- ===================================================================== -->
@@ -913,41 +1042,770 @@
       'use strict';
 
       // =====================================================================
-      // 1. STRICT DUAL-EXAM CONFIG, ISOLATED BANKS & RAW GITHUB FALLBACK
+      // 12. TAB 5: SPLIT-SCREEN PDF CBT (PDF.JS + CUSTOM ORDER + 2-STEP GRADER)
       // =====================================================================
-      const RAW_GITHUB_BASE = 'https://raw.githubusercontent.com/sanskar-jee/Sanskar/main/';
+      if (typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      }
 
-      const EXAM_CFG = {
-        jee: {
-          id: 'jee', name: 'JEE Main', short: 'JEE Main (PCM)',
-          defaultTitle: 'JEE Main 2027', defaultDate: '2027-01-22',
-          subjects: ['Physics', 'Chemistry', 'Mathematics'],
-          primarySubject: 'Physics', benchSec: 90,
-          cbtQs: 75, cbtMins: 180, cbtLabel: 'JEE Main (75 Qs)',
-          cbtRanges: [
-            { name: 'Physics', start: 1, end: 25 },
-            { name: 'Chemistry', start: 26, end: 50 },
-            { name: 'Mathematics', start: 51, end: 75 }
-          ],
-          // JEE mode loads ONLY these 6 files — never touches NEET
-          githubFiles: ['train.jsonl', 'train (1).jsonl', 'train (2).jsonl', 'test.jsonl', 'test (1).jsonl', 'test (2).jsonl'],
-          fallbackFile: null
-        },
-        neet: {
-          id: 'neet', name: 'NEET UG', short: 'NEET UG (PCB)',
-          defaultTitle: 'NEET UG 2027', defaultDate: '2027-05-02',
-          subjects: ['Physics', 'Chemistry', 'Biology'],
-          primarySubject: 'Biology', benchSec: 50,
-          cbtQs: 180, cbtMins: 200, cbtLabel: 'NEET UG (180 Qs)',
-          cbtRanges: [
-            { name: 'Physics', start: 1, end: 45 },
-            { name: 'Chemistry', start: 46, end: 90 },
-            { name: 'Biology', start: 91, end: 180 }
-          ],
-          // NEET mode loads ONLY neet_complete_dataset.jsonl (falls back to neet.jsonl ONLY if first 404s)
-          githubFiles: ['neet_complete_dataset.jsonl'],
-          fallbackFile: 'neet.jsonl'
+      let cbtPdfDoc = null, cbtPdfTotalPages = 0, cbtPdfCurPage = 1, cbtPdfScale = 1.0, cbtFullPdf = false, cbtRenderToken = 0;
+      let cbtOrder = ['Physics', 'Chemistry', 'Mathematics'];
+      let cbtCounts = [25, 25, 25];
+      let cbtNumPerSub = 5;
+      let cbtSections = []; // [{ name, start, end }]
+      let cbtTotalQs = 75, cbtCurQ = 1, cbtShowAllPalette = false;
+      let cbtAns = {}, cbtTypes = {}, cbtVis = new Set([1]), cbtMarkSet = new Set();
+      let cbtSecs = 180 * 60, cbtInitSecs = 180 * 60, cbtTimerRun = false, cbtInt = null;
+      let cbtKey = {}, cbtKeyFilterSub = 'All', cbtLastResult = null, cbtResultSaved = false;
+
+      function getCbtPresetsForExam(ex) {
+        return ex === 'neet'
+          ? [{ label: 'NEET 180 Qs (45/45/90)', counts: [45, 45, 90], numPerSub: 0, mins: 200 }]
+          : [
+              { label: 'JEE 75 Qs (25/25/25)', counts: [25, 25, 25], numPerSub: 5, mins: 180 },
+              { label: 'JEE 90 Qs (30/30/30)', counts: [30, 30, 30], numPerSub: 10, mins: 180 }
+            ];
+      }
+
+      function renderCbtSetupControls() {
+        const subs = EXAM_CFG[currentExam].subjects;
+        for (let i = 0; i < 3; i++) {
+          const sel = document.getElementById(`cbt-ord-${i}`);
+          if (sel) {
+            sel.innerHTML = subs.map(s => `<option value="${s}" ${cbtOrder[i] === s ? 'selected' : ''}>${s}</option>`).join('');
+          }
+          const inp = document.getElementById(`cbt-cnt-${i}`);
+          if (inp) inp.value = cbtCounts[i];
         }
+        const numInp = document.getElementById('cbt-num-per-sub');
+        if (numInp) numInp.value = cbtNumPerSub;
+
+        const presets = getCbtPresetsForExam(currentExam);
+        const pBox = document.getElementById('cbt-preset-btns');
+        if (pBox) {
+          pBox.innerHTML = presets.map((p, idx) =>
+            `<button onclick="applyCbtPreset(${idx})" class="px-2.5 py-1 rounded-lg bg-acc-soft text-[11px] font-extrabold hover:brightness-110 transition">${p.label}</button>`
+          ).join('');
+        }
+      }
+
+      window.toggleCbtSetupPanel = function () {
+        document.getElementById('cbt-setup-panel').classList.toggle('hidden');
+      };
+
+      // Prevent duplicate subject selections by automatically swapping
+      window.onCbtOrderChange = function (slotIdx, newSubj) {
+        const prevSubj = cbtOrder[slotIdx];
+        const dupIdx = cbtOrder.findIndex((s, i) => i !== slotIdx && s === newSubj);
+        cbtOrder[slotIdx] = newSubj;
+        if (dupIdx !== -1) {
+          cbtOrder[dupIdx] = prevSubj;
+          // Swap counts too so Biology's 90 Qs travels with Biology in NEET mode
+          const tmpCnt = cbtCounts[slotIdx];
+          cbtCounts[slotIdx] = cbtCounts[dupIdx];
+          cbtCounts[dupIdx] = tmpCnt;
+        }
+        renderCbtSetupControls();
+      };
+
+      window.applyCbtPreset = function (idx) {
+        const p = getCbtPresetsForExam(currentExam)[idx];
+        if (!p) return;
+        if (currentExam === 'neet') {
+          cbtCounts = cbtOrder.map(s => s === 'Biology' ? 90 : 45);
+        } else {
+          cbtCounts = [...p.counts];
+        }
+        cbtNumPerSub = p.numPerSub;
+        document.getElementById('cbt-mins-input').value = p.mins;
+        renderCbtSetupControls();
+        window.applyCbtLayout(true);
+        window.resetCbtTimer();
+      };
+
+      function buildCbtSections() {
+        cbtSections = [];
+        let cursor = 1;
+        for (let i = 0; i < 3; i++) {
+          const cnt = Math.max(1, Math.min(150, parseInt(cbtCounts[i], 10) || 25));
+          cbtCounts[i] = cnt;
+          cbtSections.push({ name: cbtOrder[i], start: cursor, end: cursor + cnt - 1, count: cnt });
+          cursor += cnt;
+        }
+        cbtTotalQs = cursor - 1;
+      }
+
+      function getCbtSectionForQ(qNum) {
+        return cbtSections.find(s => qNum >= s.start && qNum <= s.end) || cbtSections[0] || { name: 'Physics', start: 1, end: cbtTotalQs };
+      }
+
+      window.applyCbtLayout = function (silent = false) {
+        for (let i = 0; i < 3; i++) {
+          cbtOrder[i] = document.getElementById(`cbt-ord-${i}`).value;
+          cbtCounts[i] = Math.max(1, Math.min(150, parseInt(document.getElementById(`cbt-cnt-${i}`).value, 10) || 25));
+        }
+        cbtNumPerSub = Math.max(0, Math.min(50, parseInt(document.getElementById('cbt-num-per-sub').value, 10) || 0));
+        buildCbtSections();
+
+        // Assign MCQ / Numerical types per section based on cbtNumPerSub
+        cbtTypes = {};
+        cbtSections.forEach(sec => {
+          const numStart = sec.end - Math.min(cbtNumPerSub, sec.count) + 1;
+          for (let q = sec.start; q <= sec.end; q++) {
+            cbtTypes[q] = (cbtNumPerSub > 0 && q >= numStart) ? 'num' : 'mcq';
+          }
+        });
+
+        // Prune out-of-range answers/marks if total Qs shrank
+        Object.keys(cbtAns).forEach(k => { if (parseInt(k, 10) > cbtTotalQs) delete cbtAns[k]; });
+        cbtMarkSet = new Set([...cbtMarkSet].filter(k => k <= cbtTotalQs));
+        cbtVis = new Set([...cbtVis].filter(k => k <= cbtTotalQs));
+        if (cbtCurQ > cbtTotalQs || cbtCurQ < 1) cbtCurQ = 1;
+        cbtVis.add(cbtCurQ);
+
+        const shortNames = cbtOrder.map(s => s.slice(0, 4)).join(' → ');
+        document.getElementById('cbt-layout-summary-pill').textContent = `${cbtTotalQs} Qs • ${shortNames}`;
+
+        const tabs = document.getElementById('cbt-subject-tabs');
+        tabs.innerHTML = cbtSections.map(s =>
+          `<button onclick="jumpCbtQ(${s.start})" data-sub="${s.name}" class="cbt-sub-btn py-2 px-1 rounded-xl text-[11px] font-extrabold transition truncate">${s.name} (${s.start}–${s.end})</button>`
+        ).join('');
+
+        renderCbtOmr();
+        if (!silent) {
+          document.getElementById('cbt-setup-panel').classList.add('hidden');
+          showToast(`Layout updated: ${cbtTotalQs} Qs (${cbtOrder.join(' → ')})`, 'success');
+        }
+      };
+
+      window.initCbt = function () {
+        const cfg = EXAM_CFG[currentExam];
+        cbtOrder = [...cfg.subjects];
+        cbtCounts = currentExam === 'neet' ? [45, 45, 90] : [25, 25, 25];
+        cbtNumPerSub = currentExam === 'neet' ? 0 : 5;
+        cbtCurQ = 1; cbtAns = {}; cbtVis = new Set([1]); cbtMarkSet = new Set();
+        cbtKey = {}; cbtKeyFilterSub = 'All'; cbtLastResult = null; cbtResultSaved = false;
+
+        document.getElementById('cbt-mins-input').value = cfg.cbtMins;
+        document.getElementById('cbt-post-submit').classList.add('hidden');
+        document.getElementById('cbt-final-scorecard').classList.add('hidden');
+        document.getElementById('cbt-arena').classList.remove('hidden');
+        document.getElementById('cbt-setup-panel').classList.remove('hidden');
+
+        renderCbtSetupControls();
+        window.applyCbtLayout(true);
+      };
+
+      // ---- B) PDF.JS MULTI-PAGE SCROLLABLE CANVAS RENDERER ----
+      window.handleCbtPdfDrop = function (e) {
+        e.preventDefault();
+        document.getElementById('cbt-pdf-pane').classList.remove('ring-2', 'ring-[var(--accent)]');
+        const f = e.dataTransfer?.files?.[0];
+        if (f && f.type === 'application/pdf') loadCbtPdfFile(f);
+        else showToast('Please drop a valid PDF file.', 'error');
+      };
+
+      window.handleCbtPdfUpload = function (e) {
+        const f = e.target.files?.[0];
+        if (f) loadCbtPdfFile(f);
+        e.target.value = '';
+      };
+
+      async function loadCbtPdfFile(file) {
+        if (typeof pdfjsLib === 'undefined') {
+          return showToast('PDF.js is still loading — please wait a second and try again.', 'error');
+        }
+        try {
+          document.getElementById('cbt-pdf-name').textContent = file.name;
+          document.getElementById('cbt-pdf-empty').classList.add('hidden');
+          document.getElementById('cbt-pdf-pages').classList.add('hidden');
+          document.getElementById('cbt-pdf-loading').classList.remove('hidden');
+          document.getElementById('cbt-pdf-loading-txt').textContent = `Loading "${file.name}"...`;
+
+          const buf = await file.arrayBuffer();
+          cbtPdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+          cbtPdfTotalPages = cbtPdfDoc.numPages;
+          cbtPdfCurPage = 1;
+          cbtPdfScale = 1.0;
+
+          document.getElementById('cbt-page-total').textContent = cbtPdfTotalPages;
+          document.getElementById('cbt-page-input').value = 1;
+          document.getElementById('cbt-page-input').max = cbtPdfTotalPages;
+          document.getElementById('cbt-page-nav').classList.remove('hidden');
+
+          await renderAllCbtPdfPages();
+          showToast(`Loaded "${file.name}" (${cbtPdfTotalPages} pages)`, 'success');
+        } catch (err) {
+          document.getElementById('cbt-pdf-loading').classList.add('hidden');
+          document.getElementById('cbt-pdf-empty').classList.remove('hidden');
+          showToast('Could not read PDF file. Make sure it is not password-protected.', 'error');
+        }
+      }
+
+      async function renderAllCbtPdfPages() {
+        if (!cbtPdfDoc) return;
+        const myToken = ++cbtRenderToken;
+        const scrollEl = document.getElementById('cbt-pdf-scroll');
+        const pagesWrap = document.getElementById('cbt-pdf-pages');
+        const loadEl = document.getElementById('cbt-pdf-loading');
+        const loadTxt = document.getElementById('cbt-pdf-loading-txt');
+
+        loadEl.classList.remove('hidden');
+        pagesWrap.innerHTML = '';
+        pagesWrap.classList.remove('hidden');
+
+        const availWidth = Math.max(280, scrollEl.clientWidth - 28);
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        for (let p = 1; p <= cbtPdfTotalPages; p++) {
+          if (myToken !== cbtRenderToken) return;
+          loadTxt.textContent = `Rendering page ${p} of ${cbtPdfTotalPages}...`;
+
+          const page = await cbtPdfDoc.getPage(p);
+          if (myToken !== cbtRenderToken) return;
+
+          const baseVp = page.getViewport({ scale: 1.0 });
+          const fitScale = availWidth / baseVp.width;
+          const cssScale = fitScale * cbtPdfScale;
+          const cssVp = page.getViewport({ scale: cssScale });
+          const renderVp = page.getViewport({ scale: cssScale * dpr });
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'cbt-pdf-page-wrap relative bg-white rounded-xl shadow-lg overflow-hidden shrink-0';
+          wrapper.dataset.page = String(p);
+          wrapper.style.width = `${Math.floor(cssVp.width)}px`;
+
+          const badge = document.createElement('div');
+          badge.className = 'absolute top-2 right-2 px-2 py-0.5 rounded-md bg-black/65 text-white font-mono text-[10px] font-bold pointer-events-none';
+          badge.textContent = `Page ${p}/${cbtPdfTotalPages}`;
+
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.floor(renderVp.width);
+          canvas.height = Math.floor(renderVp.height);
+          canvas.style.width = `${Math.floor(cssVp.width)}px`;
+          canvas.style.height = `${Math.floor(cssVp.height)}px`;
+          canvas.style.display = 'block';
+
+          wrapper.appendChild(canvas);
+          wrapper.appendChild(badge);
+          pagesWrap.appendChild(wrapper);
+
+          const ctx = canvas.getContext('2d', { alpha: false });
+          await page.render({ canvasContext: ctx, viewport: renderVp }).promise;
+          // Yield briefly so UI remains responsive on iPad
+          if (p % 2 === 0) await new Promise(r => setTimeout(r, 0));
+        }
+
+        if (myToken === cbtRenderToken) {
+          loadEl.classList.add('hidden');
+          document.getElementById('cbt-pdf-zoom-lbl').textContent = `${Math.round(cbtPdfScale * 100)}%`;
+        }
+      }
+
+      window.zoomCbtPdf = function (deltaPct) {
+        if (!cbtPdfDoc) return;
+        cbtPdfScale = Math.min(2.2, Math.max(0.6, +(cbtPdfScale + deltaPct / 100).toFixed(2)));
+        document.getElementById('cbt-pdf-zoom-lbl').textContent = `${Math.round(cbtPdfScale * 100)}%`;
+        renderAllCbtPdfPages();
+      };
+      window.fitCbtPdfWidth = function () {
+        if (!cbtPdfDoc) return;
+        cbtPdfScale = 1.0;
+        document.getElementById('cbt-pdf-zoom-lbl').textContent = '100%';
+        renderAllCbtPdfPages();
+      };
+      window.jumpCbtPdfPage = function (p) {
+        if (!cbtPdfDoc) return;
+        const target = Math.min(cbtPdfTotalPages, Math.max(1, parseInt(p, 10) || 1));
+        cbtPdfCurPage = target;
+        document.getElementById('cbt-page-input').value = target;
+        const el = document.querySelector(`.cbt-pdf-page-wrap[data-page="${target}"]`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      window.scrollCbtPdfPage = function (delta) {
+        window.jumpCbtPdfPage(cbtPdfCurPage + delta);
+      };
+      window.onCbtPdfScroll = function () {
+        if (!cbtPdfDoc) return;
+        const scrollEl = document.getElementById('cbt-pdf-scroll');
+        const wraps = scrollEl.querySelectorAll('.cbt-pdf-page-wrap');
+        const topEdge = scrollEl.scrollTop + 60;
+        for (const w of wraps) {
+          if (w.offsetTop + w.offsetHeight > topEdge) {
+            const p = parseInt(w.dataset.page, 10);
+            if (p && p !== cbtPdfCurPage) {
+              cbtPdfCurPage = p;
+              document.getElementById('cbt-page-input').value = p;
+            }
+            break;
+          }
+        }
+      };
+      window.toggleCbtFullPdf = function () {
+        cbtFullPdf = !cbtFullPdf;
+        document.getElementById('cbt-pdf-pane').className = `${cbtFullPdf ? 'lg:col-span-12' : 'lg:col-span-7'} surface-card rounded-2xl overflow-hidden flex flex-col h-[74vh]`;
+        document.getElementById('cbt-omr-pane').classList.toggle('hidden', cbtFullPdf);
+        document.getElementById('cbt-full-btn').textContent = cbtFullPdf ? 'Split' : 'Full';
+        if (cbtPdfDoc) setTimeout(renderAllCbtPdfPages, 60);
+      };
+
+      // ---- C) FULLY INTERACTIVE OMR & QUESTION PALETTE ----
+      window.setCbtType = function (t) { cbtTypes[cbtCurQ] = t; renderCbtOmr(); };
+      window.selectCbtOpt = function (l) { cbtAns[cbtCurQ] = l; cbtVis.add(cbtCurQ); renderCbtOmr(); };
+      window.onCbtNumChange = function (v) {
+        cbtVis.add(cbtCurQ);
+        if (!v.trim()) delete cbtAns[cbtCurQ]; else cbtAns[cbtCurQ] = v.trim();
+        renderCbtPalette();
+      };
+      window.cbtClear = function () { delete cbtAns[cbtCurQ]; cbtMarkSet.delete(cbtCurQ); renderCbtOmr(); };
+      window.cbtMark = function () {
+        cbtMarkSet.add(cbtCurQ);
+        if (cbtCurQ < cbtTotalQs) cbtCurQ++;
+        cbtVis.add(cbtCurQ);
+        renderCbtOmr();
+      };
+      window.cbtPrev = function () {
+        if (cbtCurQ > 1) cbtCurQ--;
+        cbtVis.add(cbtCurQ);
+        renderCbtOmr();
+      };
+      window.cbtNext = function () {
+        cbtMarkSet.delete(cbtCurQ);
+        if (cbtCurQ < cbtTotalQs) cbtCurQ++;
+        cbtVis.add(cbtCurQ);
+        renderCbtOmr();
+      };
+      window.jumpCbtQ = function (n) {
+        const qNum = Math.min(cbtTotalQs, Math.max(1, parseInt(n, 10) || 1));
+        cbtCurQ = qNum;
+        cbtVis.add(qNum);
+        renderCbtOmr();
+      };
+      window.toggleCbtPaletteScope = function () {
+        cbtShowAllPalette = !cbtShowAllPalette;
+        renderCbtPalette();
+      };
+
+      function renderCbtOmr() {
+        const t = cbtTypes[cbtCurQ] || 'mcq';
+        const val = cbtAns[cbtCurQ] || '';
+        const sec = getCbtSectionForQ(cbtCurQ);
+
+        document.querySelectorAll('.cbt-sub-btn').forEach(b => {
+          b.className = `cbt-sub-btn py-2 px-1 rounded-xl text-[11px] font-extrabold transition truncate ${b.dataset.sub === sec.name ? 'bg-acc' : 'surface-elevated text-sec'}`;
+        });
+        document.getElementById('cbt-active-q-lbl').textContent = `Q ${cbtCurQ} of ${cbtTotalQs}`;
+        document.getElementById('cbt-active-sub-badge').textContent = sec.name;
+
+        document.getElementById('cbt-t-mcq').className = `px-2.5 py-1 rounded-md transition ${t === 'mcq' ? 'bg-acc' : 'text-sec'}`;
+        document.getElementById('cbt-t-num').className = `px-2.5 py-1 rounded-md transition ${t === 'num' ? 'bg-acc' : 'text-sec'}`;
+        document.getElementById('cbt-mcq-box').classList.toggle('hidden', t !== 'mcq');
+        document.getElementById('cbt-num-box').classList.toggle('hidden', t !== 'num');
+
+        if (t === 'mcq') {
+          document.querySelectorAll('.cbt-opt').forEach(b => {
+            b.className = `cbt-opt py-2.5 rounded-xl font-black text-sm transition ${b.dataset.opt === val ? 'bg-acc ring-2 ring-[var(--rosegold)]' : 'surface-input hover:border-[var(--accent)]'}`;
+          });
+        } else {
+          document.getElementById('cbt-num-val').value = val;
+        }
+        renderCbtPalette();
+      }
+
+      function renderCbtPalette() {
+        const sec = getCbtSectionForQ(cbtCurQ);
+        const startQ = cbtShowAllPalette ? 1 : sec.start;
+        const endQ = cbtShowAllPalette ? cbtTotalQs : sec.end;
+
+        document.getElementById('cbt-palette-lbl').textContent = cbtShowAllPalette
+          ? `All Questions (1–${cbtTotalQs})`
+          : `${sec.name} (${sec.start}–${sec.end})`;
+        document.getElementById('cbt-palette-scope-btn').textContent = cbtShowAllPalette ? 'Current Section' : `Show All (${cbtTotalQs})`;
+
+        let a = 0, sk = 0, mk = 0, un = 0, h = '';
+        for (let i = 1; i <= cbtTotalQs; i++) {
+          const has = cbtAns[i] !== undefined && String(cbtAns[i]).trim() !== '';
+          if (cbtMarkSet.has(i)) mk++;
+          else if (has) a++;
+          else if (cbtVis.has(i)) sk++;
+          else un++;
+        }
+        for (let i = startQ; i <= endQ; i++) {
+          const has = cbtAns[i] !== undefined && String(cbtAns[i]).trim() !== '';
+          let cls = 'surface-elevated text-sec';
+          if (cbtMarkSet.has(i)) cls = 'bg-purple-600 text-white';
+          else if (has) cls = 'bg-emerald-500 text-white';
+          else if (cbtVis.has(i)) cls = 'bg-rose-500 text-white';
+          if (i === cbtCurQ) cls += ' ring-2 ring-[var(--rosegold)] scale-105';
+          h += `<button onclick="jumpCbtQ(${i})" class="h-8 rounded-lg font-mono text-xs font-extrabold transition ${cls}">${i}</button>`;
+        }
+        document.getElementById('cbt-palette').innerHTML = h;
+        document.getElementById('cbt-cnt-ans').textContent = a;
+        document.getElementById('cbt-cnt-skip').textContent = sk;
+        document.getElementById('cbt-cnt-mark').textContent = mk;
+        document.getElementById('cbt-cnt-unv').textContent = un;
+      }
+
+      function updateCbtTimerUI() {
+        const h = String(Math.floor(cbtSecs / 3600)).padStart(2, '0');
+        const m = String(Math.floor((cbtSecs % 3600) / 60)).padStart(2, '0');
+        const s = String(cbtSecs % 60).padStart(2, '0');
+        document.getElementById('cbt-timer-display').textContent = `${h}:${m}:${s}`;
+      }
+      window.toggleCbtTimer = function () {
+        const b = document.getElementById('cbt-timer-btn');
+        if (cbtTimerRun) {
+          clearInterval(cbtInt); cbtTimerRun = false; b.textContent = 'Resume';
+        } else {
+          cbtTimerRun = true; b.textContent = 'Pause';
+          cbtInt = setInterval(() => {
+            if (cbtSecs > 0) { cbtSecs--; updateCbtTimerUI(); }
+            else { clearInterval(cbtInt); cbtTimerRun = false; window.submitCbtToSummary(); }
+          }, 1000);
+        }
+      };
+      window.resetCbtTimer = function () {
+        clearInterval(cbtInt); cbtTimerRun = false;
+        const mins = Math.max(5, parseInt(document.getElementById('cbt-mins-input').value, 10) || EXAM_CFG[currentExam].cbtMins);
+        cbtInitSecs = mins * 60;
+        cbtSecs = cbtInitSecs;
+        document.getElementById('cbt-timer-btn').textContent = 'Start';
+        updateCbtTimerUI();
+      };
+
+      // ---- D) POST-SUBMISSION 2-STEP WORKFLOW ----
+      window.submitCbtToSummary = function () {
+        clearInterval(cbtInt); cbtTimerRun = false;
+        document.getElementById('cbt-timer-btn').textContent = 'Resume';
+        document.getElementById('cbt-setup-panel').classList.add('hidden');
+        document.getElementById('cbt-arena').classList.add('hidden');
+        document.getElementById('cbt-post-submit').classList.remove('hidden');
+        document.getElementById('cbt-final-scorecard').classList.add('hidden');
+        cbtResultSaved = false;
+
+        let attempted = 0;
+        for (let i = 1; i <= cbtTotalQs; i++) {
+          if (cbtAns[i] !== undefined && String(cbtAns[i]).trim() !== '') attempted++;
+        }
+        const unattempted = cbtTotalQs - attempted;
+        const elapsed = Math.max(0, cbtInitSecs - cbtSecs);
+        const eMin = Math.floor(elapsed / 60), eSec = elapsed % 60;
+
+        document.getElementById('cbt-summary-kpis').innerHTML = `
+          <div class="p-3.5 rounded-2xl surface-elevated"><div class="text-[10px] font-bold uppercase text-mut">Total Qs</div><div class="font-mono text-xl font-extrabold mt-1">${cbtTotalQs}</div></div>
+          <div class="p-3.5 rounded-2xl surface-elevated"><div class="text-[10px] font-bold uppercase text-mut">Attempted</div><div class="font-mono text-xl font-extrabold text-emerald-400 mt-1">${attempted}</div></div>
+          <div class="p-3.5 rounded-2xl surface-elevated"><div class="text-[10px] font-bold uppercase text-mut">Unattempted</div><div class="font-mono text-xl font-extrabold text-sec mt-1">${unattempted}</div></div>
+          <div class="p-3.5 rounded-2xl surface-elevated"><div class="text-[10px] font-bold uppercase text-mut">Marked Review</div><div class="font-mono text-xl font-extrabold text-purple-400 mt-1">${cbtMarkSet.size}</div></div>
+          <div class="p-3.5 rounded-2xl surface-elevated col-span-2 sm:col-span-1"><div class="text-[10px] font-bold uppercase text-mut">Time Taken</div><div class="font-mono text-xl font-extrabold text-rg mt-1">${eMin}m ${eSec}s</div></div>`;
+
+        document.getElementById('cbt-summary-table').innerHTML = `
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="border-b border-[var(--border-subtle)] text-mut uppercase text-[10px]">
+                <th class="py-2 pr-3">Subject (Your Order)</th>
+                <th class="py-2 px-3">Q Range</th>
+                <th class="py-2 px-3">Attempted</th>
+                <th class="py-2 px-3">Unattempted</th>
+                <th class="py-2 pl-3">Marked</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border-subtle)] font-semibold">
+              ${cbtSections.map(s => {
+                let sa = 0, sm = 0;
+                for (let q = s.start; q <= s.end; q++) {
+                  if (cbtAns[q] !== undefined && String(cbtAns[q]).trim() !== '') sa++;
+                  if (cbtMarkSet.has(q)) sm++;
+                }
+                return `<tr><td class="py-2.5 pr-3 font-extrabold text-acc">${s.name}</td><td class="py-2.5 px-3 font-mono text-sec">Q${s.start}–Q${s.end}</td><td class="py-2.5 px-3 font-mono text-emerald-400">${sa} / ${s.count}</td><td class="py-2.5 px-3 font-mono text-sec">${s.count - sa}</td><td class="py-2.5 pl-3 font-mono text-purple-400">${sm}</td></tr>`;
+              }).join('')}
+            </tbody>
+          </table>`;
+
+        renderCbtKeySubFilters();
+        renderCbtKeyGrid();
+        showToast('Test submitted! Now upload or paste the Answer Key to calculate your result.', 'info');
+      };
+
+      window.resumeCbtFromSummary = function () {
+        document.getElementById('cbt-post-submit').classList.add('hidden');
+        document.getElementById('cbt-arena').classList.remove('hidden');
+      };
+
+      window.startNewCbtTest = function () {
+        window.initCbt();
+        window.resetCbtTimer();
+        showToast('Started a fresh PDF CBT session.', 'info');
+      };
+
+      function normalizeParsedKeyToken(qNum, rawTok) {
+        const tok = String(rawTok || '').trim().toUpperCase().replace(/^[\(\[]|[\)\]]$/g, '');
+        if (!tok) return '';
+        const isMcq = (cbtTypes[qNum] || 'mcq') === 'mcq';
+        if (isMcq) {
+          if (['A', 'B', 'C', 'D'].includes(tok)) return tok;
+          const map = { '1': 'A', '2': 'B', '3': 'C', '4': 'D' };
+          if (map[tok]) return map[tok];
+        }
+        return tok;
+      }
+
+      function parseAnswerKeyText(rawText) {
+        const txt = String(rawText || '').trim();
+        if (!txt) return 0;
+        let cnt = 0;
+        // Matches: "1. A", "1 (B)", "1-C", "Q1: 2", "21) 42.5", "1  A"
+        const rx = /(?:^|[\s,;|])(?:Q\.?\s*)?(\d{1,3})\s*(?:[\.\)\-:=]\s*|\s+)\(?([A-Da-d]|-?\d+(?:\.\d+)?)\)?(?=$|[\s,;|])/g;
+        let m;
+        while ((m = rx.exec(txt)) !== null) {
+          const qn = parseInt(m[1], 10);
+          if (qn >= 1 && qn <= cbtTotalQs) {
+            const norm = normalizeParsedKeyToken(qn, m[2]);
+            if (norm) { cbtKey[qn] = norm; cnt++; }
+          }
+        }
+        // Fallback: continuous letter/value list like "A B C D..."
+        if (cnt === 0) {
+          const toks = txt.toUpperCase().split(/[\s,;|]+/).filter(Boolean);
+          if (toks.length === 1 && /^[ABCD]{4,}$/.test(toks[0])) {
+            toks[0].split('').forEach((ch, idx) => { if (idx + 1 <= cbtTotalQs) { cbtKey[idx + 1] = ch; cnt++; } });
+          } else {
+            toks.forEach((t, idx) => {
+              const qn = idx + 1;
+              if (qn <= cbtTotalQs) {
+                const norm = normalizeParsedKeyToken(qn, t);
+                if (norm) { cbtKey[qn] = norm; cnt++; }
+              }
+            });
+          }
+        }
+        return cnt;
+      }
+
+      window.handleCbtAnswerKeyPdf = async function (e) {
+        const f = e.target.files?.[0];
+        if (!f) return;
+        e.target.value = '';
+        if (typeof pdfjsLib === 'undefined') return showToast('PDF.js not ready yet.', 'error');
+
+        const statusEl = document.getElementById('cbt-key-pdf-status');
+        statusEl.textContent = 'Scanning PDF pages...';
+        try {
+          const buf = await f.arrayBuffer();
+          const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+          let fullText = '';
+          for (let p = 1; p <= pdf.numPages; p++) {
+            const page = await pdf.getPage(p);
+            const tc = await page.getTextContent();
+            fullText += '\n' + tc.items.map(it => it.str).join(' ');
+          }
+          const cnt = parseAnswerKeyText(fullText);
+          renderCbtKeyGrid();
+          statusEl.textContent = cnt > 0 ? `✓ Extracted ${cnt} keys from ${f.name}` : `Could not auto-detect keys — edit grid below.`;
+          showToast(cnt > 0 ? `Extracted ${cnt} answer keys from PDF!` : 'No standard key patterns found in PDF. Try pasting or editing grid.', cnt > 0 ? 'success' : 'info');
+        } catch {
+          statusEl.textContent = 'Failed to read PDF.';
+          showToast('Could not parse Answer Key PDF.', 'error');
+        }
+      };
+
+      window.handleCbtAnswerKeyTextFile = async function (e) {
+        const f = e.target.files?.[0];
+        if (!f) return;
+        e.target.value = '';
+        const txt = await f.text();
+        document.getElementById('cbt-key-paste').value = txt;
+        window.applyPastedCbtKey();
+      };
+
+      window.applyPastedCbtKey = function () {
+        const raw = document.getElementById('cbt-key-paste').value.trim();
+        if (!raw) return showToast('Paste your answer key text first.', 'info');
+        const cnt = parseAnswerKeyText(raw);
+        renderCbtKeyGrid();
+        showToast(cnt > 0 ? `Parsed ${cnt} answer keys!` : 'No keys recognized — use format like 1:A 2:B or A B C D.', cnt > 0 ? 'success' : 'error');
+      };
+
+      function renderCbtKeySubFilters() {
+        const box = document.getElementById('cbt-key-sub-filters');
+        const subs = ['All', ...cbtSections.map(s => s.name)];
+        box.innerHTML = subs.map(s =>
+          `<button onclick="setCbtKeyFilter('${s}')" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition ${cbtKeyFilterSub === s ? 'bg-acc' : 'surface-elevated text-sec'}">${s}</button>`
+        ).join('');
+      }
+      window.setCbtKeyFilter = function (s) { cbtKeyFilterSub = s; renderCbtKeySubFilters(); renderCbtKeyGrid(); };
+
+      function updateCbtKeyCountPill() {
+        const filled = Object.keys(cbtKey).filter(k => parseInt(k, 10) <= cbtTotalQs && String(cbtKey[k] || '').trim() !== '').length;
+        document.getElementById('cbt-key-count-pill').textContent = `${filled} / ${cbtTotalQs} Keys Loaded`;
+      }
+
+      function renderCbtKeyGrid() {
+        updateCbtKeyCountPill();
+        const sec = cbtKeyFilterSub === 'All' ? { start: 1, end: cbtTotalQs } : (cbtSections.find(s => s.name === cbtKeyFilterSub) || { start: 1, end: cbtTotalQs });
+        let h = '';
+        for (let i = sec.start; i <= sec.end; i++) {
+          const isNum = (cbtTypes[i] || 'mcq') === 'num';
+          const kv = cbtKey[i] || '';
+          h += `<div class="p-1.5 rounded-xl surface-elevated space-y-1">
+            <div class="flex items-center justify-between text-[10px] font-bold text-mut"><span>Q${i}</span><span>${isNum ? '#' : 'MCQ'}</span></div>
+            <input value="${escapeHtml(kv)}" onchange="setCbtKeyVal(${i}, this.value)" class="w-full px-1.5 py-1 rounded-lg surface-input text-xs font-mono font-extrabold uppercase text-center" placeholder="-" />
+          </div>`;
+        }
+        document.getElementById('cbt-key-grid').innerHTML = h;
+      }
+      window.setCbtKeyVal = function (i, v) {
+        const norm = normalizeParsedKeyToken(i, v);
+        if (!norm) delete cbtKey[i]; else cbtKey[i] = norm;
+        updateCbtKeyCountPill();
+      };
+      window.clearCbtKey = function () { cbtKey = {}; renderCbtKeyGrid(); showToast('Cleared answer key.', 'info'); };
+
+      // ---- STEP 3: CALCULATE FINAL SCORECARD ----
+      let cbtCompFilter = 'all';
+      window.calculateCbtFinalResult = function () {
+        const scheme = document.getElementById('cbt-marking-scheme').value;
+        let totalC = 0, totalW = 0, totalU = 0, totalScore = 0;
+        const rows = [];
+        const subBreakdown = cbtSections.map(s => ({ name: s.name, range: `Q${s.start}–Q${s.end}`, count: s.count, att: 0, cor: 0, wrg: 0, score: 0, max: s.count * 4 }));
+
+        for (let i = 1; i <= cbtTotalQs; i++) {
+          const sec = getCbtSectionForQ(i);
+          const sb = subBreakdown.find(x => x.name === sec.name);
+          const isNum = (cbtTypes[i] || 'mcq') === 'num';
+          const ua = String(cbtAns[i] || '').trim().toUpperCase();
+          const ka = String(cbtKey[i] || '').trim().toUpperCase();
+
+          let status = 'unattempted', marks = 0;
+          if (!ua) {
+            totalU++;
+          } else if (!ka) {
+            status = 'no_key';
+            if (sb) sb.att++;
+          } else {
+            if (sb) sb.att++;
+            let isRight = false;
+            if (isNum) {
+              const uN = parseFloat(ua), kN = parseFloat(ka);
+              isRight = (!isNaN(uN) && !isNaN(kN)) ? Math.abs(uN - kN) <= 0.01 : (ua === ka);
+            } else {
+              isRight = (ua === ka);
+            }
+            if (isRight) {
+              status = 'correct'; marks = 4; totalC++;
+              if (sb) sb.cor++;
+            } else {
+              status = 'wrong';
+              marks = (scheme === 'no_neg' || (scheme === 'jee_num_zero' && isNum)) ? 0 : -1;
+              totalW++;
+              if (sb) sb.wrg++;
+            }
+          }
+          totalScore += marks;
+          if (sb) sb.score += marks;
+          rows.push({ q: i, subject: sec.name, ua: ua || '—', ka: ka || '—', status, marks });
+        }
+
+        const maxScore = cbtTotalQs * 4;
+        const acc = (totalC + totalW) ? Math.round((totalC / (totalC + totalW)) * 100) : 0;
+        cbtLastResult = { score: totalScore, maxScore, acc, totalC, totalW, totalU, subBreakdown, rows };
+        cbtCompFilter = 'all';
+        renderCbtScorecard();
+        document.getElementById('cbt-final-scorecard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showToast(`Final Score: ${totalScore} / ${maxScore} (${acc}% Accuracy)`, 'success');
+      };
+
+      window.setCbtCompFilter = function (f) { cbtCompFilter = f; renderCbtScorecard(); };
+
+      function renderCbtScorecard() {
+        if (!cbtLastResult) return;
+        const r = cbtLastResult;
+        const sc = document.getElementById('cbt-final-scorecard');
+        sc.classList.remove('hidden');
+
+        const filteredRows = r.rows.filter(row => cbtCompFilter === 'all' || row.status === cbtCompFilter);
+        const stBadge = {
+          correct: 'bg-emerald-500/15 text-emerald-400',
+          wrong: 'bg-rose-500/15 text-rose-400',
+          unattempted: 'surface-input text-mut',
+          no_key: 'bg-rg-soft'
+        };
+        const stLabel = { correct: 'Correct', wrong: 'Incorrect', unattempted: 'Skipped', no_key: 'No Key' };
+
+        sc.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 text-[11px] font-extrabold uppercase tracking-wider">Step 3 • Final Result</span>
+              <h2 class="text-2xl font-extrabold mt-1">PDF CBT Scorecard</h2>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="saveCbtResultToDashboard()" ${cbtResultSaved ? 'disabled' : ''} class="px-4 py-2.5 rounded-xl ${cbtResultSaved ? 'bg-emerald-600/30 text-emerald-300' : 'bg-acc'} text-xs font-extrabold">
+                ${cbtResultSaved ? '✓ Saved to Analytics' : '💾 Save to Dashboard Analytics'}
+              </button>
+              <button onclick="startNewCbtTest()" class="px-4 py-2.5 rounded-xl surface-elevated text-xs font-extrabold">↻ Retake / New PDF Test</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <div class="p-4 rounded-2xl surface-elevated"><div class="text-[10px] font-bold uppercase text-mut">Total Score</div><div class="font-mono text-2xl font-extrabold text-acc mt-1">${r.score}<span class="text-xs text-mut">/${r.maxScore}</span></div></div>
+            <div class="p-4 rounded-2xl surface-elevated"><div class="text-[10px] font-bold uppercase text-mut">Accuracy</div><div class="font-mono text-2xl font-extrabold text-emerald-400 mt-1">${r.acc}%</div></div>
+            <div class="p-4 rounded-2xl surface-elevated"><div class="text-[10px] font-bold uppercase text-mut">Correct</div><div class="font-mono text-2xl font-extrabold text-emerald-400 mt-1">${r.totalC}</div></div>
+            <div class="p-4 rounded-2xl surface-elevated"><div class="text-[10px] font-bold uppercase text-mut">Incorrect</div><div class="font-mono text-2xl font-extrabold text-rose-400 mt-1">${r.totalW}</div></div>
+            <div class="p-4 rounded-2xl surface-elevated col-span-2 sm:col-span-1"><div class="text-[10px] font-bold uppercase text-mut">Unattempted</div><div class="font-mono text-2xl font-extrabold text-sec mt-1">${r.totalU}</div></div>
+          </div>
+
+          <div class="space-y-2">
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-sec">Subject-Wise Score Breakdown</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-[var(--border-subtle)] text-mut uppercase text-[10px]">
+                    <th class="py-2 pr-3">Subject</th><th class="py-2 px-3">Range</th><th class="py-2 px-3">Attempted</th><th class="py-2 px-3">Correct</th><th class="py-2 px-3">Wrong</th><th class="py-2 pl-3">Score</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--border-subtle)] font-semibold">
+                  ${r.subBreakdown.map(s => `<tr><td class="py-2.5 pr-3 font-extrabold text-acc">${s.name}</td><td class="py-2.5 px-3 font-mono text-sec">${s.range}</td><td class="py-2.5 px-3 font-mono">${s.att}/${s.count}</td><td class="py-2.5 px-3 font-mono text-emerald-400">${s.cor}</td><td class="py-2.5 px-3 font-mono text-rose-400">${s.wrg}</td><td class="py-2.5 pl-3 font-mono font-extrabold text-rg">${s.score}/${s.max}</td></tr>`).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-xs font-extrabold uppercase tracking-wider text-sec">Question-by-Question Comparison</h3>
+              <div class="flex flex-wrap gap-1">
+                ${[['all','All'],['correct','Correct'],['wrong','Wrong'],['unattempted','Skipped']].map(([k,l]) =>
+                  `<button onclick="setCbtCompFilter('${k}')" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold ${cbtCompFilter === k ? 'bg-acc' : 'surface-elevated text-sec'}">${l}</button>`
+                ).join('')}
+              </div>
+            </div>
+            <div class="max-h-80 overflow-y-auto overflow-x-auto rounded-2xl surface-elevated p-2">
+              <table class="w-full text-xs text-left border-collapse">
+                <thead class="sticky top-0 bg-[var(--bg-elevated)]">
+                  <tr class="border-b border-[var(--border-subtle)] text-mut uppercase text-[10px]">
+                    <th class="py-2 px-2">Q#</th><th class="py-2 px-2">Subject</th><th class="py-2 px-2">Your Ans</th><th class="py-2 px-2">Official Key</th><th class="py-2 px-2">Status</th><th class="py-2 px-2 text-right">Marks</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--border-subtle)] font-mono">
+                  ${filteredRows.map(row => `<tr><td class="py-2 px-2 font-bold">Q${row.q}</td><td class="py-2 px-2 font-sans font-semibold text-sec">${row.subject}</td><td class="py-2 px-2 font-bold">${escapeHtml(row.ua)}</td><td class="py-2 px-2 font-bold text-acc">${escapeHtml(row.ka)}</td><td class="py-2 px-2 font-sans"><span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold ${stBadge[row.status]}">${stLabel[row.status]}</span></td><td class="py-2 px-2 text-right font-extrabold ${row.marks > 0 ? 'text-emerald-400' : row.marks < 0 ? 'text-rose-400' : 'text-mut'}">${row.marks > 0 ? '+' : ''}${row.marks}</td></tr>`).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>`;
+      }
+
+      window.saveCbtResultToDashboard = function () {
+        if (!cbtLastResult || cbtResultSaved) return;
+        mockHistory.unshift({
+          title: `PDF CBT (${cbtTotalQs} Qs)`,
+          date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+          score: cbtLastResult.score,
+          maxScore: cbtLastResult.maxScore,
+          accuracy: cbtLastResult.acc
+        });
+        saveLS(lsKey('mock_history'), mockHistory.slice(0, 25));
+        cbtResultSaved = true;
+        renderCbtScorecard();
+        showToast('Score saved to Dashboard & Analytics!', 'success');
       };
 
       // Strictly isolated in-memory banks & diagnostics
@@ -2579,7 +3437,6 @@
 
         const cfg = EXAM_CFG[exam];
         document.getElementById('header-exam-sub').textContent = cfg.short;
-        document.getElementById('cbt-default-opt').textContent = cfg.cbtLabel;
         document.getElementById('cbt-mins-input').value = cfg.cbtMins;
         document.getElementById('pill-jee').className = `px-2.5 py-1.5 rounded-lg text-[11px] font-extrabold transition ${exam === 'jee' ? 'bg-acc' : 'text-sec'}`;
         document.getElementById('pill-neet').className = `px-2.5 py-1.5 rounded-lg text-[11px] font-extrabold transition ${exam === 'neet' ? 'bg-acc' : 'text-sec'}`;
