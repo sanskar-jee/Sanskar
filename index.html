@@ -1120,28 +1120,328 @@
       return exam === 'neet' ? 'Biology' : 'Physics';
     }
 
+    // Parse raw Python-style list strings (e.g. "['Chemistry', 'States of Matter', 'NEET', 'NEET 2013 (Karnataka)']")
+    // into a clean chapter name and separate year/exam badge.
+    function cleanChapterAndYear(rawChapter, rawTags, exam) {
+      const genericTokens = new Set([
+        'neet', 'neet ug', 'neet pyq', 'jee', 'jee main', 'jee advanced', 'jee pyq',
+        'physics', 'chemistry', 'biology', 'botany', 'zoology', 'mathematics', 'math', 'maths',
+        'pyq', 'aipmt', 'general', 'unknown', ''
+      ]);
+
+      const tokens = [];
+      const pushRaw = (val) => {
+        if (!val) return;
+        if (Array.isArray(val)) {
+          val.forEach(pushRaw);
+          return;
+        }
+        const s = String(val).trim();
+        if (!s) return;
+        if (s.startsWith('[') && s.endsWith(']')) {
+          const inner = s.slice(1, -1);
+          const quoted = [...inner.matchAll(/['"]([^'"]+)['"]/g)].map(m => m[1].trim());
+          if (quoted.length > 0) {
+            quoted.forEach(t => tokens.push(t));
+          } else {
+            inner.split(',').map(x => x.replace(/^['"\s]+|['"\s]+$/g, '')).filter(Boolean).forEach(t => tokens.push(t));
+          }
+        } else {
+          tokens.push(s);
+        }
+      };
+
+      pushRaw(rawChapter);
+      pushRaw(rawTags);
+
+      let year = '';
+      const chapterCandidates = [];
+
+      for (const tok of tokens) {
+        const t = tok.trim();
+        if (!t) continue;
+        const yearExamMatch = t.match(/(NEET|AIPMT|JEE|AIIMS)[^,'"]*?(19|20)\d{2}[^,'"]*/i);
+        if (yearExamMatch) {
+          if (!year) year = t.replace(/\s+/g, ' ').trim();
+          continue;
+        }
+        if (/^(19|20)\d{2}$/.test(t)) {
+          if (!year) year = `${EXAM_CONFIG[exam].name} ${t}`;
+          continue;
+        }
+        if (genericTokens.has(t.toLowerCase())) continue;
+        chapterCandidates.push(t);
+      }
+
+      return {
+        chapter: chapterCandidates[0] || `${EXAM_CONFIG[exam].name} PYQ`,
+        year
+      };
+    }
+
+    // Strip redundant leading headers like "[NEET PYQ | Chemistry]" or "[JEE PYQ | Physics]"
+    function stripLeadingHeader(text) {
+      return String(text || '')
+        .replace(/^\s*\[(?:NEET|JEE)[^\]]*\]\s*/i, '')
+        .replace(/^\s*(?:Question|Q\s*\d*)\s*[:\.\-]\s*/i, '')
+        .trim();
+    }
+
+    // Clean extracted option text and ensure balanced $...$ LaTeX delimiters
+    function cleanOptionText(raw) {
+      let s = String(raw || '').trim();
+      s = s.replace(/^\(?[A-D1-4]\)?[\.\:\)]\s+/, '').trim();
+      const dollarCount = (s.match(/(?<!\\)\$/g) || []).length;
+      if (dollarCount % 2 === 1) {
+        if (s.startsWith('$') && !s.endsWith('$')) s = s + '$';
+        else if (s.endsWith('$') && !s.startsWith('$')) s = '$' + s;
+      }
+      return s;
+    }
+
+    // Extract 4 options from raw question text in strict priority order without ever splitting on bare decimals (\d.)
+    function extractOptionsFromText(rawText) {
+      const cleanedRaw = stripLeadingHeader(rawText);
+      const lines = cleanedRaw.split(/\r?\n/);
+
+      // Priority (b): Multi-line lettered options at start of lines
+      const findMultilineLettered = () => {
+        const expected = ['A', 'B', 'C', 'D'];
+        let found = [];
+        let firstLineIdx = -1;
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          const nextExpected = expected[found.length];
+          if (!nextExpected) break;
+
+          // Match "(A) text", "A. text", "A) text", "A: text"
+          let m = line.match(new RegExp(`^(?:\\(?(${nextExpected})\\)|(${nextExpected})[\\.\\:\\)])\\s*(.*)$`));
+          // Or bare "A text" / "A $latex$" at start of line
+          if (!m) m = line.match(new RegExp(`^(${nextExpected})(?:\\s+|(?=\\$))(.+)$`));
+          // Or standalone "A" with option text on the immediately following line
+          if (!m && new RegExp(`^\\(?${nextExpected}\\)?[\\.\\:\\)]?$`).test(line) && i + 1 < lines.length) {
+            const nextLine = lines[i + 1].trim();
+            if (nextLine) {
+              if (firstLineIdx === -1) firstLineIdx = i;
+              found.push(nextLine);
+              i++;
+              continue;
+            }
+          }
+
+          if (m) {
+            if (firstLineIdx === -1) firstLineIdx = i;
+            const optBody = (m[3] !== undefined ? m[3] : m[2] || '').trim();
+            found.push(optBody);
+          } else if (found.length > 0 && found.length < 4) {
+            // Continuation line of the current option
+            found[found.length - 1] += ' ' + line;
+          }
+        }
+
+        if (found.length === 4 && firstLineIdx > 0) {
+          const qText = lines.slice(0, firstLineIdx).join('\n').trim();
+          if (qText) return { qText, options: found.map(cleanOptionText), oneIndexed: false };
+        }
+        return null;
+      };
+
+      const multiLetter = findMultilineLettered();
+      if (multiLetter) return multiLetter;
+
+      // Priority (c): Inline lettered options at the END of the text (greedy prefix avoids matching "A " in sentences)
+      // Normalize adjacent LaTeX closing $ before B/C/D (e.g. "$B $" -> "$ B $") safely without lookbehind
+      const normText = cleanedRaw.replace(/\$([BCD])(?=\s|\$)/g, '$ $1');
+
+      // (c1) Explicit delimiters: (A) / A. / A)
+      const inlineExplicit = normText.match(
+        /^([\s\S]+)(?:[\r\n]+|\s+)(?:\(A\)|A[\.\)])\s*([\s\S]+?)\s+(?:\(B\)|B[\.\)])\s*([\s\S]+?)\s+(?:\(C\)|C[\.\)])\s*([\s\S]+?)\s+(?:\(D\)|D[\.\)])\s*([\s\S]+)$/
+      );
+      if (inlineExplicit) {
+        return {
+          qText: inlineExplicit[1].trim(),
+          options: [inlineExplicit[2], inlineExplicit[3], inlineExplicit[4], inlineExplicit[5]].map(cleanOptionText),
+          oneIndexed: false
+        };
+      }
+
+      // (c2) Bare uppercase A / B / C / D inline delimiters (handles spaces, newlines, or adjacent $)
+      const inlineBare = normText.match(
+        /^([\s\S]+)(?:[\r\n]+|\s+)A(?:\s+|(?=\$))([\s\S]+?)(?:[\r\n]+|\s+)B(?:\s+|(?=\$))([\s\S]+?)(?:[\r\n]+|\s+)C(?:\s+|(?=\$))([\s\S]+?)(?:[\r\n]+|\s+)D(?:\s+|(?=\$))([\s\S]+)$/
+      );
+      if (inlineBare) {
+        return {
+          qText: inlineBare[1].trim(),
+          options: [inlineBare[2], inlineBare[3], inlineBare[4], inlineBare[5]].map(cleanOptionText),
+          oneIndexed: false
+        };
+      }
+
+      // Priority (d): Multi-line numbered options ONLY at start of line AND followed by whitespace (never matches 1.40)
+      const findMultilineNumbered = () => {
+        const expected = ['1', '2', '3', '4'];
+        let found = [];
+        let firstLineIdx = -1;
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          const nextNum = expected[found.length];
+          if (!nextNum) break;
+          const m = line.match(new RegExp(`^(?:\\(?(${nextNum})\\)|(${nextNum})[\\.\\)])\\s+(.+)$`));
+          if (m) {
+            if (firstLineIdx === -1) firstLineIdx = i;
+            found.push(m[3].trim());
+          } else if (found.length > 0 && found.length < 4) {
+            found[found.length - 1] += ' ' + line;
+          }
+        }
+
+        if (found.length === 4 && firstLineIdx > 0) {
+          const qText = lines.slice(0, firstLineIdx).join('\n').trim();
+          if (qText) return { qText, options: found.map(cleanOptionText), oneIndexed: true };
+        }
+        return null;
+      };
+
+      const multiNum = findMultilineNumbered();
+      if (multiNum) return multiNum;
+
+      return { qText: cleanedRaw, options: null, oneIndexed: false };
+    }
+
     function normalizeOptIndex(raw, options, oneIndexed) {
+      if (raw === null || raw === undefined || raw === '') return -1;
       if (typeof raw === 'number') {
         if (oneIndexed && raw >= 1 && raw <= 4) return raw - 1;
         if (raw >= 0 && raw <= 3) return raw;
         if (raw >= 1 && raw <= 4) return raw - 1;
       }
-      const s = String(raw ?? '').trim().toUpperCase();
-      const map = { A: 0, B: 1, C: 2, D: 3, OPTION_A: 0, OPTION_B: 1, OPTION_C: 2, OPTION_D: 3, OPTION_1: 0, OPTION_2: 1, OPTION_3: 2, OPTION_4: 3 };
+      const s = String(raw).trim().toUpperCase().replace(/[\*`]/g, '');
+      const map = {
+        A: 0, B: 1, C: 2, D: 3,
+        OPTION_A: 0, OPTION_B: 1, OPTION_C: 2, OPTION_D: 3,
+        'OPTION A': 0, 'OPTION B': 1, 'OPTION C': 2, 'OPTION D': 3,
+        OPTION_1: 0, OPTION_2: 1, OPTION_3: 2, OPTION_4: 3,
+        'OPTION 1': 0, 'OPTION 2': 1, 'OPTION 3': 2, 'OPTION 4': 3
+      };
       if (map[s] !== undefined) return map[s];
-      if (/^[1-4]$/.test(s)) return oneIndexed ? Number(s) - 1 : (Number(s) <= 3 ? Number(s) : 3);
+      if (/^[1-4]$/.test(s)) return Number(s) - 1;
       if (s === '0') return 0;
-      const match = s.match(/^\(?([ABCD])\)?[.)]?/);
+      const match = s.match(/^\(?([ABCD])\)?[\.\)\:]?$/);
       if (match) return map[match[1]];
-      if (Array.isArray(options)) {
-        const idx = options.findIndex(o => String(o).trim().toUpperCase() === s);
+
+      // Normalized text comparison against the 4 options
+      if (Array.isArray(options) && options.length === 4) {
+        const norm = (str) => String(str || '').toLowerCase().replace(/[\s\$\\\{\}\(\)\.,;:\*`]/g, '');
+        const target = norm(raw);
+        if (target) {
+          const exactIdx = options.findIndex(o => norm(o) === target);
+          if (exactIdx >= 0) return exactIdx;
+          const partialIdx = options.findIndex(o => {
+            const no = norm(o);
+            return no.length >= 2 && (no.includes(target) || target.includes(no));
+          });
+          if (partialIdx >= 0) return partialIdx;
+        }
+      }
+      return -1;
+    }
+
+    // Robust answer extraction from structured fields AND chat assistant explanations
+    function extractCorrectAnswer(row, meta, asstMsg, options, oneIndexed) {
+      const structuredCandidates = [
+        row.answer, row.correct_answer, row.correct_option, row.correct, row.ans, row.label,
+        meta.answer, meta.correct_answer, meta.correct_option, meta.ans
+      ];
+      for (const cand of structuredCandidates) {
+        const idx = normalizeOptIndex(cand, options, oneIndexed);
         if (idx >= 0) return idx;
       }
+
+      if (asstMsg) {
+        const cleanAsst = String(asstMsg).replace(/[\*`\$]/g, '');
+
+        // 1. Explicit labels: "Correct Answer: B", "Answer is (C)", "Final Answer - D"
+        const explicitMatches = [...cleanAsst.matchAll(/(?:correct\s*(?:answer|option)|final\s*answer|answer|ans)\s*(?:is|:|\-|=)\s*(?:option\s*)?[\(\[\s]*([A-D1-4])(?:[\)\]\s\.,;]|$)/gi)];
+        if (explicitMatches.length > 0) {
+          const lastVal = explicitMatches[explicitMatches.length - 1][1];
+          const idx = normalizeOptIndex(lastVal, options, true);
+          if (idx >= 0) return idx;
+        }
+
+        // 2. Phrase patterns: "Option (B) is correct", "Choice C is right"
+        const phraseMatch = cleanAsst.match(/(?:option|choice)\s*[\(\[]?\s*([A-D1-4])\s*[\)\]]?\s*(?:is\s*(?:correct|right|the\s*correct|true))/i);
+        if (phraseMatch) {
+          const idx = normalizeOptIndex(phraseMatch[1], options, true);
+          if (idx >= 0) return idx;
+        }
+
+        // 3. Concluding patterns: "Therefore, the correct answer is (C)", "Hence, B"
+        const conclMatch = cleanAsst.match(/(?:therefore|hence|thus|so)[,\s]+(?:the\s*)?(?:correct\s*)?(?:answer|option)?\s*(?:is\s*)?(?:option\s*)?[\(\[]?\s*([A-D1-4])\s*[\)\]]?(?:\b|$)/i);
+        if (conclMatch) {
+          const idx = normalizeOptIndex(conclMatch[1], options, true);
+          if (idx >= 0) return idx;
+        }
+
+        // 4. Standalone letter at end of solution
+        const endMatch = cleanAsst.match(/(?:^|\n)\s*(?:option\s*)?[\(\[]?([A-D])[\)\]]?\s*$/);
+        if (endMatch) {
+          const idx = normalizeOptIndex(endMatch[1], options, false);
+          if (idx >= 0) return idx;
+        }
+
+        // 5. Text fallback: "Correct Answer: <text>" matched against the 4 options
+        const textAnsMatch = cleanAsst.match(/(?:correct\s*(?:answer|option)|final\s*answer|answer)\s*(?:is|:|\-|=)\s*([^\n\.]+)/i);
+        if (textAnsMatch) {
+          const idx = normalizeOptIndex(textAnsMatch[1].trim(), options, false);
+          if (idx >= 0) return idx;
+        }
+      }
+
       return 0;
     }
 
     function parseUniversalRow(row, idx, exam) {
       if (!row || typeof row !== 'object') return null;
+
+      // Priority (a): Check explicit structured option fields first
+      const extractStructuredOptions = (obj) => {
+        if (!obj || typeof obj !== 'object') return { options: null, oneIndexed: false };
+        if (Array.isArray(obj.options) && obj.options.length >= 2) {
+          return { options: obj.options.slice(0, 4).map(cleanOptionText), oneIndexed: false };
+        }
+        if (Array.isArray(obj.choices) && obj.choices.length >= 2) {
+          return { options: obj.choices.slice(0, 4).map(cleanOptionText), oneIndexed: false };
+        }
+        if (obj.options && typeof obj.options === 'object') {
+          return {
+            options: [obj.options.a ?? obj.options.A, obj.options.b ?? obj.options.B, obj.options.c ?? obj.options.C, obj.options.d ?? obj.options.D].map(cleanOptionText),
+            oneIndexed: false
+          };
+        }
+        if (obj.option_a !== undefined || obj.optionA !== undefined) {
+          return {
+            options: [obj.option_a ?? obj.optionA, obj.option_b ?? obj.optionB, obj.option_c ?? obj.optionC, obj.option_d ?? obj.optionD].map(cleanOptionText),
+            oneIndexed: false
+          };
+        }
+        if (obj.option_1 !== undefined) {
+          return {
+            options: [obj.option_1, obj.option_2, obj.option_3, obj.option_4].map(cleanOptionText),
+            oneIndexed: true
+          };
+        }
+        if (obj.A !== undefined && obj.B !== undefined && obj.C !== undefined && obj.D !== undefined) {
+          return { options: [obj.A, obj.B, obj.C, obj.D].map(cleanOptionText), oneIndexed: false };
+        }
+        if (obj.a !== undefined && obj.b !== undefined && obj.c !== undefined && obj.d !== undefined) {
+          return { options: [obj.a, obj.b, obj.c, obj.d].map(cleanOptionText), oneIndexed: false };
+        }
+        return { options: null, oneIndexed: false };
+      };
 
       // Format C: Hugging Face catchshubham/neet-dataset (messages + metadata)
       if (Array.isArray(row.messages)) {
@@ -1150,85 +1450,74 @@
         const meta = row.metadata || {};
         if (!userMsg.trim()) return null;
 
-        // Extract options A/B/C/D or 1/2/3/4 from user message
-        const optMatches = [...userMsg.matchAll(/(?:^|\n)\s*(?:\(?([A-Da-d1-4])\)?[\.\):]\s+)(.+)/g)];
-        let qText = userMsg.trim();
-        let options = [];
-        let oneIndexed = false;
+        let { options, oneIndexed } = extractStructuredOptions(row);
+        if (!options) ({ options, oneIndexed } = extractStructuredOptions(meta));
 
-        if (optMatches.length >= 4) {
-          const firstPos = userMsg.indexOf(optMatches[0][0]);
-          if (firstPos > 0) qText = userMsg.slice(0, firstPos).trim();
-          oneIndexed = /^[1-4]$/.test(optMatches[0][1]);
-          options = optMatches.slice(0, 4).map(m => m[2].trim());
-        } else {
-          // Fallback: check inline options like "(A) ... (B) ... (C) ... (D) ..."
-          const inlineMatch = userMsg.match(/([\s\S]*?)\(?A\)?[\.\)]\s*([\s\S]*?)\(?B\)?[\.\)]\s*([\s\S]*?)\(?C\)?[\.\)]\s*([\s\S]*?)\(?D\)?[\.\)]\s*([\s\S]*)/i);
-          if (inlineMatch) {
-            qText = inlineMatch[1].trim();
-            options = [inlineMatch[2].trim(), inlineMatch[3].trim(), inlineMatch[4].trim(), inlineMatch[5].trim()];
-          } else {
-            options = ['Option A', 'Option B', 'Option C', 'Option D'];
-          }
+        let qText = stripLeadingHeader(userMsg);
+        if (!options) {
+          const extracted = extractOptionsFromText(userMsg);
+          qText = extracted.qText;
+          options = extracted.options;
+          oneIndexed = extracted.oneIndexed;
+        }
+        if (!options || options.length < 4) {
+          options = ['Option A', 'Option B', 'Option C', 'Option D'];
         }
 
-        // Extract correct answer from metadata or assistant explanation
-        const ansFromAsst =
-          asstMsg.match(/(?:correct\s*answer|answer|correct\s*option)\s*(?:is|:|-)?\s*\(?([A-D1-4])\)?/i)?.[1] ||
-          asstMsg.match(/\*\*([A-D])\*\*/)?.[1] ||
-          asstMsg.match(/\bOption\s*\(?([A-D1-4])\)?/i)?.[1];
-        const rawAns = meta.correct_answer ?? meta.answer ?? ansFromAsst ?? 'A';
-        const subject = detectSubject(meta.subject, row.id || meta.id, qText, exam);
+        const { chapter, year } = cleanChapterAndYear(meta.chapter || meta.topic, meta.tags || row.tags, exam);
+        const subject = detectSubject(meta.subject || meta.chapter || meta.tags, row.id || meta.id, qText, exam);
+        const correctOption = extractCorrectAnswer(row, meta, asstMsg, options, oneIndexed);
 
         return {
           id: String(row.id || meta.id || `${exam.toUpperCase()}-HF-${idx + 1}`),
           type: 'mcq',
           subject,
-          chapter: String(meta.chapter || meta.topic || `${EXAM_CONFIG[exam].name} PYQ`).trim(),
+          chapter,
+          year,
           question: qText,
           options,
-          correctOption: normalizeOptIndex(rawAns, options, oneIndexed),
+          correctOption,
           numericalAnswer: null,
           explanation: asstMsg.trim()
         };
       }
 
       // Format A & B: soughed/jee-main-questions OR Standard MCQ JSON/JSONL
-      const qText = String(row.question || row.question_text || row.prompt || '').trim();
-      if (!qText) return null;
+      const rawQText = String(row.question || row.question_text || row.prompt || '').trim();
+      if (!rawQText) return null;
 
-      let options = null;
-      let oneIndexed = false;
-
-      if (Array.isArray(row.options) && row.options.length >= 2) {
-        options = row.options.slice(0, 4).map(String);
-      } else if (row.options && typeof row.options === 'object') {
-        options = [row.options.a ?? row.options.A, row.options.b ?? row.options.B, row.options.c ?? row.options.C, row.options.d ?? row.options.D].map(v => String(v ?? ''));
-      } else if (row.option_a !== undefined || row.optionA !== undefined) {
-        options = [row.option_a ?? row.optionA, row.option_b ?? row.optionB, row.option_c ?? row.optionC, row.option_d ?? row.optionD].map(v => String(v ?? ''));
-      } else if (row.option_1 !== undefined) {
-        oneIndexed = true;
-        options = [row.option_1, row.option_2, row.option_3, row.option_4].map(v => String(v ?? ''));
-      } else if (row.a !== undefined && row.b !== undefined) {
-        options = [row.a, row.b, row.c, row.d].map(v => String(v ?? ''));
+      let { options, oneIndexed } = extractStructuredOptions(row);
+      let qText = stripLeadingHeader(rawQText);
+      if (!options) {
+        const extracted = extractOptionsFromText(rawQText);
+        if (extracted.options) {
+          qText = extracted.qText;
+          options = extracted.options;
+          oneIndexed = extracted.oneIndexed;
+        }
       }
 
       const hasValidOpts = Array.isArray(options) && options.filter(o => o.trim() !== '').length >= 2;
       const hasNum = row.numerical_answer !== undefined && row.numerical_answer !== null && String(row.numerical_answer).trim() !== '';
       const isNum = (exam === 'jee') && (hasNum || !hasValidOpts);
-      if (exam === 'neet' && !hasValidOpts) return null; // NEET is strictly MCQ
+      if (exam === 'neet' && !hasValidOpts) return null;
 
+      const { chapter, year } = cleanChapterAndYear(row.chapter || row.topic, row.tags, exam);
       const subject = detectSubject(row.subject, row.question_id || row.id, qText, exam);
+      const explanation = String(row.explanation || row.solution || '').trim();
+      const correctOption = isNum ? null : extractCorrectAnswer(row, row.metadata || {}, explanation, options, oneIndexed);
+
       return {
         id: String(row.question_id || row.id || `${exam.toUpperCase()}-${idx + 1}`),
         type: isNum ? 'num' : 'mcq',
         subject,
-        chapter: String(row.chapter || row.topic || `${EXAM_CONFIG[exam].name} PYQ`).trim(),
+        chapter,
+        year,
         question: qText,
         options: isNum ? [] : options,
-        correctOption: isNum ? null : normalizeOptIndex(row.correct_answer ?? row.correct_option ?? row.answer, options, oneIndexed),
+        correctOption,
         numericalAnswer: isNum ? String(row.numerical_answer ?? row.answer ?? '0').trim() : null,
-        explanation: String(row.explanation || row.solution || '').trim()
+        explanation
       };
     }
 
@@ -1742,6 +2031,7 @@
           <div class="flex flex-wrap items-center gap-2">
             <span class="px-2.5 py-1 rounded-lg bg-accent-50 dark:bg-slate-800 text-accent-700 dark:text-accent-500 text-xs font-bold">${q.subject}</span>
             <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">${q.chapter}</span>
+            ${q.year ? `<span class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-xs font-bold">${q.year}</span>` : ''}
             <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 text-xs font-mono font-bold">${q.id}</span>
           </div>
           <div class="flex items-center gap-2">
